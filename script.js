@@ -1,10 +1,8 @@
-// Stores the value of the value entered into the "number of lines" input box into a variable
-let titleInputBoxValueLength = document.getElementById('assetTitle').size;
 // Storing the "Create" button into a variable
 const createButton = document.getElementById('createButton');
 
-// NOT CURRENTLY WORKING!
 createButton.addEventListener('click', () => {
+    console.log(parseInt(document.querySelector('#assetNoOfLines').value));
     // The functions required to allow the alert(s) to appear above the form if input validation fails
     const alertPlaceholder = document.getElementById('alertPlaceholder');
     const appendAlert = (message, type) => {
@@ -19,7 +17,12 @@ createButton.addEventListener('click', () => {
         alertPlaceholder.append(wrapper);
     }
 
-    if(titleInputBoxValueLength > 10) {
-        appendAlert('You cannot enter a title longer than 10 characters!', 'danger');
+    // Performs input validation to make sure that the asset title is less than 15 characters
+    if(document.querySelector('#assetTitle').value.length > 15 && parseInt(document.querySelector('#assetNoOfLines').value) > 0) {
+        appendAlert('You cannot enter a title longer than 15 characters!', 'danger');
+    } else if(document.querySelector('#assetTitle').value.length < 15 && parseInt(document.querySelector('#assetNoOfLines').value) < 0) {
+        appendAlert('You cannot enter a negative number of lines!', 'danger');
+    } else if(document.querySelector('#assetTitle').value.length > 15 && parseInt(document.querySelector('#assetNoOfLines').value) < 0) {
+        appendAlert('You cannot enter a title longer than 15 characters and you cannot enter a negative number of lines!', 'danger');
     }
 });
