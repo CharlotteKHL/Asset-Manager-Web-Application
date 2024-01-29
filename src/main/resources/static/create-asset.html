@@ -39,12 +39,12 @@
         <!-- Creating an asset form starts here -->
         <div class="container">
             <div id="alertPlaceholder"></div>
-            <form>
+            <form action="/submit" method="post">
                 <div class="mb-3">
                     <label for="assetTitle" class="form-label">
                         Title
                     </label>
-                    <input type="text" class="form-control m-auto" id="assetTitle" aria-describedby="titleHelp" style="width: 500px">
+                    <input type="text" class="form-control m-auto" id="assetTitle" aria-describedby="titleHelp" style="width: 500px" name="title">
                     <div id="titleHelp" class="form-text">
                         Enter the asset title
                     </div>
@@ -53,7 +53,7 @@
                     <label for="assetType" class="form-label">
                         Type
                     </label>
-                    <select class="form-select m-auto" aria-label="Asset type selection menu" aria-describedby="typeHelp" style="width: 500px">
+                    <select class="form-select m-auto" aria-label="Asset type selection menu" aria-describedby="typeHelp" style="width: 500px" name="type">
                         <option selected></option>
                         <option value="Type 1">Type 1</option>
                         <option value="Type 2">Type 2</option>
@@ -67,7 +67,7 @@
                     <label for="assetNoOfLines" class="form-label">
                         Number of lines
                     </label>
-                    <input type="number" class="form-control m-auto" id="assetNoOfLines" aria-describedby="linesHelp" style="width: 500px">
+                    <input type="number" class="form-control m-auto" id="assetNoOfLines" aria-describedby="linesHelp" style="width: 500px" name="lines">
                     <div id="linesHelp" class="form-text">
                         Enter the number of lines the asset contains
                     </div>
@@ -76,7 +76,7 @@
                     <label for="assetLink" class="form-label">
                         Link
                     </label>
-                    <input type="text" class="form-control m-auto" id="assetLink" aria-describedby="linkHelp" style="width: 500px">
+                    <input type="text" class="form-control m-auto" id="assetLink" aria-describedby="linkHelp" style="width: 500px" name="link">
                     <div id="linkHelp" class="form-text">
                         Paste the link to the asset document(s)
                     </div>
@@ -85,7 +85,7 @@
                     <label for="assetLanguage" class="form-label">
                         Programming Language
                     </label>
-                    <select class="form-select m-auto" aria-label="Asset programming language selection menu" aria-describedby="languageHelp" style="width: 500px">
+                    <select class="form-select m-auto" aria-label="Asset programming language selection menu" aria-describedby="languageHelp" style="width: 500px" name="lang">
                         <option selected></option>
                         <option value="Java">Java</option>
                         <option value="JavaScript">JavaScript</option>
@@ -100,7 +100,7 @@
                     <label for="assetAssociations" class="form-label">
                         Association(s)
                     </label>
-                    <select class="form-select m-auto" aria-label="Asset association(s) selection menu" aria-describedby="associationsHelp" style="width: 500px">
+                    <select class="form-select m-auto" aria-label="Asset association(s) selection menu" aria-describedby="associationsHelp" style="width: 500px" name="assoc">
                         <option selected></option>
                         <!-- Ideally, this will be a preloaded dropdown menu of pre-existing assets already in the database -->
                         <option value="Asset 1">Asset 1</option>
@@ -116,12 +116,12 @@
                     <label for="assetDate" class="form-label">
                         Date
                     </label>
-                    <input type="text" class="form-control m-auto" id="assetDate" aria-describedby="dateHelp" style="width: 500px">
+                    <input type="text" class="form-control m-auto" id="assetDate" aria-describedby="dateHelp" style="width: 500px" name="date">
                     <div id="linkHelp" class="form-text">
                         Write down the date the asset was created (in the format dd/mm/yy)
                     </div>
                 </div>
-                <button class="btn btn-outline-primary" type="button" id="createButton">
+                <button class="btn btn-outline-primary" type="submit" id="createButton">
                     <i class="bi bi-check-lg"></i> Create
                 </button>
             </form>
