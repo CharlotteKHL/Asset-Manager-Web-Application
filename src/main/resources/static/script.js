@@ -36,9 +36,9 @@ createButton.addEventListener('click', () => {
     }
 
     // If the asset number of lines is less than or equal to zero
-    if(parseInt(document.querySelector('#assetNoOfLines').value) <= 0) {
+    if(parseInt(document.querySelector('#assetNoOfLines').value) <= 0 || document.querySelector('#assetNoOfLines').value === "") {
         valid = false;
-        appendAlert('You cannot enter a positive, non-zero number of lines!', 'danger', 'noOfLinesAlertPlaceholder');
+        appendAlert('You must enter a positive number of lines!', 'danger', 'noOfLinesAlertPlaceholder');
     }
 
     // If the asset link is empty
