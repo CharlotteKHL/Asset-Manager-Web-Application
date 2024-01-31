@@ -2,10 +2,10 @@
 const createButton = document.getElementById('createButton');
 
 createButton.addEventListener('click', () => {
-    console.log(parseInt(document.querySelector('#assetNoOfLines').value));
+    let valid = true;
     // The functions required to allow the alert(s) to appear above the form if input validation fails
-    const alertPlaceholder = document.getElementById('alertPlaceholder');
-    const appendAlert = (message, type) => {
+    const appendAlert = (message, type, placeholder) => {
+        const placeholderElement = document.getElementById(`${placeholder}`);
         const wrapper = document.createElement('div');
         wrapper.innerHTML = [
             `<div class="alert alert-${type} alert-dismissible" role="alert">
@@ -14,15 +14,59 @@ createButton.addEventListener('click', () => {
             </div>`
         ].join('');
 
-        alertPlaceholder.append(wrapper);
+        placeholderElement.append(wrapper);
     }
 
-    // Performs input validation to make sure that the asset title is less than 15 characters
-    if(document.querySelector('#assetTitle').value.length > 15 && parseInt(document.querySelector('#assetNoOfLines').value) > 0) {
-        appendAlert('You cannot enter a title longer than 15 characters!', 'danger');
-    } else if(document.querySelector('#assetTitle').value.length < 15 && parseInt(document.querySelector('#assetNoOfLines').value) < 0) {
-        appendAlert('You cannot enter a negative number of lines!', 'danger');
-    } else if(document.querySelector('#assetTitle').value.length > 15 && parseInt(document.querySelector('#assetNoOfLines').value) < 0) {
-        appendAlert('You cannot enter a title longer than 15 characters and you cannot enter a negative number of lines!', 'danger');
+    // If the asset title is empty
+    if(document.querySelector('#assetTitle').value.length == 0) {
+        valid = false;
+        appendAlert('You must enter an asset title!', 'danger', 'titleAlertPlaceholder');
+    }
+
+    // If the asset title is less than 50 characters
+    if(document.querySelector('#assetTitle').value.length > 50) {
+        valid = false;
+        appendAlert('You cannot enter a title longer than 50 characters!', 'danger', 'titleAlertPlaceholder');
+    }
+
+    // If the asset type is empty
+    if(document.querySelector('#assetType').value.length == 0) {
+        valid = false;
+        appendAlert('You must enter an asset type!', 'danger', 'typeAlertPlaceholder');
+    }
+
+    // If the asset number of lines is less than or equal to zero
+    if(parseInt(document.querySelector('#assetNoOfLines').value) <= 0) {
+        valid = false;
+        appendAlert('You cannot enter a positive, non-zero number of lines!', 'danger', 'noOfLinesAlertPlaceholder');
+    }
+
+    // If the asset link is empty
+    if(document.querySelector('#assetLink').value.length == 0) {
+        valid = false;
+        appendAlert('You must enter an asset link!', 'danger', 'linkAlertPlaceholder');
+    }
+
+    // If the asset programming language is empty
+    if(document.querySelector('#assetLanguage').value.length == 0) {
+        valid = false;
+        appendAlert('You must enter an asset programming language!', 'danger', 'progLanguageAlertPlaceholder');
+    }
+
+    // If the asset association(s) is empty
+    if(document.querySelector('#assetAssociations').value.length == 0) {
+        valid = false;
+        appendAlert('You must enter asset association(s)!', 'danger', 'associationsAlertPlaceholder');
+    }
+
+    // If the asset link is empty
+    if(document.querySelector('#assetDate').value.length == 0) {
+        valid = false;
+        appendAlert('You must enter an asset creation date!', 'danger', 'dateAlertPlaceholder');
+    }
+
+    // If the asset form is filled in correctly then asset creation notification is displayed
+    if(valid) {
+        appendAlert('<i class="bi bi-check-circle-fill"></i>  Asset created successfully!', 'success', 'successAlertPlaceholder');
     }
 });
