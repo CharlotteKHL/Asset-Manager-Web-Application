@@ -124,6 +124,7 @@ public class FormController {
 
 	}
 
+	/* Validates the title and link attributes of the form, preventing duplicates*/ 
 	public String validateTitleLink(String title, String link, String lang, String assoc) {
 
 		String UNIQUE_TITLE = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
@@ -154,6 +155,7 @@ public class FormController {
 		return "Form submitted successfully";
 	}
 
+	 /* Validates the programming language selection attributes of the form, preventing unwanted results*/
 	public void validateSelection(String lang) throws InvalidSelection {
 		if (!programmingLanguagesSet.contains(lang)) {
 			throw new InvalidSelection("This programming language is not valid.");
