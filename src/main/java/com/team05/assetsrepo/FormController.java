@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -64,16 +65,17 @@ public class FormController {
 	 * @throws InvalidSelection 
 	 */
 	@PostMapping("/submit")
-	public ResponseEntity<Void> extractForm(@RequestParam String title, @RequestParam int lines,
+	public String extractForm(@RequestParam String title, @RequestParam int lines,
 			@RequestParam String link, @RequestParam String lang, @RequestParam String assoc,
-			@RequestParam String date) throws InvalidSelection {
+			@RequestParam String date, Model model) throws InvalidSelection {
 
-		validateTitleLink(title, link, lang, assoc);
+		String message = validateTitleLink(title, link, lang, assoc);
+		model.addAttribute("error", message);
 		validateSelection(lang);
 
 		insertAssetData(title, lines, link, lang, assoc, date);
 
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		return "submit";
 
 	}
 
@@ -122,7 +124,7 @@ public class FormController {
 
 	}
 
-	public void validateTitleLink(String title, String link, String lang, String assoc) {
+	public String validateTitleLink(String title, String link, String lang, String assoc) {
 
 		String UNIQUE_TITLE = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
 		String UNIQUE_LINK = "SELECT DISTINCT COUNT(link) FROM std_assets WHERE link = :link";
@@ -147,7 +149,9 @@ public class FormController {
 		} catch (NotUnique e) {
 			e.printStackTrace();
 			System.out.println("Error!");
+			return e.getMessage();
 		}
+		return "Form submitted successfully";
 	}
 
 	public void validateSelection(String lang) throws InvalidSelection {
