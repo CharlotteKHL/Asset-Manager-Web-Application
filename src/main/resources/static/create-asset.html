@@ -38,7 +38,14 @@
         <br>
         <!-- Creating an asset form starts here -->
         <div class="container">
-            <div id="alertPlaceholder"></div>
+            <div id="successAlertPlaceholder"></div>
+            <div id="titleAlertPlaceholder"></div>
+            <div id="typeAlertPlaceholder"></div>
+            <div id="noOfLinesAlertPlaceholder"></div>
+            <div id="linkAlertPlaceholder"></div>
+            <div id="progLanguageAlertPlaceholder"></div>
+            <div id="associationsAlertPlaceholder"></div>
+            <div id="dateAlertPlaceholder"></div>
             <form action="/submit" method="post">
                 <div class="mb-3">
                     <label for="assetTitle" class="form-label">
@@ -53,7 +60,7 @@
                     <label for="assetType" class="form-label">
                         Type
                     </label>
-                    <select class="form-select m-auto" aria-label="Asset type selection menu" aria-describedby="typeHelp" style="width: 500px" name="type">
+                    <select class="form-select m-auto" id="assetType" aria-label="Asset type selection menu" aria-describedby="typeHelp" style="width: 500px" name="type">
                         <option selected></option>
                         <option value="Type 1">Type 1</option>
                         <option value="Type 2">Type 2</option>
@@ -85,7 +92,7 @@
                     <label for="assetLanguage" class="form-label">
                         Programming Language
                     </label>
-                    <select class="form-select m-auto" aria-label="Asset programming language selection menu" aria-describedby="languageHelp" style="width: 500px" name="lang">
+                    <select class="form-select m-auto" id="assetLanguage" aria-label="Asset programming language selection menu" aria-describedby="languageHelp" style="width: 500px" name="lang">
                         <option selected></option>
                         <option value="Java">Java</option>
                         <option value="JavaScript">JavaScript</option>
@@ -100,7 +107,7 @@
                     <label for="assetAssociations" class="form-label">
                         Association(s)
                     </label>
-                    <select class="form-select m-auto" aria-label="Asset association(s) selection menu" aria-describedby="associationsHelp" style="width: 500px" name="assoc">
+                    <select class="form-select m-auto" id="assetAssociations" aria-label="Asset association(s) selection menu" aria-describedby="associationsHelp" style="width: 500px" name="assoc">
                         <option selected></option>
                         <!-- Ideally, this will be a preloaded dropdown menu of pre-existing assets already in the database -->
                         <option value="Asset 1">Asset 1</option>
@@ -121,7 +128,7 @@
                         Write down the date the asset was created (in the format dd/mm/yy)
                     </div>
                 </div>
-                <button class="btn btn-outline-primary" type="submit" id="createButton">
+                <button class="btn btn-outline-primary" type="button" id="createButton">
                     <i class="bi bi-check-lg"></i> Create
                 </button>
             </form>
