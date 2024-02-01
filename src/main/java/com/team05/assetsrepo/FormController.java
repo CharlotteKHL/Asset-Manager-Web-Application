@@ -1,7 +1,10 @@
 package com.team05.assetsrepo;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -56,6 +59,8 @@ public class FormController {
    */
   public void insertAssetData(String title, int lines, String link, String lang, String assoc, 
       String date) {
+    
+    validate(title,link,lang,assoc);
 
     String statement = "INSERT INTO std_assets (title, lines, link, lang, assoc, date) "
         + "VALUES (:title, :lines, :link, :lang, :assoc, :date)";
@@ -93,5 +98,36 @@ public class FormController {
     }
 
   }
+  
+  public void validate (String title, String link, String lang, String assoc) {
+    
+    String UNIQUE_TITLE = "SELECT DISTINCT COUNT title FROM std_assets WHERE title = :title";
+    String UNIQUE_LINK = "SELECT DISTINCT COUNT link FROM std_assets WHERE link = :link";
+    
+    try {
+      Map<String, String> parameters = new HashMap();
+      parameters.put("title", title);
+      
+      int titleResult = (int)jdbcTemplate.queryForObject(
+          UNIQUE_TITLE, parameters, Integer.class);
+      
+      parameters.clear();
+      parameters.put("link", link);
+    
+      int linkResult = (int)jdbcTemplate.queryForObject(
+        UNIQUE_LINK, parameters, Integer.class);
+      
+      if(titleResult != 0) {
+        throw new NotUnique("This title is not unique");
+      } else if (linkResult != 0) {
+        throw new NotUnique("This link is not unique");
+      }
+    
+    } catch (NotUnique e){
+     e.printStackTrace();
+     System.out.println("Error!");
+    }
+  }
+
 
 }
