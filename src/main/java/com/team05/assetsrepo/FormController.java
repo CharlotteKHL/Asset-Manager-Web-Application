@@ -40,6 +40,8 @@ public class FormController {
       @RequestParam String link, @RequestParam String lang,
       @RequestParam String assoc, @RequestParam String date) {
 
+    validate(title,link,lang,assoc);
+
     insertAssetData(title, lines, link, lang, assoc, date);
 
     return new ResponseEntity<>(HttpStatus.CREATED);
@@ -59,8 +61,6 @@ public class FormController {
    */
   public void insertAssetData(String title, int lines, String link, String lang, String assoc, 
       String date) {
-    
-    validate(title,link,lang,assoc);
 
     String statement = "INSERT INTO std_assets (title, lines, link, lang, assoc, date) "
         + "VALUES (:title, :lines, :link, :lang, :assoc, :date)";
@@ -101,8 +101,8 @@ public class FormController {
   
   public void validate (String title, String link, String lang, String assoc) {
     
-    String UNIQUE_TITLE = "SELECT DISTINCT COUNT title FROM std_assets WHERE title = :title";
-    String UNIQUE_LINK = "SELECT DISTINCT COUNT link FROM std_assets WHERE link = :link";
+    String UNIQUE_TITLE = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
+    String UNIQUE_LINK = "SELECT DISTINCT COUNT(link) FROM std_assets WHERE link = :link";
     
     try {
       Map<String, String> parameters = new HashMap();
