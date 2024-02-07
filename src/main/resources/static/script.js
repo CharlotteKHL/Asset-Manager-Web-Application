@@ -1,20 +1,25 @@
+// Client-side asset form validation - this is called upon form submission.
 function validateEntries() {
 
     const assetForm = document.getElementById("assetForm");
+    // Regular expression to ensure date entered is valid i.e. dd/MM/yyyy.
     const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+    // Creates an array containing all entries entered / selected by the user.
     let entries = [...assetForm.elements]
         .filter(element => element.tagName === 'INPUT' || element.tagName === 'SELECT')
         .map(input => input.value);
-    // console.log(entries);
 
+    // The code below "resets" any previously displayed alerts.
     const alerts = Array.from(document.getElementsByClassName('alertMsg'));
-    // console.log(alerts);
     alerts.forEach(alert => {
         alert.remove();
     });
 
     let alertTriggered = false;
 
+    /* The block of code below is used to generate and display the necessary (Bootstrap) alert.
+    Each alert has its own specific id.
+    All alerts share the same class: "alertMsg". */
     const appendAlert = (message, type, placeholder, alertId) => {
         const placeholderElement = document.getElementById(`${placeholder}`);
         const wrapper = document.createElement('div');
@@ -29,7 +34,7 @@ function validateEntries() {
 
         placeholderElement.append(wrapper);
     }
-      
+
     // Checks whether the asset title is empty.
     if(entries[0].length == 0 && document.getElementById('titleAlert') === null) {
         alertTriggered = true;
@@ -53,7 +58,7 @@ function validateEntries() {
         alertTriggered = true;
         appendAlert('You must enter a positive number of lines!', 'danger', 'noOfLinesAlertPlaceholder', 'noOfLinesAlert');
     }
-    
+
     // Checks whether the asset link is empty.
     if(entries[3].length == 0 && document.getElementById('linkAlert') === null) {
         alertTriggered = true;
@@ -78,6 +83,9 @@ function validateEntries() {
         appendAlert('You must enter an asset creation date in the dd/mm/yyyy format!', 'danger', 'dateAlertPlaceholder', 'dateAlert');
     }
 
+    /* If no alerts were triggered, we can proceed to submit a POST request.
+    If an error (from the server / backend) is caught, this is appropriately displayed.
+    Otherwise a successful message is displayed to the user. */
     if(!alertTriggered) {
 
         var formData = new FormData();
