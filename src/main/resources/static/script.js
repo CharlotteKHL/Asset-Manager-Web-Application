@@ -1,30 +1,25 @@
-// Storing the "Create" button into a variable
-const createButton = document.getElementById('createButton');
+function validateEntries() {
 
-// Boolean variables for each form attribute to check whether it has already been validated or not
-let titleEmpty = false;
-let titleTooLong = false;
-let type = false;
-let noOfLinesNegativeOrZero = false;
-let noOfLinesEmpty = false;
-let link = false;
-let progLanguage = false;
-let associations = false;
-let dateEmpty = false;
-let dateIncorrectFormat = false;
+    const assetForm = document.getElementById("assetForm");
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+    let entries = [...assetForm.elements]
+        .filter(element => element.tagName === 'INPUT' || element.tagName === 'SELECT')
+        .map(input => input.value);
+    // console.log(entries);
 
-// Boolean variable to check whether the asset has been successfully created yet or not
-let assetSuccessfullyCreated = false;
+    const alerts = Array.from(document.getElementsByClassName('alertMsg'));
+    // console.log(alerts);
+    alerts.forEach(alert => {
+        alert.remove();
+    });
 
-// The code regex expected for the correct date format in the date field
-const dateRegex = /[0-31]{2}\/[0-12]{2}\/[0-9999]{2}/;
+    let alertTriggered = false;
 
-createButton.addEventListener('click', () => {
-    let valid = true;
-    // The functions required to allow the alert(s) to appear above the form if input validation fails
-    const appendAlert = (message, type, placeholder) => {
+    const appendAlert = (message, type, placeholder, alertId) => {
         const placeholderElement = document.getElementById(`${placeholder}`);
         const wrapper = document.createElement('div');
+        wrapper.id = alertId;
+        wrapper.classList.add("alertMsg");
         wrapper.innerHTML = [
             `<div class="alert alert-${type} alert-dismissible" role="alert">
                 <div>${message}</div>
@@ -34,79 +29,78 @@ createButton.addEventListener('click', () => {
 
         placeholderElement.append(wrapper);
     }
-
-    // If the asset title is empty
-    if(document.querySelector('#assetTitle').value.length == 0 && titleEmpty == false) {
-        titleEmpty = true;
-        valid = false;
-        appendAlert('You must enter an asset title!', 'danger', 'titleAlertPlaceholder');
+      
+    // Checks whether the asset title is empty.
+    if(entries[0].length == 0 && document.getElementById('titleAlert') === null) {
+        alertTriggered = true;
+        appendAlert('You must enter an asset title!', 'danger', 'titleAlertPlaceholder', 'titleAlert');
     }
 
-    // If the asset title is less than 50 characters
-    if(document.querySelector('#assetTitle').value.length > 50 && titleTooLong == false) {
-        titleTooLong = true;
-        valid = false;
-        appendAlert('You cannot enter a title longer than 50 characters!', 'danger', 'titleAlertPlaceholder');
+    // Checks whether the asset title is over 50 characters long.
+    if(entries[0].length > 50 && document.getElementById('titleLengthAlert') === null) {
+        alertTriggered = true;
+        appendAlert('You cannot enter a title longer than 50 characters!', 'danger', 'titleAlertPlaceholder', 'titleLengthAlert');
     }
 
-    // If the asset type is empty
-    if(document.querySelector('#assetType').value.length == 0 && type == false) {
-        type = true;
-        valid = false;
-        appendAlert('You must enter an asset type!', 'danger', 'typeAlertPlaceholder');
+    // Checks whether the asset type has been left empty.
+    if(entries[1].length == 0 && document.getElementById('typeAlert') === null) {
+        alertTriggered = true;
+        appendAlert('You must enter an asset type!', 'danger', 'typeAlertPlaceholder', 'typeAlert');
     }
 
-    // If the asset number of lines is empty
-    if(document.querySelector('#assetNoOfLines').value === "" & noOfLinesEmpty == false) {
-        noOfLinesEmpty = true;
-        appendAlert('You must enter a number of lines!', 'danger', 'noOfLinesAlertPlaceholder');
+    // Checks whether the number of lines has been left empty / is less than or equal to 0.
+    if((entries[2] == "" || entries[2] <= 0) && document.getElementById('noOfLinesAlert') === null) {
+        alertTriggered = true;
+        appendAlert('You must enter a positive number of lines!', 'danger', 'noOfLinesAlertPlaceholder', 'noOfLinesAlert');
+    }
+    
+    // Checks whether the asset link is empty.
+    if(entries[3].length == 0 && document.getElementById('linkAlert') === null) {
+        alertTriggered = true;
+        appendAlert('You must enter an asset link!', 'danger', 'linkAlertPlaceholder', 'linkAlert');
     }
 
-    // If the asset number of lines is less than or equal to zero
-    if(parseInt(document.querySelector('#assetNoOfLines').value) <= 0 & noOfLinesNegativeOrZero == false) {
-        noOfLinesNegativeOrZero = true
-        valid = false;
-        appendAlert('You must enter a positive number of lines!', 'danger', 'noOfLinesAlertPlaceholder');
+    // Checks whether the programming language field is empty.
+    if(entries[4].length == 0 && document.getElementById('progLanguageAlert') === null) {
+        alertTriggered = true;
+        appendAlert('You must enter an asset programming language!', 'danger', 'progLanguageAlertPlaceholder', 'progLanguageAlert');
     }
 
-    // If the asset link is empty
-    if(document.querySelector('#assetLink').value.length == 0 && link == false) {
-        link = true;
-        valid = false;
-        appendAlert('You must enter an asset link!', 'danger', 'linkAlertPlaceholder');
+    // Checks whether the associations field is empty.
+    if(entries[5].length == 0 && document.getElementById('associationsAlert') === null) {
+        alertTriggered = true;
+        appendAlert('You must enter asset association(s)!', 'danger', 'associationsAlertPlaceholder', 'associationsAlert');
     }
 
-    // If the asset programming language is empty
-    if(document.querySelector('#assetLanguage').value.length == 0 && progLanguage == false) {
-        progLanguage = true;
-        valid = false;
-        appendAlert('You must enter an asset programming language!', 'danger', 'progLanguageAlertPlaceholder');
+    // Checks whether date field has been left empty or does not conform to the date regular expression.
+    if((entries[6].length == 0 || !dateRegex.test(entries[6])) && document.getElementById('dateAlert') === null) {
+        alertTriggered = true;
+        appendAlert('You must enter an asset creation date in the dd/mm/yyyy format!', 'danger', 'dateAlertPlaceholder', 'dateAlert');
     }
 
-    // If the asset association(s) is empty
-    if(document.querySelector('#assetAssociations').value.length == 0 && associations == false) {
-        associations = true;
-        valid = false;
-        appendAlert('You must enter asset association(s)!', 'danger', 'associationsAlertPlaceholder');
+    if(!alertTriggered) {
+
+        var formData = new FormData();
+
+        formData.append("title", entries[0]);
+        // N.B. Type is skipped as this will be implemented later...
+        formData.append("lines", entries[2]);
+        formData.append("link", entries[3]);
+        formData.append("lang", entries[4]);
+        formData.append("assoc", entries[5]);
+        formData.append("date", entries[6]);
+
+        fetch('/submit', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i>  Asset created successfully!', 'success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i>  Error: ' + error.message, 'danger', 'successAlertPlaceholder');
+        });
     }
 
-    // If the asset date is empty
-    if(document.querySelector('#assetDate').value.length == 0 && dateEmpty == false) {
-        dateEmpty = true;
-        valid = false;
-        appendAlert('You must enter an asset creation date!', 'danger', 'dateAlertPlaceholder');
-    }
-
-    // If the asset date is entered in the incorrect format
-    if(!dateRegex.test(document.querySelector('#assetDate').value) && dateIncorrectFormat == false) {
-        dateIncorrectFormat = true;
-        valid = false;
-        appendAlert('You must enter the date in the format mm/dd/yy!', 'danger', 'dateAlertPlaceholder');
-    }
-
-    // If the asset form is filled in correctly then asset creation notification is displayed
-    if(titleEmpty == false && titleTooLong == false && type == false && noOfLinesEmpty == false && noOfLinesNegativeOrZero == false & link == false && progLanguage == false && associations == false && dateEmpty == false && dateIncorrectFormat == false && assetSuccessfullyCreated == false) {
-        assetSuccessfullyCreated = true;
-        appendAlert('<i class="bi bi-check-circle-fill"></i>  Asset created successfully!', 'success', 'successAlertPlaceholder');
-    }
-});
+}

@@ -46,7 +46,7 @@
             <div id="progLanguageAlertPlaceholder"></div>
             <div id="associationsAlertPlaceholder"></div>
             <div id="dateAlertPlaceholder"></div>
-            <form action="/submit" method="post">
+            <form id="assetForm">
                 <div class="mb-3">
                     <label for="assetTitle" class="form-label">
                         Title
@@ -125,10 +125,10 @@
                     </label>
                     <input type="text" class="form-control m-auto" id="assetDate" aria-describedby="dateHelp" style="width: 500px" name="date">
                     <div id="linkHelp" class="form-text">
-                        Write down the date the asset was created (in the format dd/mm/yy)
+                        Write down the date the asset was created (in the format dd/mm/yyyy)
                     </div>
                 </div>
-                <button class="btn btn-outline-primary" type="button" id="createButton">
+                <button class="btn btn-outline-primary" type="button" id="createButton" onclick="validateEntries()">
                     <i class="bi bi-check-lg"></i> Create
                 </button>
             </form>
