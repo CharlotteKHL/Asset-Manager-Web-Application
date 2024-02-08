@@ -71,6 +71,7 @@ public class FormController {
     validateSelection(lang);
 
     insertAssetData(title, lines, link, lang, assoc, date);
+    insertAssetType(title, type);
 
     return "submit";
 
@@ -119,6 +120,11 @@ public class FormController {
       e.printStackTrace();
     }
 
+  }
+  
+  public void insertAssetType(String title, String type) {
+    String statement = "INSERT INTO type (name, attributes)"
+        + "VALUES (:type, :title)";
   }
 
   /* Validates the title and link attributes of the form, preventing duplicates */
