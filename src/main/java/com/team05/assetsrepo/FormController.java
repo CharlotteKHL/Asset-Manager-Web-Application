@@ -7,10 +7,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -219,6 +222,9 @@ public class FormController {
     }
   }
   
+  @Autowired
+  private PasswordEncoder encoder;
+  
   /**
    * Assigns a new user id to the new user and inserts the new information into the database.
    *
@@ -228,6 +234,9 @@ public class FormController {
    */
   @PostMapping("/register")
   public String register(@RequestParam String username, @RequestParam String password, Model model) {
+	  
+	// Sets the user's password to the hashed version
+	setPassword(username, encoder.encode(getPassword(username)));
     
     String count = "SELECT COUNT(user_id) FROM user";
     String insert = "INSERT INTO user (user_id, username, password, role) "
@@ -258,5 +267,28 @@ public class FormController {
     
     return "successful-register";
   }
-
+  
+  /* A method to allow you to get a user's password */
+  public String getPassword(@RequestParam String username) {
+	  String password = "SELECT DISTINCT password WHERE username = :username";
+	  
+	  Map<String, String> parameters = new HashMap();
+	  
+	  parameters.put("username", username);
+	  
+	  String passwordValue = jdbcTemplate.queryForObject(password, parameters, String.class);
+	  
+	  return passwordValue;
+  }
+  
+  public void setPassword(@RequestParam String username, @RequestParam String password) {
+	  String setPassword = "UPDATE std_assets SET password = :password WHERE username = :username";
+	  
+	  Map<String, String> parameters = new HashMap();
+	  
+	  parameters.put("username", username);
+	  parameters.put("password", password);
+	  
+	  jdbcTemplate.execute(setPassword, parameters, null);
+  }
 }
