@@ -91,8 +91,19 @@ public class FormController {
   public void insertAssetData(String title, int lines, String link, String lang, String assoc,
       String date) {
 
-    String statement = "INSERT INTO std_assets (title, lines, link, lang, assoc, date) "
-        + "VALUES (:title, :lines, :link, :lang, :assoc, :date)";
+    // Ensures that the primary key id is correctly numbered to be 1 more than
+    // the previous highest.
+    String maxIDQuery = "SELECT MAX(id) FROM std_assets";
+    Integer maxID = jdbcTemplate.queryForObject(maxIDQuery, Collections.emptyMap(), Integer.class);
+
+    if (maxID == null) {
+      maxID = 0; // if no records found, initialise maxID to 0
+    }
+
+    int insertID = maxID + 1;
+
+    String statement = "INSERT INTO std_assets (id, title, lines, link, lang, assoc, date) "
+        + "VALUES (:id, :title, :lines, :link, :lang, :assoc, :date)";
 
     try {
 
@@ -111,7 +122,7 @@ public class FormController {
        * The value corresponds to the actual values that will replace those named parameters in the
        * SQL query.
        */
-      MapSqlParameterSource params = new MapSqlParameterSource().addValue("title", title)
+      MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", insertID).addValue("title", title)
           .addValue("lines", lines).addValue("link", link).addValue("lang", lang)
           .addValue("assoc", assoc).addValue("date", sqlDate);
 
@@ -130,8 +141,8 @@ public class FormController {
    * @param date the asset's type inclusion/creation date.
    */
   public void insertAssetType(String title, String type, String date) {
-    //Ensures that the primary key type_id is correctly numbered to be 1 more than
-    //the previous highest.
+    // Ensures that the primary key type_id is correctly numbered to be 1 more than
+    // the previous highest.
     String maxIDQuery = "SELECT MAX(type_id) FROM type";
     Integer maxID = jdbcTemplate.queryForObject(maxIDQuery, Collections.emptyMap(), Integer.class);
 
