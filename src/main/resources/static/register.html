@@ -14,39 +14,46 @@
         <div class="container-fluid">
             <a class="nav-link active" aria-current="page" href="#">Asset Metadata Repository</a>
         </div>
-        <button>
+        <button class="btn btn-outline-primary">
             Login
         </button>
     </nav>
     
     <!-- Main body -->
-    <center>
-            <h1>Register</h1>
+    <section bg-body-tertiary p-2 text-center></section>
+        <center>
             <br>
-            <form>
-                <div class = "mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email">
-                        <div id="emailHelp" class="form-text">Enter Username here</div>
-                </div>
+            <h1>Register</h1>
                 <br>
-                <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                    <div id="emailHelp" class="form-text">Do not share your password with anyone else.</div>
-                </div>
-                <br>
-                <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Re-enter Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                    <div id="emailHelp" class="form-text">Do not share your password with anyone else.</div>
-                </div>
-            </form>
+                <form>
+                    <div class = "container-fluid">
+                            <label class="form-label">Username</label>
+                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email" style="width: 500px">
+                            <div id="emailHelp" class="form-text">Enter Username here</div>
+                    </div>
+                    <br>
+                    <div class="container-fluid">
+                        <label for="exampleInputPassword1" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" style="width: 500px">
+                    </div>
+                    <br>
+                    <div class="container-fluid">
+                        <label for="exampleInputPassword1" class="form-label">Re-enter Password</label>
+                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" style="width: 500px">
+                        <div id="emailHelp" class="form-text">Make sure that both passwords are the same.</div>
+                    </div>
+                </form>
 
-            <button>
-                Register
-            </button>
-    </center>
+                <br>
+
+                <button class="btn btn-outline-primary">
+                    Login
+                </button>
+                <button class="btn btn-outline-primary">
+                    Register
+                </button>
+        </center>
+    </section>
     
     
     <!-- Javascript -->
