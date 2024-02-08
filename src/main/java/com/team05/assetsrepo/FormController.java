@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Controller responsible for extracting and processing data entered into the
  * asset creation form.
+ */
+/**
+ * 
  */
 @Controller
 public class FormController {
@@ -56,18 +60,36 @@ public class FormController {
 	}
 
 	/**
+	 * The extractLogin method hands POST requests to the "/successful-login" URL.
+	 * RequestParam annotations are used to extract necessary login
+	 * parameters/attributes.
+	 * 
+	 * @return returns a HTTP "Logged in" response, indicating the user has logged
+	 *         in successfully.
+	 * @throws InvalidLogin
+	 */
+	@PostMapping("/login")
+	public String extractLogin(@RequestParam String username, @RequestParam String password, Model model)
+			throws InvalidLogin {
+		String message = validateLoginDetails(username, password);
+		model.addAttribute("error", message);
+
+		return "successful-login";
+	}
+
+	/**
 	 * The extractForm method handles POST requests to the "/submit" URL.
 	 * RequestParam annotations are used to extract necessary form parameters /
 	 * attributes.
 	 *
 	 * @return returns a HTTP "Created" response, indicating that a resource has
 	 *         been successfully created.
-	 * @throws InvalidSelection 
+	 * @throws InvalidSelection
 	 */
 	@PostMapping("/submit")
-	public String extractForm(@RequestParam String title, @RequestParam int lines,
-			@RequestParam String link, @RequestParam String lang, @RequestParam String assoc,
-			@RequestParam String date, Model model) throws InvalidSelection {
+	public String extractForm(@RequestParam String title, @RequestParam int lines, @RequestParam String link,
+			@RequestParam String lang, @RequestParam String assoc, @RequestParam String date, Model model)
+			throws InvalidSelection {
 
 		String message = validateTitleLink(title, link, lang, assoc);
 		model.addAttribute("error", message);
@@ -124,7 +146,7 @@ public class FormController {
 
 	}
 
-	/* Validates the title and link attributes of the form, preventing duplicates*/ 
+	/* Validates the title and link attributes of the form, preventing duplicates */
 	public String validateTitleLink(String title, String link, String lang, String assoc) {
 
 		String UNIQUE_TITLE = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
@@ -155,7 +177,47 @@ public class FormController {
 		return "Form submitted successfully";
 	}
 
-	 /* Validates the programming language selection attributes of the form, preventing unwanted results*/
+	/*
+	 * Validates the username & password of the login, preventing duplicate
+	 * usernames & incorrect passwords
+	 */
+	public String validateLoginDetails(String username, String password) {
+
+		String UNIQUE_USERNAME = "SELECT DISTINCT COUNT(username) FROM std_assets WHERE username = :username";
+		String CORRECT_PASSWORD = "SELECT DISTINCT username FROM std_assets WHERE password = :password";
+
+		try {
+			Map<String, String> parameters = new HashMap();
+			parameters.put("username", username);
+
+			int usernameResult = (int) jdbcTemplate.queryForObject(UNIQUE_USERNAME, parameters, Integer.class);
+
+			parameters.clear();
+			parameters.put("password", password);
+
+			List<Integer> passwordResult = jdbcTemplate.queryForList(CORRECT_PASSWORD, parameters, Integer.class);
+
+			if (usernameResult != 0) {
+				throw new NotUnique("This username is not unique");
+			} else if (passwordResult.size() != 0) {
+				throw new InvalidLogin("This password is correct");
+			}
+		} catch (NotUnique e) {
+			e.printStackTrace();
+			System.out.println("Error!");
+			return e.getMessage();
+		} catch (InvalidLogin e) {
+			e.printStackTrace();
+			System.out.println("Error!");
+			return e.getMessage();
+		}
+		return "Logged in successfully!";
+	}
+
+	/*
+	 * Validates the programming language selection attributes of the form,
+	 * preventing unwanted results
+	 */
 	public void validateSelection(String lang) throws InvalidSelection {
 		if (!programmingLanguagesSet.contains(lang)) {
 			throw new InvalidSelection("This programming language is not valid.");
