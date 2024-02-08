@@ -122,6 +122,12 @@ public class FormController {
 
   }
 
+  /**
+   * 
+   * @param title the associated asset's title.
+   * @param type the asset's type.
+   * @param date the asset's type inclusion/creation date.
+   */
   public void insertAssetType(String title, String type, String date) {
     String statement =
         "INSERT INTO type (name, attributes, date)" + "VALUES (:type, :title, :date)";
@@ -153,7 +159,7 @@ public class FormController {
     }
   }
 
-  /* Validates the title and link attributes of the form, preventing duplicates */
+  /* Validates the title, type, and link attributes of the form, preventing duplicates */
   public String validateTitleTypeLink(String title, String type, String link, String lang,
       String assoc) {
 
