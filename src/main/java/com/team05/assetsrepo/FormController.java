@@ -165,7 +165,8 @@ public class FormController {
 
     String UNIQUE_TITLE = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
     String UNIQUE_LINK = "SELECT DISTINCT COUNT(link) FROM std_assets WHERE link = :link";
-    String UNIQUE_TYPE = "SELECT DISTINCT COUNT(type) FROM type WHERE name = :type";
+    String UNIQUE_TITLE_TYPE =
+        "SELECT DISTINCT COUNT(*) FROM type WHERE name = :type AND title = :title";
 
 
     try {
@@ -181,15 +182,17 @@ public class FormController {
 
       parameters.clear();
       parameters.put("type", type);
+      parameters.put("title", title);
 
-      int typeResult = (int) jdbcTemplate.queryForObject(UNIQUE_TYPE, parameters, Integer.class);
+      int typeResult =
+          (int) jdbcTemplate.queryForObject(UNIQUE_TITLE_TYPE, parameters, Integer.class);
 
       if (titleResult != 0) {
         throw new NotUnique("This title is not unique");
       } else if (linkResult != 0) {
         throw new NotUnique("This link is not unique");
       } else if (typeResult != 0) {
-        throw new NotUnique("This type is not unique");
+        throw new NotUnique("This combination of title and type is not unique");
       }
 
     } catch (NotUnique e) {
