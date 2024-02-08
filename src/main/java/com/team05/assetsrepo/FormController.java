@@ -227,20 +227,34 @@ public class FormController {
    * @return html page to tell user of successful registration and link to login page
    */
   @PostMapping("/register")
-  public String register(@RequestParam String username, @RequestParam String password) {
+  public String register(@RequestParam String username, @RequestParam String password, Model model) {
     
     String count = "SELECT COUNT(user_id) FROM user";
     String insert = "INSERT INTO user (user_id, username, password, role) "
         + "VALUES (:user_id, :username, :password, :role)";
+    String uniqueName = "SELECT COUNT(user_id) FROM user WHERE username = :username";
+    String message = "Registration successul";
     
     Map<String, String> parameters = new HashMap();
     
     int idCount = (int) jdbcTemplate.queryForObject(count, parameters, Integer.class);
     
-    MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", count + 1)
-        .addValue("username", username).addValue("password", password).addValue("role", "admin");
+    parameters.put("username", username);
+    
+    int nameCount = (int) jdbcTemplate.queryForObject(uniqueName, parameters, Integer.class);
+    
+    if (nameCount != 0) {
+    
+      MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", count + 1)
+          .addValue("username", username).addValue("password", password).addValue("role", "admin");
 
-    jdbcTemplate.update(insert, params);
+      jdbcTemplate.update(insert, params);
+      model.addAttribute("message", message);
+    
+    } else {
+      message = "Registration unsuccessful, username must be unique";
+      model.addAttribute("message", message);
+    }
     
     return "successful-register";
   }
