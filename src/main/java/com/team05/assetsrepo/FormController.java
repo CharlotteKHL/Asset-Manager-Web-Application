@@ -130,6 +130,8 @@ public class FormController {
    * @param date the asset's type inclusion/creation date.
    */
   public void insertAssetType(String title, String type, String date) {
+    //Ensures that the primary key type_id is correctly numbered to be 1 more than
+    //the previous highest.
     String maxIDQuery = "SELECT MAX(type_id) FROM type";
     Integer maxID = jdbcTemplate.queryForObject(maxIDQuery, Collections.emptyMap(), Integer.class);
 
@@ -142,14 +144,27 @@ public class FormController {
         "INSERT INTO type (type_id, name, attributes, date) VALUES (:type_id, :name, :attributes, :date)";
 
     try {
+      // Date entered by the user is parsed so that it conforms to the dd/MM/yy
+      // format.
       SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy");
       java.util.Date dateObj = format.parse(date);
+      // Convert date from (Java) Util to (Java) SQL object.
       java.sql.Date sqlDate = new java.sql.Date(dateObj.getTime());
+
+      /*
+       * Here, the database is updated using the jdbcTemplate object. This is done by passing the
+       * previously written SQL statement along with the map of parameters to the update method.
+       *
+       * The key corresponds to the named parameters written after "VALUES" in the SQL statement.
+       * The value corresponds to the actual values that will replace those named parameters in the
+       * SQL query.
+       */
 
       MapSqlParameterSource params = new MapSqlParameterSource().addValue("type_id", insertID)
           .addValue("name", type).addValue("attributes", title).addValue("date", sqlDate);
 
       jdbcTemplate.update(statement, params);
+
     } catch (ParseException e) {
       e.printStackTrace();
     }
