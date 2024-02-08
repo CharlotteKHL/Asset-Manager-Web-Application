@@ -71,7 +71,7 @@ public class FormController {
     validateSelection(lang);
 
     insertAssetData(title, lines, link, lang, assoc, date);
-    insertAssetType(title, type);
+    insertAssetType(title, type, date);
 
     return "submit";
 
@@ -121,14 +121,41 @@ public class FormController {
     }
 
   }
-  
-  public void insertAssetType(String title, String type) {
-    String statement = "INSERT INTO type (name, attributes)"
-        + "VALUES (:type, :title)";
+
+  public void insertAssetType(String title, String type, String date) {
+    String statement =
+        "INSERT INTO type (name, attributes, date)" + "VALUES (:type, :title, :date)";
+
+    try {
+
+      // Date entered by the user is parsed so that it conforms to the dd/MM/yy
+      // format.
+      SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy");
+      java.util.Date dateObj = format.parse(date);
+      // Convert date from (Java) Util to (Java) SQL object.
+      java.sql.Date sqlDate = new java.sql.Date(dateObj.getTime());
+
+      /*
+       * Here, the database is updated using the jdbcTemplate object. This is done by passing the
+       * previously written SQL statement along with the map of parameters to the update method.
+       *
+       * The key corresponds to the named parameters written after "VALUES" in the SQL statement.
+       * The value corresponds to the actual values that will replace those named parameters in the
+       * SQL query.
+       */
+      MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", type)
+          .addValue("attributes", title).addValue("date", sqlDate);
+
+      jdbcTemplate.update(statement, params);
+
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
   }
 
   /* Validates the title and link attributes of the form, preventing duplicates */
-  public String validateTitleTypeLink(String title, String type, String link, String lang, String assoc) {
+  public String validateTitleTypeLink(String title, String type, String link, String lang,
+      String assoc) {
 
     String UNIQUE_TITLE = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
     String UNIQUE_LINK = "SELECT DISTINCT COUNT(link) FROM std_assets WHERE link = :link";
@@ -145,7 +172,7 @@ public class FormController {
       parameters.put("link", link);
 
       int linkResult = (int) jdbcTemplate.queryForObject(UNIQUE_LINK, parameters, Integer.class);
-      
+
       parameters.clear();
       parameters.put("type", type);
 
