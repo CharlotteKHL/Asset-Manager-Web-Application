@@ -3,6 +3,7 @@ package com.team05.assetsrepo;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -129,31 +130,26 @@ public class FormController {
    * @param date the asset's type inclusion/creation date.
    */
   public void insertAssetType(String title, String type, String date) {
+    String maxIDQuery = "SELECT MAX(type_id) FROM type";
+    Integer maxID = jdbcTemplate.queryForObject(maxIDQuery, Collections.emptyMap(), Integer.class);
+
+    if (maxID == null) {
+      maxID = 0; // if no records found, initialise maxID to 0
+    }
+
+    int insertID = maxID + 1;
     String statement =
-        "INSERT INTO type (name, attributes, date)" + "VALUES (:type, :title, :date)";
+        "INSERT INTO type (type_id, name, attributes, date) VALUES (:type_id, :name, :attributes, :date)";
 
     try {
-
-      // Date entered by the user is parsed so that it conforms to the dd/MM/yy
-      // format.
       SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy");
       java.util.Date dateObj = format.parse(date);
-      // Convert date from (Java) Util to (Java) SQL object.
       java.sql.Date sqlDate = new java.sql.Date(dateObj.getTime());
 
-      /*
-       * Here, the database is updated using the jdbcTemplate object. This is done by passing the
-       * previously written SQL statement along with the map of parameters to the update method.
-       *
-       * The key corresponds to the named parameters written after "VALUES" in the SQL statement.
-       * The value corresponds to the actual values that will replace those named parameters in the
-       * SQL query.
-       */
-      MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", type)
-          .addValue("attributes", title).addValue("date", sqlDate);
+      MapSqlParameterSource params = new MapSqlParameterSource().addValue("type_id", insertID)
+          .addValue("name", type).addValue("attributes", title).addValue("date", sqlDate);
 
       jdbcTemplate.update(statement, params);
-
     } catch (ParseException e) {
       e.printStackTrace();
     }
@@ -165,9 +161,10 @@ public class FormController {
 
     String UNIQUE_TITLE = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
     String UNIQUE_LINK = "SELECT DISTINCT COUNT(link) FROM std_assets WHERE link = :link";
-    String UNIQUE_TITLE_TYPE =
-        "SELECT DISTINCT COUNT(*) FROM type WHERE name = :type AND title = :title";
-
+    /*
+     * String UNIQUE_TITLE_TYPE =
+     * "SELECT DISTINCT COUNT(*) FROM type WHERE name = :type AND attributes = :title";
+     */
 
     try {
       Map<String, String> parameters = new HashMap();
@@ -180,20 +177,21 @@ public class FormController {
 
       int linkResult = (int) jdbcTemplate.queryForObject(UNIQUE_LINK, parameters, Integer.class);
 
-      parameters.clear();
-      parameters.put("type", type);
-      parameters.put("title", title);
-
-      int typeResult =
-          (int) jdbcTemplate.queryForObject(UNIQUE_TITLE_TYPE, parameters, Integer.class);
-
+      /*
+       * parameters.clear(); parameters.put("type", type); parameters.put("title", title);
+       * 
+       * int typeResult = (int) jdbcTemplate.queryForObject(UNIQUE_TITLE_TYPE, parameters,
+       * Integer.class);
+       * 
+       */
       if (titleResult != 0) {
         throw new NotUnique("This title is not unique");
       } else if (linkResult != 0) {
         throw new NotUnique("This link is not unique");
-      } else if (typeResult != 0) {
-        throw new NotUnique("This combination of title and type is not unique");
-      }
+      } /*
+         * else if (typeResult != 0) { throw new
+         * NotUnique("This combination of title and type is not unique"); }
+         */
 
     } catch (NotUnique e) {
       e.printStackTrace();
