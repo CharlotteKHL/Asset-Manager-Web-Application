@@ -52,16 +52,17 @@
                         Type
                     </label>
                     <select class="form-select m-auto" id="assetType" aria-label="Asset type selection menu" aria-describedby="typeHelp" style="width: 500px" name="type">
-                        <option selected disabled hidden>Select type or enter custom value</option>
-                        <option value="Type 1">Type 1</option>
-                        <option value="Type 2">Type 2</option>
-                        <option value="Type 3">Type 3</option>
-                        <option value="Other">Other (please specify)</option>
+                        <option selected></option>
+                        <!-- Populate options using Thymeleaf -->
+                        <th:block th:each="type : ${types}">
+                            <option th:text="${type}"></option>
+                        </th:block>
                     </select>
                     <div id="typeHelp" class="form-text">
-                        Choose the asset type from the dropdown menu or enter a custom value
+                        Choose the asset type from the dropdown menu
                     </div>
                 </div>
+
                 <div class="mb-3 d-none" id="customTypeInputDiv">
                     <label for="customType" class="form-label">
                         Custom Type
