@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -235,6 +237,13 @@ public class FormController {
     if (!programmingLanguagesSet.contains(lang)) {
       throw new InvalidSelection("This programming language is not valid.");
     }
+  }
+  
+  @GetMapping("/create-type")
+  public String showTypeFromDB(Model model) {
+    List<String> types = jdbcTemplate.queryForList("SELECT type FROM type_updated", String.class);
+    model.addAttribute("types", types);
+    return "create-type";
   }
 
 }
