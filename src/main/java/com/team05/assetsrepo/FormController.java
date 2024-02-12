@@ -239,12 +239,17 @@ public class FormController {
     }
   }
   
+  @GetMapping("/create-asset.html")
+  public String showCreateAssetPage() {
+      return "create-asset";
+  }
+  
   @GetMapping("/create-type.html")
   public String showTypeFromDB(Model model) {
     List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type_updated", Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     System.out.println("Types from database: " + types);
-    return "create-type.html";
+    return "create-type";
   }
 
 }
