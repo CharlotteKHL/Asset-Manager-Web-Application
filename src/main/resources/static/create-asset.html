@@ -41,11 +41,6 @@
             <div id="successAlertPlaceholder"></div>
             <div id="titleAlertPlaceholder"></div>
             <div id="typeAlertPlaceholder"></div>
-            <div id="noOfLinesAlertPlaceholder"></div>
-            <div id="linkAlertPlaceholder"></div>
-            <div id="progLanguageAlertPlaceholder"></div>
-            <div id="associationsAlertPlaceholder"></div>
-            <div id="dateAlertPlaceholder"></div>
             <form action="/submit" method="post">
                 <div class="mb-3">
                     <label for="assetTitle" class="form-label">
@@ -68,39 +63,6 @@
                     </select>
                     <div id="typeHelp" class="form-text">
                         Choose the asset type from the dropdown menu
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="assetNoOfLines" class="form-label">
-                        Number of lines
-                    </label>
-                    <input type="number" class="form-control m-auto" id="assetNoOfLines" aria-describedby="linesHelp" style="width: 500px" name="lines">
-                    <div id="linesHelp" class="form-text">
-                        Enter the number of lines the asset contains
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="assetLink" class="form-label">
-                        Link
-                    </label>
-                    <input type="text" class="form-control m-auto" id="assetLink" aria-describedby="linkHelp" style="width: 500px" name="link">
-                    <div id="linkHelp" class="form-text">
-                        Paste the link to the asset document(s)
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="assetLanguage" class="form-label">
-                        Programming Language
-                    </label>
-                    <select class="form-select m-auto" id="assetLanguage" aria-label="Asset programming language selection menu" aria-describedby="languageHelp" style="width: 500px" name="lang">
-                        <option selected></option>
-                        <option value="Java">Java</option>
-                        <option value="JavaScript">JavaScript</option>
-                        <option value="C++">C++</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div id="languageHelp" class="form-text">
-                        Choose the programming language the asset was made in from the dropdown menu
                     </div>
                 </div>
                 <div class="mb-3">
