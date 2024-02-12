@@ -42,81 +42,42 @@
             <div id="titleAlertPlaceholder"></div>
             <div id="typeAlertPlaceholder"></div>
             <div id="noOfLinesAlertPlaceholder"></div>
-            <div id="linkAlertPlaceholder"></div>
+            <div id="documentLinkAlertPlaceholder"></div>
             <div id="progLanguageAlertPlaceholder"></div>
             <div id="associationsAlertPlaceholder"></div>
             <div id="dateAlertPlaceholder"></div>
             <form action="/submit" method="post">
                 <div class="mb-3">
-                    <label for="assetTitle" class="form-label">
-                        Title
-                    </label>
-                    <input type="text" class="form-control m-auto" id="assetTitle" aria-describedby="titleHelp" style="width: 500px" name="title">
-                    <div id="titleHelp" class="form-text">
-                        Enter the asset title
-                    </div>
-                </div>
-                <div class="mb-3">
                     <label for="assetType" class="form-label">
                         Type
                     </label>
                     <select class="form-select m-auto" id="assetType" aria-label="Asset type selection menu" aria-describedby="typeHelp" style="width: 500px" name="type">
-                        <option selected></option>
+                        <option selected disabled hidden>Select type or enter custom value</option>
                         <option value="Type 1">Type 1</option>
                         <option value="Type 2">Type 2</option>
                         <option value="Type 3">Type 3</option>
+                        <option value="Other">Other (please specify)</option>
                     </select>
                     <div id="typeHelp" class="form-text">
-                        Choose the asset type from the dropdown menu
+                        Choose the asset type from the dropdown menu or enter a custom value
+                    </div>
+                </div>
+                <div class="mb-3 d-none" id="customTypeInputDiv">
+                    <label for="customType" class="form-label">
+                        Custom Type
+                    </label>
+                    <input type="text" class="form-control m-auto" id="customType" aria-describedby="customTypeHelp" style="width: 500px" name="customType">
+                    <div id="customTypeHelp" class="form-text">
+                        Please enter the custom type value
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="assetNoOfLines" class="form-label">
-                        Number of lines
+                    <label for="assetDocumentLink" class="form-label">
+                        Document Link
                     </label>
-                    <input type="number" class="form-control m-auto" id="assetNoOfLines" aria-describedby="linesHelp" style="width: 500px" name="lines">
-                    <div id="linesHelp" class="form-text">
-                        Enter the number of lines the asset contains
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="assetLink" class="form-label">
-                        Link
-                    </label>
-                    <input type="text" class="form-control m-auto" id="assetLink" aria-describedby="linkHelp" style="width: 500px" name="link">
+                    <input type="text" class="form-control m-auto" id="assetDocumentLink" aria-describedby="linkHelp" style="width: 500px" name="link">
                     <div id="linkHelp" class="form-text">
                         Paste the link to the asset document(s)
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="assetLanguage" class="form-label">
-                        Programming Language
-                    </label>
-                    <select class="form-select m-auto" id="assetLanguage" aria-label="Asset programming language selection menu" aria-describedby="languageHelp" style="width: 500px" name="lang">
-                        <option selected></option>
-                        <option value="Java">Java</option>
-                        <option value="JavaScript">JavaScript</option>
-                        <option value="C++">C++</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div id="languageHelp" class="form-text">
-                        Choose the programming language the asset was made in from the dropdown menu
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="assetAssociations" class="form-label">
-                        Association(s)
-                    </label>
-                    <select class="form-select m-auto" id="assetAssociations" aria-label="Asset association(s) selection menu" aria-describedby="associationsHelp" style="width: 500px" name="assoc">
-                        <option selected></option>
-                        <!-- Ideally, this will be a preloaded dropdown menu of pre-existing assets already in the database -->
-                        <option value="Asset 1">Asset 1</option>
-                        <option value="Asset 2">Asset 2</option>
-                        <option value="Asset 3">Asset 3</option>
-                        <option value="Asset 4">Asset 4</option>
-                    </select>
-                    <div id="associationsHelp" class="form-text">
-                        Choose any asset(s) that your new asset is associated with
                     </div>
                 </div>
                 <div class="mb-3">
@@ -124,7 +85,7 @@
                         Date
                     </label>
                     <input type="text" class="form-control m-auto" id="assetDate" aria-describedby="dateHelp" style="width: 500px" name="date">
-                    <div id="linkHelp" class="form-text">
+                    <div id="dateHelp" class="form-text">
                         Write down the date the asset was created (in the format dd/mm/yy)
                     </div>
                 </div>
@@ -136,6 +97,19 @@
     </section>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const assetTypeSelect = document.getElementById('assetType');
+            const customTypeInputDiv = document.getElementById('customTypeInputDiv');
+
+            assetTypeSelect.addEventListener('change', function() {
+                if (assetTypeSelect.value === 'Other') {
+                    customTypeInputDiv.classList.remove('d-none');
+                } else {
+                    customTypeInputDiv.classList.add('d-none');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
