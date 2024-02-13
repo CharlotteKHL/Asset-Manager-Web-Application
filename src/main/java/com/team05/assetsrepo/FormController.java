@@ -126,9 +126,9 @@ public class FormController {
        * The value corresponds to the actual values that will replace those named parameters in the
        * SQL query.
        */
-      MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", insertID).addValue("title", title)
-          .addValue("lines", lines).addValue("link", link).addValue("lang", lang)
-          .addValue("assoc", assoc).addValue("date", sqlDate);
+      MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", insertID)
+          .addValue("title", title).addValue("lines", lines).addValue("link", link)
+          .addValue("lang", lang).addValue("assoc", assoc).addValue("date", sqlDate);
 
       jdbcTemplate.update(statement, params);
 
@@ -240,40 +240,67 @@ public class FormController {
       throw new InvalidSelection("This programming language is not valid.");
     }
   }
-  
+
+  /**
+   * Retrieves the HTML page for creating an asset.
+   *
+   * @return The name of the HTML page for creating an asset ("create-asset").
+   */
   @GetMapping("/create-asset.html")
   public String showCreateAssetPage() {
-      return "create-asset";
+    return "create-asset";
   }
-  
+
+  /**
+   * Retrieves the HTML page for creating a type and fetches types from the database to populate a
+   * dropdown menu.
+   *
+   * @param model The model to which types retrieved from the database will be added.
+   * @return The name of the HTML page for creating a type ("create-type").
+   */
   @GetMapping("/create-type.html")
   public String showTypeFromDB(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type_updated", Collections.emptyMap(), String.class);
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type_updated",
+        Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     System.out.println("Types from database: " + types);
     return "create-type";
   }
 
+  /**
+   * Retrieves attributes associated with a given type from the database.
+   *
+   * @param type The type for which attributes are to be retrieved.
+   * @return A ResponseEntity containing a list of attributes associated with the provided type.
+   */
   @GetMapping("/attributes/{type}")
   public ResponseEntity<List<String>> getAttributesForType(@PathVariable String type) {
-      // Fetch attributes dynamically for the selected type
-      List<String> attributes = fetchAttributesForTypeFromDatabase(type);
-      return ResponseEntity.ok(attributes);
+    // Fetch attributes dynamically for the selected type
+    List<String> attributes = fetchAttributesForTypeFromDatabase(type);
+    return ResponseEntity.ok(attributes);
   }
-  
+
+  /**
+   * Fetches attributes for the selected type from the database.
+   *
+   * @param type The type for which attributes are to be fetched.
+   * @return A list of attributes associated with the provided type.
+   */
   private List<String> fetchAttributesForTypeFromDatabase(String type) {
     // Fetch attributes for the selected type from the database
     // Use appropriate SQL query to retrieve attributes based on the selected type
     String sql = "SELECT attributes FROM type_updated WHERE type = ?";
     Map<String, Object> paramMap = Collections.singletonMap("type", type);
-    List<String> attributes = jdbcTemplate.queryForList(sql, paramMap, String.class);    
+    List<String> attributes = jdbcTemplate.queryForList(sql, paramMap, String.class);
     // Assuming attributes are stored as a comma-separated string in the database
     // Split the string to get individual attributes
     if (!attributes.isEmpty()) {
-        String[] attributeArray = attributes.get(0).split(","); // Assuming attributes are stored as comma-separated values
-        return Arrays.asList(attributeArray);
+      String[] attributeArray = attributes.get(0).split(","); // Assuming attributes are stored as
+                                                              // comma-separated values
+      return Arrays.asList(attributeArray);
     } else {
-        return Collections.emptyList();
+      return Collections.emptyList();
     }
   }
+
 }
