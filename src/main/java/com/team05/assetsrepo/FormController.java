@@ -3,6 +3,7 @@ package com.team05.assetsrepo;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -291,15 +292,37 @@ public class FormController {
     // Use appropriate SQL query to retrieve attributes based on the selected type
     String sql = "SELECT attributes FROM type_updated WHERE type = :type";
     Map<String, Object> paramMap = Collections.singletonMap("type", type);
-    List<String> attributes = jdbcTemplate.queryForList(sql, paramMap, String.class);    
+    List<String> attributes = jdbcTemplate.queryForList(sql, paramMap, String.class);
     // Assuming attributes are stored as a comma-separated string in the database
     // Split the string to get individual attributes
     if (!attributes.isEmpty()) {
-        String[] attributeArray = attributes.get(0).split(","); // Assuming attributes are stored as comma-separated values
-        return Arrays.asList(attributeArray);
+      String[] attributeArray = attributes.get(0).split(","); // Assuming attributes are stored as
+                                                              // comma-separated values
+      return Arrays.asList(attributeArray);
     } else {
-        return Collections.emptyList();
+      return Collections.emptyList();
     }
-}
+  }
 
+  @GetMapping("/documents/{type}")
+  public ResponseEntity<List<String>> getDocumentsForType(@PathVariable String type) {
+    // Fetch documents dynamically for the selected type
+    List<String> documents = fetchDocumentsForTypeFromDatabase(type);
+    return ResponseEntity.ok(documents);
+  }
+
+  private List<String> fetchDocumentsForTypeFromDatabase(String type) {
+    String sql = "SELECT document FROM type_updated WHERE type = :type";
+    Map<String, Object> paramMap = Collections.singletonMap("type", type);
+    List<String> documentsList = jdbcTemplate.queryForList(sql, paramMap, String.class);
+
+    List<String> allDocuments = new ArrayList<>();
+    for (String documents : documentsList) {
+      if (documents != null) {
+        String[] documentArray = documents.split(",");
+        allDocuments.addAll(Arrays.asList(documentArray));
+      }
+    }
+    return allDocuments;
+  }
 }
