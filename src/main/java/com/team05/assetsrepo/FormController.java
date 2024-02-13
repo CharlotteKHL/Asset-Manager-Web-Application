@@ -289,18 +289,17 @@ public class FormController {
   private List<String> fetchAttributesForTypeFromDatabase(String type) {
     // Fetch attributes for the selected type from the database
     // Use appropriate SQL query to retrieve attributes based on the selected type
-    String sql = "SELECT attributes FROM type_updated WHERE type = ?";
+    String sql = "SELECT attributes FROM type_updated WHERE type = :type";
     Map<String, Object> paramMap = Collections.singletonMap("type", type);
-    List<String> attributes = jdbcTemplate.queryForList(sql, paramMap, String.class);
+    List<String> attributes = jdbcTemplate.queryForList(sql, paramMap, String.class);    
     // Assuming attributes are stored as a comma-separated string in the database
     // Split the string to get individual attributes
     if (!attributes.isEmpty()) {
-      String[] attributeArray = attributes.get(0).split(","); // Assuming attributes are stored as
-                                                              // comma-separated values
-      return Arrays.asList(attributeArray);
+        String[] attributeArray = attributes.get(0).split(","); // Assuming attributes are stored as comma-separated values
+        return Arrays.asList(attributeArray);
     } else {
-      return Collections.emptyList();
+        return Collections.emptyList();
     }
-  }
+}
 
 }
