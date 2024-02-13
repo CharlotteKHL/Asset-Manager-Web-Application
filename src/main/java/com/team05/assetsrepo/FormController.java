@@ -3,6 +3,7 @@ package com.team05.assetsrepo;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -252,4 +254,26 @@ public class FormController {
     return "create-type";
   }
 
+  @GetMapping("/attributes/{type}")
+  public ResponseEntity<List<String>> getAttributesForType(@PathVariable String type) {
+      // Fetch attributes dynamically for the selected type
+      List<String> attributes = fetchAttributesForTypeFromDatabase(type);
+      return ResponseEntity.ok(attributes);
+  }
+  
+  private List<String> fetchAttributesForTypeFromDatabase(String type) {
+    // Fetch attributes for the selected type from the database
+    // Use appropriate SQL query to retrieve attributes based on the selected type
+    String sql = "SELECT attributes FROM type_updated WHERE type = ?";
+    Map<String, Object> paramMap = Collections.singletonMap("type", type);
+    List<String> attributes = jdbcTemplate.queryForList(sql, paramMap, String.class);    
+    // Assuming attributes are stored as a comma-separated string in the database
+    // Split the string to get individual attributes
+    if (!attributes.isEmpty()) {
+        String[] attributeArray = attributes.get(0).split(","); // Assuming attributes are stored as comma-separated values
+        return Arrays.asList(attributeArray);
+    } else {
+        return Collections.emptyList();
+    }
+  }
 }
