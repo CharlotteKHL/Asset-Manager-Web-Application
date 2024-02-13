@@ -169,23 +169,23 @@
 
             // Function to fetch documents for the selected type from the server
             async function fetchDocuments(selectedType) {
-					    console.log('Fetching documents for type:', selectedType);
-					    try {
-					        const response = await fetch(`/document/${selectedType}`);
-					        const data = await response.json();
-					        console.log('Documents data:', data);
-					        data.forEach(document => {
-					            const documentInput = document.createElement('input');
-					            documentInput.type = 'text';
-					            documentInput.className = 'form-control m-auto mb-3';
-					            documentInput.placeholder = 'Enter document link';
-					            documentInput.value = document;
-					            documentsContainer.appendChild(documentInput);
-					        });
-					    } catch (error) {
-					        console.error('Error fetching documents:', error);
-					    }
-					}
+                console.log('Fetching documents for type:', selectedType);
+                try {
+                    const response = await fetch(`/document/${selectedType}`);
+                    const data = await response.json();
+                    console.log('Documents data:', data);
+                    data.forEach(doc => {
+                        const documentInput = document.createElement('input');
+                        documentInput.type = 'text';
+                        documentInput.className = 'form-control m-auto mb-3';
+                        documentInput.placeholder = 'Enter document link';
+                        documentInput.value = doc;
+                        documentsContainer.appendChild(documentInput);
+                    });
+                } catch (error) {
+                    console.error('Error fetching documents:', error);
+                }
+            }
         });
     </script>
 </body>
