@@ -90,6 +90,14 @@
                     </div>
                 </div>
 
+                <!-- Container for attributes -->
+                <div id="attributesContainer"></div>
+
+                <!-- Button to add another attribute -->
+                <button class="btn btn-outline-primary mb-3" type="button" id="addAttributeButton">
+                    Add another attribute
+                </button>
+
                 <button class="btn btn-outline-primary" type="submit" id="createButton">
                     <i class="bi bi-check-lg"></i> Create
                 </button>
@@ -102,6 +110,8 @@
         document.addEventListener("DOMContentLoaded", function() {
             const typeSelect = document.getElementById('type');
             const customTypeInputDiv = document.getElementById('customTypeInputDiv');
+            const attributesContainer = document.getElementById('attributesContainer');
+            const addAttributeButton = document.getElementById('addAttributeButton');
 
             typeSelect.addEventListener('change', function() {
                 if (typeSelect.value === 'Other') {
@@ -109,7 +119,40 @@
                 } else {
                     customTypeInputDiv.classList.add('d-none');
                 }
+
+                // Clear existing attributes before populating with new ones
+                attributesContainer.innerHTML = '';
+
+                // Fetch attributes for the selected type and populate the attributes container
+                fetchAttributes(typeSelect.value);
             });
+
+            addAttributeButton.addEventListener('click', function() {
+                const attributeInput = document.createElement('input');
+                attributeInput.type = 'text';
+                attributeInput.className = 'form-control m-auto mb-3';
+                attributeInput.placeholder = 'Enter attribute';
+                attributesContainer.appendChild(attributeInput);
+            });
+
+            // Function to fetch attributes for the selected type from the server
+            function fetchAttributes(selectedType) {
+                fetch(`/attributes/${selectedType}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(attribute => {
+                            if (attribute !== null) {
+                                const attributeInput = document.createElement('input');
+                                attributeInput.type = 'text';
+                                attributeInput.className = 'form-control m-auto mb-3';
+                                attributeInput.placeholder = 'Enter attribute';
+                                attributeInput.value = attribute;
+                                attributesContainer.appendChild(attributeInput);
+                            }
+                        });
+                    })
+                    .catch(error => console.error('Error fetching attributes:', error));
+            }
         });
     </script>
 </body>
