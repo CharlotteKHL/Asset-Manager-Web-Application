@@ -57,17 +57,6 @@
                     </div>
                 </div>
 
-                <!-- Date -->
-                <div class="mb-3">
-                    <label for="typeDate" class="form-label">
-                        Date
-                    </label>
-                    <input type="text" class="form-control m-auto" id="typeDate" aria-describedby="dateHelp" style="width: 500px" name="typeDate">
-                    <div id="dateHelp" class="form-text">
-                        Write down the date the type was created (in the format dd/mm/yy)
-                    </div>
-                </div>
-
                 <!-- Custom type input (appears when "Other" option is selected) -->
                 <div class="mb-3 d-none" id="customTypeInputDiv">
                     <label for="customType" class="form-label">
@@ -89,16 +78,6 @@
                     Add another attribute
                 </button>
 
-                <!-- Container for documents -->
-                <div id="documentsContainer" class="mb-3">
-                    <!-- Documents will be populated dynamically here -->
-                </div>
-
-                <!-- Button to add another document -->
-                <button class="btn btn-outline-primary" type="button" id="addDocumentButton">
-                    Add another document
-                </button>
-
                 <button class="btn btn-outline-primary" type="submit" id="createButton">
                     <i class="bi bi-check-lg"></i> Create
                 </button>
@@ -113,8 +92,6 @@
             const customTypeInputDiv = document.getElementById('customTypeInputDiv');
             const attributesContainer = document.getElementById('attributesContainer');
             const addAttributeButton = document.getElementById('addAttributeButton');
-            const documentsContainer = document.getElementById('documentsContainer');
-            const addDocumentButton = document.getElementById('addDocumentButton');
 
             typeSelect.addEventListener('change', function() {
                 if (typeSelect.value === 'Other') {
@@ -141,14 +118,6 @@
                 attributesContainer.appendChild(attributeInput);
             });
 
-            addDocumentButton.addEventListener('click', function() {
-                const documentInput = document.createElement('input');
-                documentInput.type = 'text';
-                documentInput.className = 'form-control m-auto mb-3';
-                documentInput.placeholder = 'Enter document link';
-                documentsContainer.appendChild(documentInput);
-            });
-
             // Function to fetch attributes for the selected type from the server
             async function fetchAttributes(selectedType) {
                 try {
@@ -164,26 +133,6 @@
                     });
                 } catch (error) {
                     console.error('Error fetching attributes:', error);
-                }
-            }
-
-            // Function to fetch documents for the selected type from the server
-            async function fetchDocuments(selectedType) {
-                console.log('Fetching documents for type:', selectedType);
-                try {
-                    const response = await fetch(`/document/${selectedType}`);
-                    const data = await response.json();
-                    console.log('Documents data:', data);
-                    data.forEach(doc => {
-                        const documentInput = document.createElement('input');
-                        documentInput.type = 'text';
-                        documentInput.className = 'form-control m-auto mb-3';
-                        documentInput.placeholder = 'Enter document link';
-                        documentInput.value = doc;
-                        documentsContainer.appendChild(documentInput);
-                    });
-                } catch (error) {
-                    console.error('Error fetching documents:', error);
                 }
             }
         });
