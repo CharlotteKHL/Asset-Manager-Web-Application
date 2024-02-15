@@ -94,6 +94,10 @@
                         Write down the date the asset was created (in the format dd/mm/yy)
                     </div>
                 </div>
+                <!-- Container for attributes -->
+                <div id="attributesContainer" class="mb-3">
+                    <!-- Attributes will be populated dynamically here -->
+                </div>
                 <button class="btn btn-outline-primary" type="submit" id="createButton">
                     <i class="bi bi-check-lg"></i> Create
                 </button>
@@ -103,5 +107,37 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="script.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+            const typeSelect = document.getElementById('type');
+            const attributesContainer = document.getElementById('attributesContainer');
+            
+            typeSelect.addEventListener('change', function() {
+                // Clear existing attributes before populating with new ones
+                attributesContainer.innerHTML = '';
+
+                // Fetch attributes for the selected type and populate the attributes container
+                fetchAttributes(typeSelect.value);
+            });
+
+            // Function to fetch attributes for the selected type from the server
+            async function fetchAttributes(selectedType) {
+                try {
+                    const response = await fetch(`/attributes/${selectedType}`);
+                    const data = await response.json();
+                    data.forEach(attribute => {
+                        const attributeInput = document.createElement('input');
+                        attributeInput.type = 'text';
+                        attributeInput.className = 'form-control m-auto mb-3';
+                        attributeInput.placeholder = 'Enter attribute';
+                        attributeInput.value = attribute;
+                        attributesContainer.appendChild(attributeInput);
+                    });
+                } catch (error) {
+                    console.error('Error fetching attributes:', error);
+            }
+            }
+        });
+    </script>
 </body>
 </html>
