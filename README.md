@@ -24,9 +24,9 @@ Any incorrect fields or duplicate assets will result in an error page.
 
 ## Contributors
 * Alexandra Danciu - zlac480
-* Aryan Jolly - zlac###
+* Aryan Jolly - zlac155
 * Charlotte Lam - zlac188
-* Daljit Dhillon - zlac###
+* Daljit Dhillon - zeac037
 * Dan Bee - zlac198
 * Leane Matejko - zlac239
 * Robert Hammond - zlac265
