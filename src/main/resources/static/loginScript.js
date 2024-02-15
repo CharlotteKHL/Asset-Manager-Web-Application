@@ -30,7 +30,6 @@ function checkLogin() {
     }else{
         formData.push(document.getElementById("exampleInputEmail1").value);
     }
-    alert(formData);
 
     // validating the password 
     if((document.getElementById("exampleInputPassword1").value) == ""){
@@ -39,8 +38,6 @@ function checkLogin() {
     }else{
         formData.push(document.getElementById("exampleInputPassword1").value);
     }
-
-    alert(formData);
 
     // Portion that check if the server side validation has worked.
     if(valid){
@@ -65,7 +62,5 @@ function checkLogin() {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'danger', 'successAlertPlaceholder');
         });
     }
-
-    alert("test4");
 
 }
