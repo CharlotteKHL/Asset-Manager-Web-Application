@@ -87,7 +87,7 @@ public class FormController {
       @RequestParam String link, @RequestParam String lang, @RequestParam String assoc,
       @RequestParam String date, Model model) throws InvalidSelection {
 
-    String message = validateTitleTypeLink(title, type, link, lang, assoc);
+    String message = "temp";
     model.addAttribute("error", message);
 
     insertAssetData(title, link, lang, assoc, date);
@@ -236,52 +236,6 @@ public class FormController {
     } catch (ParseException e) {
       e.printStackTrace();
     }
-  }
-
-  /* Validates the title, type, and link attributes of the form, preventing duplicates */
-  public String validateTitleTypeLink(String title, String type, String link, String lang,
-      String assoc) {
-
-    String UNIQUE_TITLE = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
-    String UNIQUE_LINK = "SELECT DISTINCT COUNT(link) FROM std_assets WHERE link = :link";
-    /*
-     * String UNIQUE_TITLE_TYPE =
-     * "SELECT DISTINCT COUNT(*) FROM type WHERE name = :type AND attributes = :title";
-     */
-
-    try {
-      Map<String, String> parameters = new HashMap();
-      parameters.put("title", title);
-
-      int titleResult = (int) jdbcTemplate.queryForObject(UNIQUE_TITLE, parameters, Integer.class);
-
-      parameters.clear();
-      parameters.put("link", link);
-
-      int linkResult = (int) jdbcTemplate.queryForObject(UNIQUE_LINK, parameters, Integer.class);
-
-      /*
-       * parameters.clear(); parameters.put("type", type); parameters.put("title", title);
-       * 
-       * int typeResult = (int) jdbcTemplate.queryForObject(UNIQUE_TITLE_TYPE, parameters,
-       * Integer.class);
-       * 
-       */
-      if (titleResult != 0) {
-        throw new NotUnique("This title is not unique");
-      } else if (linkResult != 0) {
-        throw new NotUnique("This link is not unique");
-      } /*
-         * else if (typeResult != 0) { throw new
-         * NotUnique("This combination of title and type is not unique"); }
-         */
-
-    } catch (NotUnique e) {
-      e.printStackTrace();
-      System.out.println("Error!");
-      return e.getMessage();
-    }
-    return "Form submitted successfully";
   }
 
   /**
