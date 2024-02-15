@@ -118,8 +118,7 @@ public class FormController {
 
     int insertID = maxID + 1;
 
-    String statement = "INSERT INTO type_updated (type_id, type, attributes) "
-        + "VALUES (:type_id, :type, :attributes)";
+    String statement = "UPDATE type_updated SET attributes = :attributes WHERE type = :type";
 
     // Convert the attributes array to a comma-separated string representation
 
