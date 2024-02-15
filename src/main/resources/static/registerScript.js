@@ -1,7 +1,5 @@
 function checkRegister() {
 
-    const loginButton = document.getElementById('loginButton');
-
     let valid = true;
 
     var formData = [];
@@ -20,6 +18,22 @@ function checkRegister() {
         ].join('');
 
         placeholderElement.append(wrapper);
+    }
+
+    // validating the username 
+    if((document.getElementById("exampleInputEmail1").value) == ""){
+        valid = false;
+        appendAlert("Please enter an email", 'danger', 'registerEmailAlertPlaceholder', 'exampleInputEmail1');
+    }else{
+        formData.push(document.getElementById("exampleInputEmail1").value);
+    }
+
+    // validating the password 
+    if((document.getElementById("exampleInputPassword1").value) == ""){
+        valid = false;
+        appendAlert("Please enter your password", 'danger', 'registerPasswordAlertPlaceholder', 'exampleInputPassword1');
+    }else{
+        formData.push(document.getElementById("exampleInputPassword1").value);
     }
 
     // Portion that check if the server side validation has worked.
