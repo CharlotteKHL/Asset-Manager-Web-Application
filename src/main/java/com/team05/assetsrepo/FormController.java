@@ -54,8 +54,8 @@ public class FormController {
       @RequestParam(required = false) String title, @RequestParam(required = false) String type,
       @RequestParam(required = false) String link, @RequestParam(required = false) String lang,
       @RequestParam(required = false) String assoc, @RequestParam(required = false) String date,
-      @RequestParam(required = false, name = "attributesContainer") String[] attributes, Model model)
-      throws InvalidSelection, ParseException {
+      @RequestParam(required = false, name = "attributesContainer") String[] attributes,
+      Model model) throws InvalidSelection, ParseException {
 
     // Check if the request is coming from create-type.html
     String referer = request.getHeader("referer");
@@ -72,7 +72,7 @@ public class FormController {
 
   public String extractFormType(@RequestParam String type, @RequestParam String[] attributes,
       Model model) throws InvalidSelection, ParseException {
-    
+
     insertAttributeType(type, attributes);
 
     return "submit";
@@ -97,6 +97,9 @@ public class FormController {
     List<String> existingAttributes = jdbcTemplate.queryForList(existingAttributesQuery,
         Collections.singletonMap("type", type), String.class);
 
+    String statement;
+    boolean update = false;
+
     // If existing attributes are found, append the new attributes to them
     if (existingAttributes != null && !existingAttributes.isEmpty()) {
       String existingAttributesString = existingAttributes.get(0);
@@ -104,6 +107,7 @@ public class FormController {
           new ArrayList<>(Arrays.asList(existingAttributesString.split(",")));
       combinedAttributes.addAll(Arrays.asList(attributes));
       attributes = combinedAttributes.toArray(new String[0]);
+      update = true;
     }
 
     // Continue with the rest of the method as before
@@ -118,8 +122,13 @@ public class FormController {
 
     int insertID = maxID + 1;
 
-    String statement = "UPDATE type_updated SET attributes = :attributes WHERE type = :type";
+    if (update) {
+      statement = "UPDATE type_updated SET attributes = :attributes WHERE type = :type";
 
+    } else {
+      statement = "INSERT INTO type_updated (type_id, type, attributes) "
+          + "VALUES (:type_id, :type, :attributes)";
+    }
     // Convert the attributes array to a comma-separated string representation
 
     MapSqlParameterSource params = new MapSqlParameterSource().addValue("type_id", insertID)
