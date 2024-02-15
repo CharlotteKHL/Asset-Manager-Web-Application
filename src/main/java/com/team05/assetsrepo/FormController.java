@@ -60,6 +60,11 @@ public class FormController {
     // Check if the request is coming from create-type.html
     String referer = request.getHeader("referer");
     if (referer != null && referer.endsWith("/create-type.html")) {
+
+      if ("Other".equals(type)) {
+        // Retrieve the custom type entered by the user
+        type = request.getParameter("customType");
+      }
       // Process the form submission
       extractFormType(type, attributes, model);
       return ResponseEntity.ok("Type form submitted successfully!");
