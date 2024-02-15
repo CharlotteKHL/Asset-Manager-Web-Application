@@ -302,30 +302,4 @@ public class FormController {
       return Collections.emptyList();
     }
   }
-
-  @GetMapping("/document/{type}")
-  public ResponseEntity<List<String>> getDocumentForType(@PathVariable String type) {
-    // Fetch documents dynamically for the selected type
-    List<String> document = fetchDocumentForTypeFromDatabase(type);
-    return ResponseEntity.ok(document);
-  }
-
-  private List<String> fetchDocumentForTypeFromDatabase(String type) {
-    // Fetch documents for the selected type from the database
-    // Use appropriate SQL query to retrieve documents based on the selected type
-    String sql = "SELECT document FROM type_updated WHERE type = :type";
-    Map<String, Object> paramMap = Collections.singletonMap("type", type);
-    List<String> documentsList = jdbcTemplate.queryForList(sql, paramMap, String.class);
-
-    // Print the documents list for debugging
-    System.out.println("Documents for type " + type + ": " + documentsList);
-
-    // If documents list is not empty, split the comma-separated documents and return
-    if (!documentsList.isEmpty()) {
-      String[] documentArray = documentsList.get(0).split(",");
-      return Arrays.asList(documentArray);
-    } else {
-      return Collections.emptyList();
-    }
-  }
 }
