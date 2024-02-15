@@ -2,14 +2,11 @@ package com.team05.assetsrepo;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -30,7 +27,7 @@ public class FormController {
   private final NamedParameterJdbcTemplate jdbcTemplate;
 
   /**
-   * Injecting the JdbcTemplate registered in the Spring appliction context by the DBConfig class.
+   * Injecting the JdbcTemplate registered in the Spring application context by the DBConfig class.
    */
   public FormController(NamedParameterJdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
@@ -72,6 +69,16 @@ public class FormController {
     }
   }
 
+  /**
+   * Extracts form data for attribute types and inserts them into the database.
+   *
+   * @param type The type of the attribute.
+   * @param attributes An array of attribute values associated with the type.
+   * @param model The Spring MVC model for adding attributes.
+   * @return The name of the view to render after processing the form data.
+   * @throws InvalidSelection If an error occurs due to invalid selection or input.
+   * @throws ParseException If an error occurs while parsing the SQL query.
+   */
   public String extractFormType(@RequestParam String type, @RequestParam String[] attributes,
       Model model) throws InvalidSelection, ParseException {
 
@@ -80,6 +87,20 @@ public class FormController {
     return "submit";
   }
 
+  /**
+   * Extracts form data from request parameters and inserts asset data and asset type into the
+   * database.
+   *
+   * @param title The title of the asset.
+   * @param type The type of the asset.
+   * @param link The link of the asset.
+   * @param lang The language of the asset.
+   * @param assoc The association of the asset.
+   * @param date The date of the asset.
+   * @param model The Spring MVC model for adding attributes.
+   * @return The name of the view to render after processing the form data.
+   * @throws InvalidSelection If an error occurs due to invalid selection or input.
+   */
   public String extractForm(@RequestParam String title, @RequestParam String type,
       @RequestParam String link, @RequestParam String lang, @RequestParam String assoc,
       @RequestParam String date, Model model) throws InvalidSelection {
@@ -93,6 +114,14 @@ public class FormController {
     return "submit";
   }
 
+  /**
+   * Inserts a new attribute type into the database or updates existing attributes for the given
+   * type.
+   *
+   * @param type The type of the attribute.
+   * @param attributes An array of attribute values associated with the type.
+   * @throws ParseException If an error occurs while parsing the SQL query.
+   */
   public void insertAttributeType(String type, String[] attributes) throws ParseException {
     // Check if any records exist for the given type in the type_updated table
     String existingAttributesQuery = "SELECT attributes FROM type_updated WHERE type = :type";
@@ -107,7 +136,6 @@ public class FormController {
       update = true;
     }
 
-    // Continue with the rest of the method as before
     // Ensures that the primary key id is correctly numbered to be 1 more than
     // the previous highest.
     String maxIDQuery = "SELECT MAX(type_id) FROM type_updated";
