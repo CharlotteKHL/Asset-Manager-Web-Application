@@ -31,9 +31,20 @@ function checkRegister() {
     // validating the password 
     if((document.getElementById("exampleInputPassword1").value) == ""){
         valid = false;
-        appendAlert("Please enter your password", 'danger', 'registerPasswordAlertPlaceholder', 'exampleInputPassword1');
+        appendAlert("Please enter a password", 'danger', 'registerPasswordAlertPlaceholder', 'exampleInputPassword1');
     }else{
         formData.push(document.getElementById("exampleInputPassword1").value);
+    }
+
+    // validating the reentered password 
+    if(((document.getElementById("exampleInputPassword2").value) == "")){
+        valid = false;
+        appendAlert("Please re-enter your password", 'danger', 'registerRePasswordAlertPlaceholder', 'exampleInputPassword2');
+        if(((document.getElementById("exampleInputPassword1").value) != (document.getElementById("exampleInputPassword2").value))){
+            appendAlert("Make your passwords are the same", 'danger', 'registerRePassword2AlertPlaceholder', 'exampleInputPassword2');
+        }
+    }else{
+        formData.push(document.getElementById("exampleInputPassword2").value);
     }
 
     // Portion that check if the server side validation has worked.
