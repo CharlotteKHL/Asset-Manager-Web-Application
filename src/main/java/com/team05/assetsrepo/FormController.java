@@ -37,27 +37,6 @@ public class FormController {
    */
   public FormController(NamedParameterJdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
-    setProgLangSet();
-  }
-
-  /**
-   * Setting up the hashset for the different possible programming languages.
-   */
-  public void setProgLangSet() {
-    programmingLanguagesSet = new HashSet<String>();
-    programmingLanguagesSet.add("Java");
-    programmingLanguagesSet.add("JavaScript");
-    programmingLanguagesSet.add("C++");
-    programmingLanguagesSet.add("Other");
-  }
-
-  /**
-   * Adds new programming languages as possible valid selections.
-   * 
-   * @param value - The programming language to be added to the set.
-   */
-  public void addProgLangSet(String value) {
-    programmingLanguagesSet.add(value);
   }
 
   /**
@@ -67,55 +46,99 @@ public class FormController {
    * @return returns a HTTP "Created" response, indicating that a resource has been successfully
    *         created.
    * @throws InvalidSelection
+   * @throws ParseException
    */
 
   @PostMapping("/submit")
   public ResponseEntity<String> submit(HttpServletRequest request,
       @RequestParam(required = false) String title, @RequestParam(required = false) String type,
-      @RequestParam(required = false) int lines, @RequestParam(required = false) String link,
-      @RequestParam(required = false) String lang, @RequestParam(required = false) String assoc,
-      @RequestParam(required = false) String date, Model model) throws InvalidSelection {
+      @RequestParam(required = false) String link, @RequestParam(required = false) String lang,
+      @RequestParam(required = false) String assoc, @RequestParam(required = false) String date,
+      @RequestParam(required = false, name = "attributesContainer") String[] attributes, Model model)
+      throws InvalidSelection, ParseException {
 
     // Check if the request is coming from create-type.html
     String referer = request.getHeader("referer");
     if (referer != null && referer.endsWith("/create-type.html")) {
       // Process the form submission
-      // Your logic here
+      extractFormType(type, attributes, model);
       return ResponseEntity.ok("Type form submitted successfully!");
     } else {
       // If the request is not from create-type.html, call the extractForm method
-      extractForm(title, type, lines, link, lang, assoc, date, model);
+      extractForm(title, type, link, lang, assoc, date, model);
       return ResponseEntity.ok().body("Asset form submitted successfully!");
     }
   }
 
-  @PostMapping("/submit")
+  public String extractFormType(@RequestParam String type, @RequestParam String[] attributes,
+      Model model) throws InvalidSelection, ParseException {
+    
+    insertAttributeType(type, attributes);
+
+    return "submit";
+  }
+
   public String extractForm(@RequestParam String title, @RequestParam String type,
-      @RequestParam int lines, @RequestParam String link, @RequestParam String lang,
-      @RequestParam String assoc, @RequestParam String date, Model model) throws InvalidSelection {
+      @RequestParam String link, @RequestParam String lang, @RequestParam String assoc,
+      @RequestParam String date, Model model) throws InvalidSelection {
 
     String message = validateTitleTypeLink(title, type, link, lang, assoc);
     model.addAttribute("error", message);
-    validateSelection(lang);
 
-    insertAssetData(title, lines, link, lang, assoc, date);
+    insertAssetData(title, link, lang, assoc, date);
     insertAssetType(title, type, date);
 
     return "submit";
+  }
+
+  public void insertAttributeType(String type, String[] attributes) throws ParseException {
+    // Check if any records exist for the given type in the type_updated table
+    String existingAttributesQuery = "SELECT attributes FROM type_updated WHERE type = :type";
+    List<String> existingAttributes = jdbcTemplate.queryForList(existingAttributesQuery,
+        Collections.singletonMap("type", type), String.class);
+
+    // If existing attributes are found, append the new attributes to them
+    if (existingAttributes != null && !existingAttributes.isEmpty()) {
+      String existingAttributesString = existingAttributes.get(0);
+      List<String> combinedAttributes =
+          new ArrayList<>(Arrays.asList(existingAttributesString.split(",")));
+      combinedAttributes.addAll(Arrays.asList(attributes));
+      attributes = combinedAttributes.toArray(new String[0]);
+    }
+
+    // Continue with the rest of the method as before
+    // Ensures that the primary key id is correctly numbered to be 1 more than
+    // the previous highest.
+    String maxIDQuery = "SELECT MAX(type_id) FROM type_updated";
+    Integer maxID = jdbcTemplate.queryForObject(maxIDQuery, Collections.emptyMap(), Integer.class);
+
+    if (maxID == null) {
+      maxID = 0; // if no records found, initialise maxID to 0
+    }
+
+    int insertID = maxID + 1;
+
+    String statement = "INSERT INTO type_updated (type_id, type, attributes) "
+        + "VALUES (:type_id, :type, :attributes)";
+
+    // Convert the attributes array to a comma-separated string representation
+
+    MapSqlParameterSource params = new MapSqlParameterSource().addValue("type_id", insertID)
+        .addValue("type", type).addValue("attributes", attributes);
+
+    jdbcTemplate.update(statement, params);
   }
 
   /**
    * Inserts a row into the "std_assets" table in the database representing the asset.
    *
    * @param title the asset's title.
-   * @param lines the number of lines of the asset.
    * @param link the link to the asset.
    * @param lang the programming language the asset is written in.
    * @param assoc the asset's association(s).
    * @param date the asset's creation date.
    */
-  public void insertAssetData(String title, int lines, String link, String lang, String assoc,
-      String date) {
+  public void insertAssetData(String title, String link, String lang, String assoc, String date) {
 
     // Ensures that the primary key id is correctly numbered to be 1 more than
     // the previous highest.
@@ -149,8 +172,8 @@ public class FormController {
        * SQL query.
        */
       MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", insertID)
-          .addValue("title", title).addValue("lines", lines).addValue("link", link)
-          .addValue("lang", lang).addValue("assoc", assoc).addValue("date", sqlDate);
+          .addValue("title", title).addValue("link", link).addValue("lang", lang)
+          .addValue("assoc", assoc).addValue("date", sqlDate);
 
       jdbcTemplate.update(statement, params);
 
@@ -251,16 +274,6 @@ public class FormController {
       return e.getMessage();
     }
     return "Form submitted successfully";
-  }
-
-  /*
-   * Validates the programming language selection attributes of the form, preventing unwanted
-   * results
-   */
-  public void validateSelection(String lang) throws InvalidSelection {
-    if (!programmingLanguagesSet.contains(lang)) {
-      throw new InvalidSelection("This programming language is not valid.");
-    }
   }
 
   /**
