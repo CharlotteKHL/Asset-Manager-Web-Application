@@ -1,6 +1,5 @@
 package com.team05.assetsrepo;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import org.springframework.http.HttpStatus;
+import java.util.Set;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -29,8 +28,6 @@ import jakarta.servlet.http.HttpServletRequest;
 public class FormController {
 
   private final NamedParameterJdbcTemplate jdbcTemplate;
-
-  private HashSet<String> programmingLanguagesSet;
 
   /**
    * Injecting the JdbcTemplate registered in the Spring appliction context by the DBConfig class.
@@ -235,6 +232,37 @@ public class FormController {
 
     } catch (ParseException e) {
       e.printStackTrace();
+    }
+  }
+
+  /**
+   * Validates the title and link attributes of the form via SQL queries, thus preventing the
+   * creation of assets with a pre-existing title and/or link.
+   *
+   * @param title the title of the asset.
+   * @param link the link of the asset.
+   */
+  public void validateTitleAndLink(String title, String link) throws NotUniqueException {
+
+    String uniqueTitleQuery = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
+    String uniqueLinkQuery = "SELECT DISTINCT COUNT(link) FROM std_assets WHERE link = :link";
+
+    Map<String, String> parameters = new HashMap<String, String>();
+
+    parameters.put("title", title);
+
+    int titleResult =
+        (int) jdbcTemplate.queryForObject(uniqueTitleQuery, parameters, Integer.class);
+
+    parameters.clear();
+    parameters.put("link", link);
+
+    int linkResult = (int) jdbcTemplate.queryForObject(uniqueLinkQuery, parameters, Integer.class);
+
+    if (titleResult != 0) {
+      throw new NotUniqueException("This title is not unique.");
+    } else if (linkResult != 0) {
+      throw new NotUniqueException("This link is not unique.");
     }
   }
 
