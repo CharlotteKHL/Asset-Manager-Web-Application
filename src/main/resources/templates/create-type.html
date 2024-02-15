@@ -115,6 +115,7 @@
                 attributeInput.type = 'text';
                 attributeInput.className = 'form-control m-auto mb-3';
                 attributeInput.placeholder = 'Enter attribute';
+                attributeInput.name = 'attributesContainer'; // Set the name to match the parameter name in the controller method
                 attributesContainer.appendChild(attributeInput);
             });
 
@@ -129,6 +130,7 @@
                         attributeInput.className = 'form-control m-auto mb-3';
                         attributeInput.placeholder = 'Enter attribute';
                         attributeInput.value = attribute;
+                        attributeInput.name = 'attributesContainer'; // Set the name to match the parameter name in the controller method
                         attributesContainer.appendChild(attributeInput);
                     });
                 } catch (error) {
