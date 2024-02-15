@@ -107,11 +107,6 @@ public class FormController {
 
     // If existing attributes are found, append the new attributes to them
     if (existingAttributes != null && !existingAttributes.isEmpty()) {
-      String existingAttributesString = existingAttributes.get(0);
-      List<String> combinedAttributes =
-          new ArrayList<>(Arrays.asList(existingAttributesString.split(",")));
-      combinedAttributes.addAll(Arrays.asList(attributes));
-      attributes = combinedAttributes.toArray(new String[0]);
       update = true;
     }
 
