@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Controller
 public class AccountController {
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -27,7 +30,7 @@ public class AccountController {
 	 *         in successfully.
 	 * @throws InvalidLogin
 	 */
-	@PostMapping("/login")
+	@GetMapping("/login")
 	public String extractLogin(@RequestParam String username, @RequestParam String password, Model model)
 			throws InvalidLogin {
 		String message = validateLoginDetails(username, password);
