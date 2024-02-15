@@ -22,7 +22,6 @@ function checkLogin() {
         placeholderElement.append(wrapper);
     }
     
-    
     // validating the username 
     if((document.getElementById("exampleInputEmail1").value) == ""){
         valid = false;
@@ -41,7 +40,7 @@ function checkLogin() {
 
     // Portion that check if the server side validation has worked.
     if(valid){
-        formData = new formData();
+        // formData = new formData();
 
         fetch('/submit', {
             method: 'POST',
@@ -63,4 +62,5 @@ function checkLogin() {
         });
     }
 
+    window.location ="index.html";
 }
