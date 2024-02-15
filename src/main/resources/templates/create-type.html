@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Metadata Repository - Create a Type</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand">
+                Asset Metadata Repository
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation bar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <button class="btn btn-lg btn-outline-primary" onclick="window.location.href='/create-asset.html'">
+                        Create/edit assets
+                    </button>
+                    <button class="btn btn-lg btn-outline-primary">
+                        Login
+                    </button>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main page body -->
+    <section class="section bg-body-tertiary p-2 text-center">
+        <h1>
+            Create a Type
+        </h1>
+        <h3 class="fst-italic">
+            Enter the information about the type below to add it to the repository
+        </h3>
+        <br>
+        <!-- Creating a type form starts here -->
+        <div class="container">
+            <form action="/submit" method="post">
+                <div class="mb-3">
+                    <label for="type" class="form-label">
+                        Type
+                    </label>
+                    <select class="form-select m-auto" id="type" aria-label="Type selection menu" aria-describedby="typeHelp" style="width: 500px" name="type">
+                        <option selected></option>
+                        <!-- Populate options using Thymeleaf -->
+                        <option th:each="type : ${types}" th:text="${type}"></option>
+                        <!-- Add the "Other" option -->
+                        <option value="Other">Other</option>
+                    </select>
+                    <div id="typeHelp" class="form-text">
+                        Choose the type from the dropdown menu
+                    </div>
+                </div>
+
+                <!-- Custom type input (appears when "Other" option is selected) -->
+                <div class="mb-3 d-none" id="customTypeInputDiv">
+                    <label for="customType" class="form-label">
+                        Custom Type
+                    </label>
+                    <input type="text" class="form-control m-auto" id="customType" aria-describedby="customTypeHelp" style="width: 500px" name="customType">
+                    <div id="customTypeHelp" class="form-text">
+                        Please enter the custom type value
+                    </div>
+                </div>
+
+                <!-- Container for attributes -->
+                <div id="attributesContainer" class="mb-3">
+                    <!-- Attributes will be populated dynamically here -->
+                </div>
+
+                <!-- Button to add another attribute -->
+                <button class="btn btn-outline-primary" type="button" id="addAttributeButton">
+                    Add another attribute
+                </button>
+
+                <button class="btn btn-outline-primary" type="submit" id="createButton">
+                    <i class="bi bi-check-lg"></i> Create
+                </button>
+            </form>
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const typeSelect = document.getElementById('type');
+            const customTypeInputDiv = document.getElementById('customTypeInputDiv');
+            const attributesContainer = document.getElementById('attributesContainer');
+            const addAttributeButton = document.getElementById('addAttributeButton');
+
+            typeSelect.addEventListener('change', function() {
+                if (typeSelect.value === 'Other') {
+                    customTypeInputDiv.classList.remove('d-none');
+                } else {
+                    customTypeInputDiv.classList.add('d-none');
+                }
+
+                // Clear existing attributes before populating with new ones
+                attributesContainer.innerHTML = '';
+
+                // Fetch attributes for the selected type and populate the attributes container
+                fetchAttributes(typeSelect.value).then(() => {
+                    // Fetch documents for the selected type and populate the documents container
+                    fetchDocuments(typeSelect.value);
+                });
+            });
+
+            addAttributeButton.addEventListener('click', function() {
+                const attributeInput = document.createElement('input');
+                attributeInput.type = 'text';
+                attributeInput.className = 'form-control m-auto mb-3';
+                attributeInput.placeholder = 'Enter attribute';
+                attributeInput.name = 'attributesContainer'; // Set the name to match the parameter name in the controller method
+                attributesContainer.appendChild(attributeInput);
+            });
+
+            // Function to fetch attributes for the selected type from the server
+            async function fetchAttributes(selectedType) {
+                try {
+                    const response = await fetch(`/attributes/${selectedType}`);
+                    const data = await response.json();
+                    data.forEach(attribute => {
+                        const attributeInput = document.createElement('input');
+                        attributeInput.type = 'text';
+                        attributeInput.className = 'form-control m-auto mb-3';
+                        attributeInput.placeholder = 'Enter attribute';
+                        attributeInput.value = attribute;
+                        attributeInput.name = 'attributesContainer'; // Set the name to match the parameter name in the controller method
+                        attributesContainer.appendChild(attributeInput);
+                    });
+                } catch (error) {
+                    console.error('Error fetching attributes:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
