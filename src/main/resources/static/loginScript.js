@@ -40,7 +40,6 @@ function checkLogin() {
 
     // Portion that check if the server side validation has worked.
     if(valid){
-        // formData = new formData();
 
         fetch('/submit', {
             method: 'POST',
