@@ -6,10 +6,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -30,9 +28,10 @@ public class AccountController {
 	 *         in successfully.
 	 * @throws InvalidLogin
 	 */
-	@GetMapping("/login")
-	public String extractLogin(@RequestParam String username, @RequestParam String password, Model model)
+	@PostMapping("/login")
+	public String extractLogin(@RequestParam(value="username") String username, @RequestParam(value="password") String password, Model model)
 			throws InvalidLogin {
+	    System.out.println("HI");
 		String message = validateLoginDetails(username, password);
 		model.addAttribute("error", message);
 
@@ -64,11 +63,11 @@ public class AccountController {
 			System.out.println(passwordResult);
 
 			if (usernameResult != 0) {
-				throw new NotUnique("This username is not unique");
+				throw new NotUniqueException("This username is not unique");
 			} else if (passwordResult != 0) {
 				throw new InvalidLogin("This password is not correct");
 			}
-		} catch (NotUnique e) {
+		} catch (NotUniqueException e) {
 			e.printStackTrace();
 			System.out.println("Error!");
 			return e.getMessage();
@@ -79,9 +78,6 @@ public class AccountController {
 		}
 		return "Logged in successfully!";
 	}
-
-	@Autowired
-	private PasswordEncoder encoder;
 
 	/**
 	 * Assigns a new user id to the new user and inserts the new information into
@@ -96,8 +92,8 @@ public class AccountController {
 	public String register(@RequestParam String username, @RequestParam String password, Model model) {
 
 		// Sets the user's password to the hashed version
-		setPassword(username, encoder.encode(getPassword(username)));
 
+	    System.out.println("hello");
 		String count = "SELECT COUNT(user_id) FROM user";
 		String insert = "INSERT INTO user (user_id, username, password, role) "
 				+ "VALUES (:user_id, :username, :password, :role)";

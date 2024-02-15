@@ -35,13 +35,13 @@
                 <form>
                     <div class = "container-fluid" class="form-group">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email" style="width: 500px">
+                            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email" style="width: 500px" th:name="username">
                             <div id="emailHelp" class="form-text">Your username will be your email.</div>
                     </div>
                     <br>
                     <div class="container-fluid">
                         <label for="exampleInputPassword1" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" style="width: 500px">
+                        <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Password" style="width: 500px" th:name="password">
                         <div id="emailHelp" class="form-text">Do not share your password with anyone else.</div>
                     </div>
 

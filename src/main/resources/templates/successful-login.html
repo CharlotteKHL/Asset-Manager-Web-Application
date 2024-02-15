@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
 <body>
-    <a href="create-asset.html">Link to Asset Creation Form!</a>
-    <br>
-    <a href="login.html">Link to login</a>
+	<p th:text="${error}"></p><br/>
 </body>
 </html>

@@ -42,7 +42,7 @@ function checkLogin() {
     if(valid){
         // formData = new formData();
 
-        fetch('/submit', {
+        fetch('/login', {
             method: 'POST',
             body: formData,
         }).then(response => {

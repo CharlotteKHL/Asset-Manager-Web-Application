@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @SpringBootApplication
 @EnableJpaRepositories("com.team05.assetsrepo.*")
-@ComponentScan(basePackages = { "com.team05.assetsrepo.*" })
+@ComponentScan(basePackages = { "com.team05.assetsrepo" })
 @EntityScan("com.team05.assetsrepo.*")
 public class Main {
 
