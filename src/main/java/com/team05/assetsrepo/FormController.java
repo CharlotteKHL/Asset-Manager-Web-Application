@@ -243,18 +243,28 @@ public class FormController {
   }
 
   /**
-   * Retrieves the HTML page for creating an asset.
+   * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
+   * drop-down menu.
    *
+   * @param model The model to which types retrieved from the database will be added.
    * @return The name of the HTML page for creating an asset ("create-asset").
    */
   @GetMapping("/create-asset.html")
-  public String showCreateAssetPage() {
+  public String showCreateAssetPage(Model model) {
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type_updated",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("types", types);
     return "create-asset";
   }
 
+  public void updateAttributesFromTypeSelected() {
+    String type = "type";
+    getAttributesForType(type);
+  }
+  
   /**
    * Retrieves the HTML page for creating a type and fetches types from the database to populate a
-   * dropdown menu.
+   * drop-down menu.
    *
    * @param model The model to which types retrieved from the database will be added.
    * @return The name of the HTML page for creating a type ("create-type").
@@ -328,4 +338,7 @@ public class FormController {
       return Collections.emptyList();
     }
   }
+  
+  
+  
 }
