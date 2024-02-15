@@ -2,16 +2,16 @@ function checkLogin() {
 
     const loginButton = document.getElementById('loginButton');
 
-    let loginEmailEmpty = true;
-
     let valid = true;
 
-    alert("test1");
+    var formData = [];
 
     // The functions required to allow the alert(s) to appear above the form if input validation fails
-    const appendAlert = (message, type, placeholder) => {
+    const appendAlert = (message, type, placeholder, alertId) => {
         const placeholderElement = document.getElementById(`${placeholder}`);
         const wrapper = document.createElement('div');
+        wrapper.id = alertId;
+        wrapper.classList.add("alertMsg");
         wrapper.innerHTML = [
             `<div class="alert alert-${type} alert-dismissible" role="alert">
                 <div>${message}</div>
@@ -21,13 +21,17 @@ function checkLogin() {
 
         placeholderElement.append(wrapper);
     }
-
-    alert("test2");
-
-    alert("test3");
+    
+    
+    if((document.getElementById("exampleInputEmail1").value) == ""){
+        valid = false;
+        appendAlert("Please enter an email", 'danger', 'loginAlertPlaceholder', 'exampleInputEmail1');
+    }else{
+        formData.push(document.getElementById("exampleInputEmail1").value);
+    }
 
     if(valid){
-        var formData = new formData();
+        formData = new formData();
 
         fetch('/submit', {
             method: 'POST',
