@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Controller responsible for extracting and processing data entered into the asset creation form.
@@ -67,6 +68,27 @@ public class FormController {
    *         created.
    * @throws InvalidSelection
    */
+
+  @PostMapping("/submit")
+  public ResponseEntity<String> submit(HttpServletRequest request,
+      @RequestParam(required = false) String title, @RequestParam(required = false) String type,
+      @RequestParam(required = false) int lines, @RequestParam(required = false) String link,
+      @RequestParam(required = false) String lang, @RequestParam(required = false) String assoc,
+      @RequestParam(required = false) String date, Model model) throws InvalidSelection {
+
+    // Check if the request is coming from create-type.html
+    String referer = request.getHeader("referer");
+    if (referer != null && referer.endsWith("/create-type.html")) {
+      // Process the form submission
+      // Your logic here
+      return ResponseEntity.ok("Type form submitted successfully!");
+    } else {
+      // If the request is not from create-type.html, call the extractForm method
+      extractForm(title, type, lines, link, lang, assoc, date, model);
+      return ResponseEntity.ok().body("Asset form submitted successfully!");
+    }
+  }
+
   @PostMapping("/submit")
   public String extractForm(@RequestParam String title, @RequestParam String type,
       @RequestParam int lines, @RequestParam String link, @RequestParam String lang,
@@ -80,7 +102,6 @@ public class FormController {
     insertAssetType(title, type, date);
 
     return "submit";
-
   }
 
   /**
