@@ -29,7 +29,7 @@ public class AccountController {
 	 * @throws InvalidLogin
 	 */
 	@PostMapping("/login")
-	public String extractLogin(@RequestParam(required = false, value="username") String username, @RequestParam(required = false, value="password") String password, Model model)
+	public String extractLogin(@RequestParam(required = true, value="username") String username, @RequestParam(required = true, value="password") String password, Model model)
 			throws InvalidLogin {
 	    System.out.println("HI");
 		String message = validateLoginDetails(username, password);
