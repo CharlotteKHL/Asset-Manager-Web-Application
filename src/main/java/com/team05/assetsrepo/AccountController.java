@@ -55,7 +55,6 @@ public class AccountController {
 
 			System.out.println(usernameResult);
 
-			parameters.clear();
 			parameters.put("password", password);
 
 			int passwordResult = (int) jdbcTemplate.queryForObject(CORRECT_PASSWORD, parameters, Integer.class);
