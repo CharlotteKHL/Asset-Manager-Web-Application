@@ -61,7 +61,7 @@ public class AccountController {
 
 			System.out.println(passwordResult);
 
-			if (passwordResult != 0) {
+			if (passwordResult == 0) {
 				throw new InvalidLogin("This password is not correct");
 			}
 		} catch (InvalidLogin e) {
@@ -69,7 +69,7 @@ public class AccountController {
 			System.out.println("Error!");
 			return e.getMessage();
 		}
-		return "Logged in successfully!";
+		return "successful-login";
 	}
 
 	/**
