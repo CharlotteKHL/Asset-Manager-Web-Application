@@ -61,15 +61,9 @@ public class AccountController {
 
 			System.out.println(passwordResult);
 
-			if (usernameResult != 0) {
-				throw new NotUniqueException("This username is not unique");
-			} else if (passwordResult != 0) {
+			if (passwordResult != 0) {
 				throw new InvalidLogin("This password is not correct");
 			}
-		} catch (NotUniqueException e) {
-			e.printStackTrace();
-			System.out.println("Error!");
-			return e.getMessage();
 		} catch (InvalidLogin e) {
 			e.printStackTrace();
 			System.out.println("Error!");
