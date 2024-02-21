@@ -44,8 +44,8 @@ public class AccountController {
 	 */
 	public String validateLoginDetails(String username, String password) {
 
-		String UNIQUE_USERNAME = "SELECT DISTINCT COUNT(username) FROM user WHERE username = :username";
-		String CORRECT_PASSWORD = "SELECT DISTINCT COUNT(password) FROM user WHERE username = :username AND password = :password";
+		String UNIQUE_USERNAME = "SELECT DISTINCT COUNT(username) FROM user2 WHERE username = :username";
+		String CORRECT_PASSWORD = "SELECT DISTINCT COUNT(password) FROM user2 WHERE username = :username AND password = :password";
 
 		try {
 			Map<String, String> parameters = new HashMap();
@@ -94,10 +94,10 @@ public class AccountController {
 		// Sets the user's password to the hashed version
 
 	    System.out.println("hello");
-		String count = "SELECT COUNT(user_id) FROM user";
+		String count = "SELECT COUNT(user_id) FROM user2";
 		String insert = "INSERT INTO user (user_id, username, password, role) "
 				+ "VALUES (:user_id, :username, :password, :role)";
-		String uniqueName = "SELECT COUNT(user_id) FROM user WHERE username = :username";
+		String uniqueName = "SELECT COUNT(user_id) FROM user2 WHERE username = :username";
 		String message = "Registration successul";
 
 		Map<String, String> parameters = new HashMap();
@@ -126,7 +126,7 @@ public class AccountController {
 
 	/* A method to allow you to get a user's password */
 	public String getPassword(@RequestParam String username) {
-		String password = "SELECT DISTINCT password FROM user WHERE username = :username";
+		String password = "SELECT DISTINCT password FROM user2 WHERE username = :username";
 
 		Map<String, String> parameters = new HashMap();
 
@@ -138,7 +138,7 @@ public class AccountController {
 	}
 
 	public void setPassword(@RequestParam String username, @RequestParam String password) {
-		String setPassword = "UPDATE user SET password = :password WHERE username = :username";
+		String setPassword = "UPDATE user2 SET password = :password WHERE username = :username";
 
 		Map<String, String> parameters = new HashMap();
 
