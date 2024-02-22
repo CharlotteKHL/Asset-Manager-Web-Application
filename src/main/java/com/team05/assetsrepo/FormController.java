@@ -37,7 +37,15 @@ public class FormController {
   /**
    * The extractForm method handles POST requests to the "/submit" URL. RequestParam annotations are
    * used to extract necessary form parameters / attributes.
-   *
+   * 
+   * There is an initial check to see if create-type.html is the page calling the submit button. If
+   * this is the case, the values of the check-boxes from the page are looked at and associated
+   * variables are assigned e.g. whether this call will be of the deletion type via the if statement
+   * and boolean value.
+   * 
+   * The extractFormType will be called which carries out the task determined by the assigned
+   * variables.
+   * 
    * @return returns a HTTP "Created" response, indicating that a resource has been successfully
    *         created.
    * @throws InvalidSelection
@@ -83,7 +91,7 @@ public class FormController {
   }
 
   /**
-   * Extracts form data for attribute types and inserts them into the database.
+   * Extracts form data regarding types and inserts/deletes them from the database.
    *
    * @param type The type of the attribute.
    * @param attributes An array of attribute values associated with the type.
@@ -193,6 +201,11 @@ public class FormController {
     jdbcTemplate.update(statement, params);
   }
 
+  /**
+   * The row containing the type given as the argument is removed from the table in the database.
+   * 
+   * @param type the type extrapolated from the create-type.html page to be deleted from the table.
+   */
   public void deleteType(String type) {
     String statement = "DELETE FROM type WHERE type = :typeParam";
     MapSqlParameterSource params = new MapSqlParameterSource().addValue("typeParam", type);
