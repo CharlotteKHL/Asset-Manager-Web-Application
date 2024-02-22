@@ -67,7 +67,6 @@ public class FormController {
           updatedTypeName = request.getParameter("editType");
         }
       }
-      System.out.println(request.getParameter("editType"));
       // Process the form submission
       extractFormType(type, updatedTypeName, attributes, model);
       return ResponseEntity.ok("Type form submitted successfully!");
@@ -165,13 +164,11 @@ public class FormController {
 
     if (updateAttribute) {
       statement = "UPDATE type SET attributes = :attributes WHERE type = :type";
-      System.out.println("a");
     } else if (updateTypeAttribute) {
       statement =
-          "UPDATE type SET type = :updatedTypeName, attributes = :attributes WHERE type = :type";
-      params = new MapSqlParameterSource().addValue("type_id", insertID)
-          .addValue("updatedTypeName", updatedTypeName).addValue("attributes", attributes);
-      System.out.println("b");
+          "UPDATE type SET type = :updatedTypeName, attributes = :attributes WHERE type = :oldType";
+      params = new MapSqlParameterSource().addValue("updatedTypeName", updatedTypeName)
+          .addValue("attributes",attributes).addValue("oldType", type);
     } else {
       statement =
           "INSERT INTO type (type_id, type, attributes) " + "VALUES (:type_id, :type, :attributes)";
