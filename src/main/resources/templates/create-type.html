@@ -59,7 +59,7 @@
 		
 		<!-- Checkbox to toggle visibility of type name input -->
         <div class="mb-3 form-check d-none" id="changeTypeNameCheckboxDiv">
-          <input class="form-check-input" type="checkbox" id="changeTypeNameCheckbox">
+          <input class="form-check-input" type="checkbox" id="changeTypeNameCheckbox" name = "changeTypeNameCheckbox">
           <label class="form-check-label" for="changeTypeNameCheckbox">
             Change type name?
           </label>
@@ -110,6 +110,7 @@
     document.addEventListener("DOMContentLoaded", function() {
       const typeSelect = document.getElementById('type');
 	  const changeTypeNameCheckboxDiv = document.getElementById('changeTypeNameCheckboxDiv');
+	  const changeTypeNameCheckbox = document.getElementById('changeTypeNameCheckbox');
 	  const editTypeInputDiv = document.getElementById('editTypeInputDiv');
       const customTypeInputDiv = document.getElementById('customTypeInputDiv');
       const attributesContainer = document.getElementById('attributesContainer');
