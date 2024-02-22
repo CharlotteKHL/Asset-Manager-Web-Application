@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,18 +50,26 @@ public class FormController {
       @RequestParam(required = false) String link, @RequestParam(required = false) String lang,
       @RequestParam(required = false) String assoc, @RequestParam(required = false) String date,
       @RequestParam(required = false, name = "attributesContainer") String[] attributes,
+      @RequestParam(required = false,
+          name = "changeTypeNameCheckbox") String changeTypeNameCheckbox,
       Model model) throws InvalidSelection, ParseException {
 
     // Check if the request is coming from create-type.html
     String referer = request.getHeader("referer");
+    String updatedTypeName = "";
     if (referer != null && referer.endsWith("/create-type.html")) {
 
       if ("Other".equals(type)) {
         // Retrieve the custom type entered by the user
         type = request.getParameter("customType");
+      } else {
+        if (request.getParameter("changeTypeNameCheckbox") != null) {
+          updatedTypeName = request.getParameter("editType");
+        }
       }
+      System.out.println(request.getParameter("editType"));
       // Process the form submission
-      extractFormType(type, attributes, model);
+      extractFormType(type, updatedTypeName, attributes, model);
       return ResponseEntity.ok("Type form submitted successfully!");
     } else {
       // If the request is not from create-type.html, call the extractForm method
@@ -79,10 +88,10 @@ public class FormController {
    * @throws InvalidSelection If an error occurs due to invalid selection or input.
    * @throws ParseException If an error occurs while parsing the SQL query.
    */
-  public String extractFormType(@RequestParam String type, @RequestParam String[] attributes,
-      Model model) throws InvalidSelection, ParseException {
+  public String extractFormType(@RequestParam String type, String updatedTypeName,
+      @RequestParam String[] attributes, Model model) throws InvalidSelection, ParseException {
 
-    insertAttributeType(type, attributes);
+    insertAttributeType(type, updatedTypeName, attributes);
 
     return "submit";
   }
@@ -122,23 +131,30 @@ public class FormController {
    * @param attributes An array of attribute values associated with the type.
    * @throws ParseException If an error occurs while parsing the SQL query.
    */
-  public void insertAttributeType(String type, String[] attributes) throws ParseException {
+  public void insertAttributeType(String type, String updatedTypeName, String[] attributes)
+      throws ParseException {
     // Check if any records exist for the given type in the type_updated table
-    String existingAttributesQuery = "SELECT attributes FROM type_updated WHERE type = :type";
+    String existingAttributesQuery = "SELECT attributes FROM type WHERE type = :type";
     List<String> existingAttributes = jdbcTemplate.queryForList(existingAttributesQuery,
         Collections.singletonMap("type", type), String.class);
 
     String statement;
-    boolean update = false;
+    boolean updateAttribute = false;
+    boolean updateTypeAttribute = false;
+    MapSqlParameterSource params = null;
 
     // If existing attributes are found, append the new attributes to them
     if (existingAttributes != null && !existingAttributes.isEmpty()) {
-      update = true;
+      updateAttribute = true;
+      if (!(updatedTypeName).equals("")) {
+        updateAttribute = false;
+        updateTypeAttribute = true;
+      }
     }
 
     // Ensures that the primary key id is correctly numbered to be 1 more than
     // the previous highest.
-    String maxIDQuery = "SELECT MAX(type_id) FROM type_updated";
+    String maxIDQuery = "SELECT MAX(type_id) FROM type";
     Integer maxID = jdbcTemplate.queryForObject(maxIDQuery, Collections.emptyMap(), Integer.class);
 
     if (maxID == null) {
@@ -147,17 +163,25 @@ public class FormController {
 
     int insertID = maxID + 1;
 
-    if (update) {
-      statement = "UPDATE type_updated SET attributes = :attributes WHERE type = :type";
-
+    if (updateAttribute) {
+      statement = "UPDATE type SET attributes = :attributes WHERE type = :type";
+      System.out.println("a");
+    } else if (updateTypeAttribute) {
+      statement =
+          "UPDATE type SET type = :updatedTypeName, attributes = :attributes WHERE type = :type";
+      params = new MapSqlParameterSource().addValue("type_id", insertID)
+          .addValue("updatedTypeName", updatedTypeName).addValue("attributes", attributes);
+      System.out.println("b");
     } else {
-      statement = "INSERT INTO type_updated (type_id, type, attributes) "
-          + "VALUES (:type_id, :type, :attributes)";
+      statement =
+          "INSERT INTO type (type_id, type, attributes) " + "VALUES (:type_id, :type, :attributes)";
     }
     // Convert the attributes array to a comma-separated string representation
 
-    MapSqlParameterSource params = new MapSqlParameterSource().addValue("type_id", insertID)
-        .addValue("type", type).addValue("attributes", attributes);
+    if (!(updateTypeAttribute)) {
+      params = new MapSqlParameterSource().addValue("type_id", insertID).addValue("type", type)
+          .addValue("attributes", attributes);
+    }
 
     jdbcTemplate.update(statement, params);
   }
@@ -313,7 +337,7 @@ public class FormController {
    */
   @GetMapping("/create-type.html")
   public String showTypeFromDB(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type_updated",
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type",
         Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     return "create-type";
@@ -341,7 +365,7 @@ public class FormController {
   private List<String> fetchAttributesForTypeFromDatabase(String type) {
     // Fetch attributes for the selected type from the database
     // Use appropriate SQL query to retrieve attributes based on the selected type
-    String sql = "SELECT attributes FROM type_updated WHERE type = :type";
+    String sql = "SELECT attributes FROM type WHERE type = :type";
     Map<String, Object> paramMap = Collections.singletonMap("type", type);
     List<String> attributes = jdbcTemplate.queryForList(sql, paramMap, String.class);
     // Assuming attributes are stored as a comma-separated string in the database
