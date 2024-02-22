@@ -76,6 +76,13 @@
           </div>
         </div>
 
+		<!-- Checkbox to change create button to delete -->
+        <div class="mb-3 form-check d-none" id="deleteTypeDiv">
+          <input class="form-check-input" type="checkbox" id="deleteTypeCheckbox" name = "deleteTypeCheckbox">
+          <label class="form-check-label" for="deleteTypeCheckbox">
+            Delete selected type?
+          </label>
+        </div>
 
         <!-- Custom type input (appears when "Other" option is selected) -->
         <div class="mb-3 d-none" id="customTypeInputDiv">
@@ -89,7 +96,10 @@
         </div>
 
         <!-- Container for attributes -->
-        <div id="attributesContainer" class="mb-3">
+        <div id="attributesContainer" class="mb-3 m-auto" style="width: 500px">
+		  <label for="attributesContainer" class="form-label" >
+            Associated attributes
+          </label>
           <!-- Attributes will be populated dynamically here -->
         </div>
 
@@ -111,16 +121,27 @@
       const typeSelect = document.getElementById('type');
 	  const changeTypeNameCheckboxDiv = document.getElementById('changeTypeNameCheckboxDiv');
 	  const changeTypeNameCheckbox = document.getElementById('changeTypeNameCheckbox');
+	  const deleteTypeDiv = document.getElementById('deleteTypeDiv');
+	  const deleteTypeCheckbox = document.getElementById('deleteTypeCheckbox');
 	  const editTypeInputDiv = document.getElementById('editTypeInputDiv');
       const customTypeInputDiv = document.getElementById('customTypeInputDiv');
       const attributesContainer = document.getElementById('attributesContainer');
       const addAttributeButton = document.getElementById('addAttributeButton');
+	  const createButton = document.getElementById('createButton');
 
 	  changeTypeNameCheckbox.addEventListener('change', function() {
         if (changeTypeNameCheckbox.checked) {
           editTypeInputDiv.classList.remove('d-none'); 
         } else {
           editTypeInputDiv.classList.add('d-none'); 
+        }
+      });
+	  
+	  deleteTypeCheckbox.addEventListener('change', function() {
+        if (deleteTypeCheckbox.checked) {
+		  createButton.textContent = 'Delete';
+        } else {
+		  createButton.textContent = 'Create';
         }
       });
 
@@ -130,10 +151,14 @@
 		  changeTypeNameCheckboxDiv.classList.add('d-none');
 		  document.querySelector('label[for="changeTypeNameCheckbox"]').classList.add('d-none');
 		  editTypeInputDiv.classList.add('d-none'); 
+		  deleteTypeDiv.classList.add('d-none');
+		  document.querySelector('label[for="deleteTypeCheckbox"]').classList.add('d-none');
         } else {
 		  customTypeInputDiv.classList.add('d-none'); 
 		  changeTypeNameCheckboxDiv.classList.remove('d-none');
 		  document.querySelector('label[for="changeTypeNameCheckbox"]').classList.remove('d-none');
+		  deleteTypeDiv.classList.remove('d-none');
+		  document.querySelector('label[for="deleteTypeCheckbox"]').classList.remove('d-none');
         }
 
         // Clear existing attributes before populating with new ones
