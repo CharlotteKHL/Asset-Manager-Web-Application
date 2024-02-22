@@ -52,11 +52,13 @@ public class FormController {
       @RequestParam(required = false, name = "attributesContainer") String[] attributes,
       @RequestParam(required = false,
           name = "changeTypeNameCheckbox") String changeTypeNameCheckbox,
+      @RequestParam(required = false, name = "deleteTypeCheckbox") String deleteTypeCheckbox,
       Model model) throws InvalidSelection, ParseException {
 
     // Check if the request is coming from create-type.html
     String referer = request.getHeader("referer");
     String updatedTypeName = "";
+    boolean deleteType = false;
     if (referer != null && referer.endsWith("/create-type.html")) {
 
       if ("Other".equals(type)) {
@@ -66,9 +68,12 @@ public class FormController {
         if (request.getParameter("changeTypeNameCheckbox") != null) {
           updatedTypeName = request.getParameter("editType");
         }
+        if (request.getParameter("deleteTypeCheckbox") != null) {
+          deleteType = true;
+        }
       }
       // Process the form submission
-      extractFormType(type, updatedTypeName, attributes, model);
+      extractFormType(type, updatedTypeName, attributes, deleteType, model);
       return ResponseEntity.ok("Type form submitted successfully!");
     } else {
       // If the request is not from create-type.html, call the extractForm method
@@ -88,9 +93,14 @@ public class FormController {
    * @throws ParseException If an error occurs while parsing the SQL query.
    */
   public String extractFormType(@RequestParam String type, String updatedTypeName,
-      @RequestParam String[] attributes, Model model) throws InvalidSelection, ParseException {
+      @RequestParam String[] attributes, boolean deleteType, Model model)
+      throws InvalidSelection, ParseException {
 
-    insertAttributeType(type, updatedTypeName, attributes);
+    if (!(deleteType)) {
+      insertAttributeType(type, updatedTypeName, attributes);
+    } else {
+      deleteType(type);
+    }
 
     return "submit";
   }
@@ -168,7 +178,7 @@ public class FormController {
       statement =
           "UPDATE type SET type = :updatedTypeName, attributes = :attributes WHERE type = :oldType";
       params = new MapSqlParameterSource().addValue("updatedTypeName", updatedTypeName)
-          .addValue("attributes",attributes).addValue("oldType", type);
+          .addValue("attributes", attributes).addValue("oldType", type);
     } else {
       statement =
           "INSERT INTO type (type_id, type, attributes) " + "VALUES (:type_id, :type, :attributes)";
@@ -179,6 +189,13 @@ public class FormController {
       params = new MapSqlParameterSource().addValue("type_id", insertID).addValue("type", type)
           .addValue("attributes", attributes);
     }
+
+    jdbcTemplate.update(statement, params);
+  }
+
+  public void deleteType(String type) {
+    String statement = "DELETE FROM type WHERE type = :typeParam";
+    MapSqlParameterSource params = new MapSqlParameterSource().addValue("typeParam", type);
 
     jdbcTemplate.update(statement, params);
   }
