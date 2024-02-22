@@ -149,7 +149,7 @@ public class FormController {
    */
   public void insertAttributeType(String type, String updatedTypeName, String[] attributes)
       throws ParseException {
-    // Check if any records exist for the given type in the type_updated table
+    // Check if any records exist for the given type in the type table
     String existingAttributesQuery = "SELECT attributes FROM type WHERE type = :type";
     List<String> existingAttributes = jdbcTemplate.queryForList(existingAttributesQuery,
         Collections.singletonMap("type", type), String.class);
@@ -352,7 +352,7 @@ public class FormController {
    */
   @GetMapping("/create-asset.html")
   public String showCreateAssetPage(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type_updated",
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type",
         Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     return "create-asset";
@@ -419,7 +419,7 @@ public class FormController {
   private List<String> fetchDocumentForTypeFromDatabase(String type) {
     // Fetch documents for the selected type from the database
     // Use appropriate SQL query to retrieve documents based on the selected type
-    String sql = "SELECT document FROM type_updated WHERE type = :type";
+    String sql = "SELECT document FROM type WHERE type = :type";
     Map<String, Object> paramMap = Collections.singletonMap("type", type);
     List<String> documentsList = jdbcTemplate.queryForList(sql, paramMap, String.class);
 
