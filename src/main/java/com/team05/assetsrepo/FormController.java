@@ -10,7 +10,6 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -346,18 +345,22 @@ public class FormController {
   }
 
   /**
-   * Retrieves the HTML page for creating an asset.
+   * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
+   * drop-down menu.
    *
    * @return The name of the HTML page for creating an asset ("create-asset").
    */
   @GetMapping("/create-asset.html")
-  public String showCreateAssetPage() {
+  public String showCreateAssetPage(Model model) {
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type_updated",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("types", types);
     return "create-asset";
   }
 
   /**
    * Retrieves the HTML page for creating a type and fetches types from the database to populate a
-   * dropdown menu.
+   * drop-down menu.
    *
    * @param model The model to which types retrieved from the database will be added.
    * @return The name of the HTML page for creating a type ("create-type").
@@ -405,4 +408,31 @@ public class FormController {
       return Collections.emptyList();
     }
   }
+
+  @GetMapping("/document/{type}")
+  public ResponseEntity<List<String>> getDocumentForType(@PathVariable String type) {
+    // Fetch documents dynamically for the selected type
+    List<String> document = fetchDocumentForTypeFromDatabase(type);
+    return ResponseEntity.ok(document);
+  }
+
+  private List<String> fetchDocumentForTypeFromDatabase(String type) {
+    // Fetch documents for the selected type from the database
+    // Use appropriate SQL query to retrieve documents based on the selected type
+    String sql = "SELECT document FROM type_updated WHERE type = :type";
+    Map<String, Object> paramMap = Collections.singletonMap("type", type);
+    List<String> documentsList = jdbcTemplate.queryForList(sql, paramMap, String.class);
+
+    // Print the documents list for debugging
+    System.out.println("Documents for type " + type + ": " + documentsList);
+
+    // If documents list is not empty, split the comma-separated documents and return
+    if (!documentsList.isEmpty()) {
+      String[] documentArray = documentsList.get(0).split(",");
+      return Arrays.asList(documentArray);
+    } else {
+      return Collections.emptyList();
+    }
+  }
+
 }
