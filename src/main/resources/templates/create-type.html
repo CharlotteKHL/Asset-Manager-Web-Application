@@ -124,10 +124,11 @@
       });
 
       typeSelect.addEventListener('change', function() {
-        if (typeSelect.value === 'Other') {
+        if (typeSelect.value === '' || typeSelect.value === 'Other') {
           customTypeInputDiv.classList.remove('d-none');
 		  changeTypeNameCheckboxDiv.classList.add('d-none');
 		  document.querySelector('label[for="changeTypeNameCheckbox"]').classList.add('d-none');
+		  editTypeInputDiv.classList.add('d-none'); 
         } else {
 		  customTypeInputDiv.classList.add('d-none'); 
 		  changeTypeNameCheckboxDiv.classList.remove('d-none');
