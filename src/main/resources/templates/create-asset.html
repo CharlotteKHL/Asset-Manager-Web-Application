@@ -8,25 +8,27 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand">
-                Asset Metadata Repository
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation bar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <button class="btn btn-lg btn-outline-primary">
-                        Login
-                    </button>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
+	<!-- Navigation bar -->
+	<nav class="navbar navbar-expand-lg bg-body-tertiary">
+	    <div class="container-fluid">
+	        <a class="navbar-brand">
+	            Asset Metadata Repository
+	        </a>
+	        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation bar">
+	            <span class="navbar-toggler-icon"></span>
+	        </button>
+	        <div class="collapse navbar-collapse" id="navbarContent">
+	            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+	                <button class="btn btn-lg btn-outline-primary" onclick="window.location.href='/create-type.html'">
+	                    Create/edit types
+	                </button>
+	                <button class="btn btn-lg btn-outline-primary" onclick="window.location.href='/login.html'">
+	                    Login
+	                </button>
+	            </ul>
+	        </div>
+	    </div>
+	</nav>
     <!-- Main page body -->
     <section class="section bg-body-tertiary p-2 text-center">
         <h1>
@@ -41,11 +43,7 @@
             <div id="successAlertPlaceholder"></div>
             <div id="titleAlertPlaceholder"></div>
             <div id="typeAlertPlaceholder"></div>
-            <div id="noOfLinesAlertPlaceholder"></div>
-            <div id="linkAlertPlaceholder"></div>
-            <div id="progLanguageAlertPlaceholder"></div>
-            <div id="associationsAlertPlaceholder"></div>
-            <div id="dateAlertPlaceholder"></div>
+            <form id="assetForm">
             <form action="/submit" method="post">
                 <div class="mb-3">
                     <label for="assetTitle" class="form-label">
@@ -56,7 +54,7 @@
                         Enter the asset title
                     </div>
                 </div>
-                <div class="mb-3">
+                <!-- <div class="mb-3">
                     <label for="assetType" class="form-label">
                         Type
                     </label>
@@ -69,40 +67,7 @@
                     <div id="typeHelp" class="form-text">
                         Choose the asset type from the dropdown menu
                     </div>
-                </div>
-                <div class="mb-3">
-                    <label for="assetNoOfLines" class="form-label">
-                        Number of lines
-                    </label>
-                    <input type="number" class="form-control m-auto" id="assetNoOfLines" aria-describedby="linesHelp" style="width: 500px" name="lines">
-                    <div id="linesHelp" class="form-text">
-                        Enter the number of lines the asset contains
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="assetLink" class="form-label">
-                        Link
-                    </label>
-                    <input type="text" class="form-control m-auto" id="assetLink" aria-describedby="linkHelp" style="width: 500px" name="link">
-                    <div id="linkHelp" class="form-text">
-                        Paste the link to the asset document(s)
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="assetLanguage" class="form-label">
-                        Programming Language
-                    </label>
-                    <select class="form-select m-auto" id="assetLanguage" aria-label="Asset programming language selection menu" aria-describedby="languageHelp" style="width: 500px" name="lang">
-                        <option selected></option>
-                        <option value="Java">Java</option>
-                        <option value="JavaScript">JavaScript</option>
-                        <option value="C++">C++</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div id="languageHelp" class="form-text">
-                        Choose the programming language the asset was made in from the dropdown menu
-                    </div>
-                </div>
+                </div> -->
                 <div class="mb-3">
                     <label for="assetAssociations" class="form-label">
                         Association(s)
@@ -125,10 +90,10 @@
                     </label>
                     <input type="text" class="form-control m-auto" id="assetDate" aria-describedby="dateHelp" style="width: 500px" name="date">
                     <div id="linkHelp" class="form-text">
-                        Write down the date the asset was created (in the format dd/mm/yy)
+                        Write down the date the asset was created (in the format dd/mm/yyyy)
                     </div>
                 </div>
-                <button class="btn btn-outline-primary" type="submit" id="createButton">
+                <button class="btn btn-outline-primary" type="button" id="createButton" onclick="validateEntries()">
                     <i class="bi bi-check-lg"></i> Create
                 </button>
             </form>
