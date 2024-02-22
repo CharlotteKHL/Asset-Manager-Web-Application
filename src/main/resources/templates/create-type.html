@@ -57,6 +57,14 @@
           </div>
         </div>
 		
+		<!-- Checkbox to toggle visibility of type name input -->
+        <div class="mb-3 form-check d-none" id="changeTypeNameCheckboxDiv">
+          <input class="form-check-input" type="checkbox" id="changeTypeNameCheckbox">
+          <label class="form-check-label" for="changeTypeNameCheckbox">
+            Change type name?
+          </label>
+        </div>
+		
 		<!-- Edit type name (appears when a type from the DB is selected) -->
         <div class="mb-3 d-none" id="editTypeInputDiv">
           <label for="editType" class="form-label">
@@ -101,18 +109,29 @@
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const typeSelect = document.getElementById('type');
+	  const changeTypeNameCheckboxDiv = document.getElementById('changeTypeNameCheckboxDiv');
 	  const editTypeInputDiv = document.getElementById('editTypeInputDiv');
       const customTypeInputDiv = document.getElementById('customTypeInputDiv');
       const attributesContainer = document.getElementById('attributesContainer');
       const addAttributeButton = document.getElementById('addAttributeButton');
 
+	  changeTypeNameCheckbox.addEventListener('change', function() {
+        if (changeTypeNameCheckbox.checked) {
+          editTypeInputDiv.classList.remove('d-none'); 
+        } else {
+          editTypeInputDiv.classList.add('d-none'); 
+        }
+      });
+
       typeSelect.addEventListener('change', function() {
         if (typeSelect.value === 'Other') {
           customTypeInputDiv.classList.remove('d-none');
-		  editTypeInputDiv.classList.add('d-none');
+		  changeTypeNameCheckboxDiv.classList.add('d-none');
+		  document.querySelector('label[for="changeTypeNameCheckbox"]').classList.add('d-none');
         } else {
-		  editTypeInputDiv.classList.remove('d-none');
-          customTypeInputDiv.classList.add('d-none');
+		  customTypeInputDiv.classList.add('d-none'); 
+		  changeTypeNameCheckboxDiv.classList.remove('d-none');
+		  document.querySelector('label[for="changeTypeNameCheckbox"]').classList.remove('d-none');
         }
 
         // Clear existing attributes before populating with new ones
