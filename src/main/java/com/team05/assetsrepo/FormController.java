@@ -36,7 +36,15 @@ public class FormController {
   /**
    * The extractForm method handles POST requests to the "/submit" URL. RequestParam annotations are
    * used to extract necessary form parameters / attributes.
-   *
+   * 
+   * There is an initial check to see if create-type.html is the page calling the submit button. If
+   * this is the case, the values of the check-boxes from the page are looked at and associated
+   * variables are assigned e.g. whether this call will be of the deletion type via the if statement
+   * and boolean value.
+   * 
+   * The extractFormType will be called which carries out the task determined by the assigned
+   * variables.
+   * 
    * @return returns a HTTP "Created" response, indicating that a resource has been successfully
    *         created.
    * @throws InvalidSelection
@@ -49,18 +57,30 @@ public class FormController {
       @RequestParam(required = false) String link, @RequestParam(required = false) String lang,
       @RequestParam(required = false) String assoc, @RequestParam(required = false) String date,
       @RequestParam(required = false, name = "attributesContainer") String[] attributes,
+      @RequestParam(required = false,
+          name = "changeTypeNameCheckbox") String changeTypeNameCheckbox,
+      @RequestParam(required = false, name = "deleteTypeCheckbox") String deleteTypeCheckbox,
       Model model) throws InvalidSelection, ParseException {
 
     // Check if the request is coming from create-type.html
     String referer = request.getHeader("referer");
+    String updatedTypeName = "";
+    boolean deleteType = false;
     if (referer != null && referer.endsWith("/create-type.html")) {
 
       if ("Other".equals(type)) {
         // Retrieve the custom type entered by the user
         type = request.getParameter("customType");
+      } else {
+        if (request.getParameter("changeTypeNameCheckbox") != null) {
+          updatedTypeName = request.getParameter("editType");
+        }
+        if (request.getParameter("deleteTypeCheckbox") != null) {
+          deleteType = true;
+        }
       }
       // Process the form submission
-      extractFormType(type, attributes, model);
+      extractFormType(type, updatedTypeName, attributes, deleteType, model);
       return ResponseEntity.ok("Type form submitted successfully!");
     } else {
       // If the request is not from create-type.html, call the extractForm method
@@ -70,7 +90,7 @@ public class FormController {
   }
 
   /**
-   * Extracts form data for attribute types and inserts them into the database.
+   * Extracts form data regarding types and inserts/deletes them from the database.
    *
    * @param type The type of the attribute.
    * @param attributes An array of attribute values associated with the type.
@@ -79,10 +99,15 @@ public class FormController {
    * @throws InvalidSelection If an error occurs due to invalid selection or input.
    * @throws ParseException If an error occurs while parsing the SQL query.
    */
-  public String extractFormType(@RequestParam String type, @RequestParam String[] attributes,
-      Model model) throws InvalidSelection, ParseException {
+  public String extractFormType(@RequestParam String type, String updatedTypeName,
+      @RequestParam String[] attributes, boolean deleteType, Model model)
+      throws InvalidSelection, ParseException {
 
-    insertAttributeType(type, attributes);
+    if (!(deleteType)) {
+      insertAttributeType(type, updatedTypeName, attributes);
+    } else {
+      deleteType(type);
+    }
 
     return "submit";
   }
@@ -122,23 +147,30 @@ public class FormController {
    * @param attributes An array of attribute values associated with the type.
    * @throws ParseException If an error occurs while parsing the SQL query.
    */
-  public void insertAttributeType(String type, String[] attributes) throws ParseException {
-    // Check if any records exist for the given type in the type_updated table
-    String existingAttributesQuery = "SELECT attributes FROM type_updated WHERE type = :type";
+  public void insertAttributeType(String type, String updatedTypeName, String[] attributes)
+      throws ParseException {
+    // Check if any records exist for the given type in the type table
+    String existingAttributesQuery = "SELECT attributes FROM type WHERE type = :type";
     List<String> existingAttributes = jdbcTemplate.queryForList(existingAttributesQuery,
         Collections.singletonMap("type", type), String.class);
 
     String statement;
-    boolean update = false;
+    boolean updateAttribute = false;
+    boolean updateTypeAttribute = false;
+    MapSqlParameterSource params = null;
 
     // If existing attributes are found, append the new attributes to them
     if (existingAttributes != null && !existingAttributes.isEmpty()) {
-      update = true;
+      updateAttribute = true;
+      if (!(updatedTypeName).equals("")) {
+        updateAttribute = false;
+        updateTypeAttribute = true;
+      }
     }
 
     // Ensures that the primary key id is correctly numbered to be 1 more than
     // the previous highest.
-    String maxIDQuery = "SELECT MAX(type_id) FROM type_updated";
+    String maxIDQuery = "SELECT MAX(type_id) FROM type";
     Integer maxID = jdbcTemplate.queryForObject(maxIDQuery, Collections.emptyMap(), Integer.class);
 
     if (maxID == null) {
@@ -147,17 +179,35 @@ public class FormController {
 
     int insertID = maxID + 1;
 
-    if (update) {
-      statement = "UPDATE type_updated SET attributes = :attributes WHERE type = :type";
-
+    if (updateAttribute) {
+      statement = "UPDATE type SET attributes = :attributes WHERE type = :type";
+    } else if (updateTypeAttribute) {
+      statement =
+          "UPDATE type SET type = :updatedTypeName, attributes = :attributes WHERE type = :oldType";
+      params = new MapSqlParameterSource().addValue("updatedTypeName", updatedTypeName)
+          .addValue("attributes", attributes).addValue("oldType", type);
     } else {
-      statement = "INSERT INTO type_updated (type_id, type, attributes) "
-          + "VALUES (:type_id, :type, :attributes)";
+      statement =
+          "INSERT INTO type (type_id, type, attributes) " + "VALUES (:type_id, :type, :attributes)";
     }
     // Convert the attributes array to a comma-separated string representation
 
-    MapSqlParameterSource params = new MapSqlParameterSource().addValue("type_id", insertID)
-        .addValue("type", type).addValue("attributes", attributes);
+    if (!(updateTypeAttribute)) {
+      params = new MapSqlParameterSource().addValue("type_id", insertID).addValue("type", type)
+          .addValue("attributes", attributes);
+    }
+
+    jdbcTemplate.update(statement, params);
+  }
+
+  /**
+   * The row containing the type given as the argument is removed from the table in the database.
+   * 
+   * @param type the type extrapolated from the create-type.html page to be deleted from the table.
+   */
+  public void deleteType(String type) {
+    String statement = "DELETE FROM type WHERE type = :typeParam";
+    MapSqlParameterSource params = new MapSqlParameterSource().addValue("typeParam", type);
 
     jdbcTemplate.update(statement, params);
   }
@@ -295,25 +345,29 @@ public class FormController {
   }
 
   /**
-   * Retrieves the HTML page for creating an asset.
+   * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
+   * drop-down menu.
    *
    * @return The name of the HTML page for creating an asset ("create-asset").
    */
   @GetMapping("/create-asset.html")
-  public String showCreateAssetPage() {
+  public String showCreateAssetPage(Model model) {
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("types", types);
     return "create-asset";
   }
 
   /**
    * Retrieves the HTML page for creating a type and fetches types from the database to populate a
-   * dropdown menu.
+   * drop-down menu.
    *
    * @param model The model to which types retrieved from the database will be added.
    * @return The name of the HTML page for creating a type ("create-type").
    */
   @GetMapping("/create-type.html")
   public String showTypeFromDB(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type_updated",
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type FROM type",
         Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     return "create-type";
@@ -341,7 +395,7 @@ public class FormController {
   private List<String> fetchAttributesForTypeFromDatabase(String type) {
     // Fetch attributes for the selected type from the database
     // Use appropriate SQL query to retrieve attributes based on the selected type
-    String sql = "SELECT attributes FROM type_updated WHERE type = :type";
+    String sql = "SELECT attributes FROM type WHERE type = :type";
     Map<String, Object> paramMap = Collections.singletonMap("type", type);
     List<String> attributes = jdbcTemplate.queryForList(sql, paramMap, String.class);
     // Assuming attributes are stored as a comma-separated string in the database
@@ -354,4 +408,31 @@ public class FormController {
       return Collections.emptyList();
     }
   }
+
+  @GetMapping("/document/{type}")
+  public ResponseEntity<List<String>> getDocumentForType(@PathVariable String type) {
+    // Fetch documents dynamically for the selected type
+    List<String> document = fetchDocumentForTypeFromDatabase(type);
+    return ResponseEntity.ok(document);
+  }
+
+  private List<String> fetchDocumentForTypeFromDatabase(String type) {
+    // Fetch documents for the selected type from the database
+    // Use appropriate SQL query to retrieve documents based on the selected type
+    String sql = "SELECT document FROM type WHERE type = :type";
+    Map<String, Object> paramMap = Collections.singletonMap("type", type);
+    List<String> documentsList = jdbcTemplate.queryForList(sql, paramMap, String.class);
+
+    // Print the documents list for debugging
+    System.out.println("Documents for type " + type + ": " + documentsList);
+
+    // If documents list is not empty, split the comma-separated documents and return
+    if (!documentsList.isEmpty()) {
+      String[] documentArray = documentsList.get(0).split(",");
+      return Arrays.asList(documentArray);
+    } else {
+      return Collections.emptyList();
+    }
+  }
+
 }
