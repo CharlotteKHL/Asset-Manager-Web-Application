@@ -56,7 +56,21 @@
                         Enter a title for your asset.
                     </div>
                 </div>
-
+                <!-- <div class="mb-3">
+                    <label for="assetType" class="form-label">
+                        Type
+                    </label>
+                    <select class="form-select m-auto" id="type" aria-label="Type selection menu" aria-describedby="typeHelp" style="width: 500px" name="type">
+                        <option selected></option>
+                        <!-- Populate options using Thymeleaf -->
+                        <option th:each="type : ${types}" th:text="${type}"></option>
+                        <!-- Add the "Other" option -->
+                        <option value="Other">Other</option>
+                    </select>
+                    <div id="typeHelp" class="form-text">
+                        Choose the asset type from the dropdown menu
+                    </div>
+                </div> -->
                 <div class="mb-3">
                     <label for="assetAssociations" class="form-label">
                         Association(s)
