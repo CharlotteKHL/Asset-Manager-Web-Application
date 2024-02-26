@@ -12,12 +12,11 @@
 	<artifactId>assetsrepo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>assetsrepo</name>
-	<description>Demo project for Spring Boot</description>
+	<description>World's Greatest Asset Management Repository</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
-
 		<!-- Add Thymeleaf dependency -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -50,7 +49,6 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
