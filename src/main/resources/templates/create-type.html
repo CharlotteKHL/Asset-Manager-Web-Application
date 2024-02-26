@@ -253,36 +253,6 @@
                 }
             }
         });
-      });
-
-      addAttributeButton.addEventListener('click', function() {
-        const attributeInput = document.createElement('input');
-        attributeInput.type = 'text';
-        attributeInput.className = 'form-control m-auto mb-3';
-        attributeInput.placeholder = 'Enter attribute';
-        attributeInput.name = 'attributesContainer'; // Set the name to match the parameter name in the controller method
-        attributesContainer.appendChild(attributeInput);
-      });
-
-      // Function to fetch attributes for the selected type from the server
-      async function fetchAttributes(selectedType) {
-        try {
-          const response = await fetch(`/attributes/${selectedType}`);
-          const data = await response.json();
-          data.forEach(attribute => {
-            const attributeInput = document.createElement('input');
-            attributeInput.type = 'text';
-            attributeInput.className = 'form-control m-auto mb-3';
-            attributeInput.placeholder = 'Enter attribute';
-            attributeInput.value = attribute;
-            attributeInput.name = 'attributesContainer'; // Set the name to match the parameter name in the controller method
-            attributesContainer.appendChild(attributeInput);
-          });
-        } catch (error) {
-          console.error('Error fetching attributes:', error);
-        }
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
