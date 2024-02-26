@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 /**
- * Controller responsible for [...]
+ * Controller responsible for creating assets, creating / updating asset types, and fetching 
+ * types / attributes.
  */
 @Controller
 public class FormController {
