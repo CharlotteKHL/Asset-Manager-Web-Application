@@ -3,34 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Metadata Repository - Create an Asset</title>
+    <title>Asset Metadata Repository | Create an Asset</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" type="text/css" href="custom.css">
 </head>
 <body>
 	<!-- Navigation bar -->
-	<nav class="navbar navbar-expand-lg bg-body-tertiary">
-	    <div class="container-fluid">
-	        <a class="navbar-brand">
-	            Asset Metadata Repository
-	        </a>
-	        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation bar">
-	            <span class="navbar-toggler-icon"></span>
-	        </button>
-	        <div class="collapse navbar-collapse" id="navbarContent">
-	            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-	                <button class="btn btn-lg btn-outline-primary" onclick="window.location.href='/create-type.html'">
-	                    Create/edit types
-	                </button>
-	                <button class="btn btn-lg btn-outline-primary" onclick="window.location.href='/login.html'">
-	                    Login
-	                </button>
-	            </ul>
-	        </div>
-	    </div>
-	</nav>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+        <div class="container-fluid">
+           <a class="navbar-brand" href="index.html">Asset Metadata Repository</a>
+           <div class="d-flex w-100">
+              <div class="mr-auto">
+                 <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="create-type.html">Manage Asset Types</a>
+                 </button>
+                 <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="create-asset.html">Create an Asset</a>
+                 </button>
+              </div>
+              <div class="ms-auto">
+                 <button class="btn btn-outline-primary mx-1">
+                    <a class="nav-link" href="login.html">Log In</a>
+                 </button>
+                 <button class="btn btn-outline-primary mx-1">
+                    <a class="nav-link" href="register.html">Register</a>
+                 </button>
+              </div>
+           </div>
+        </div>
+     </nav>
     <!-- Main page body -->
-    <section class="section bg-body-tertiary p-2 text-center">
+    <section class="section p-2 text-center">
         <h1>
             Create an Asset
         </h1>
@@ -38,63 +42,55 @@
             Enter the information about the asset below to add it to the repository
         </h3>
         <br>
-        <!-- Creating an asset form starts here -->
+        <!-- Form for asset creation begins here -->
         <div class="container">
             <div id="successAlertPlaceholder"></div>
-            <div id="titleAlertPlaceholder"></div>
-            <div id="typeAlertPlaceholder"></div>
+            <div id="errorAlertPlaceholder"></div>
             <form id="assetForm">
-            <form action="/submit" method="post">
                 <div class="mb-3">
                     <label for="assetTitle" class="form-label">
                         Title
                     </label>
-                    <input type="text" class="form-control m-auto" id="assetTitle" aria-describedby="titleHelp" style="width: 500px" name="title">
+                    <input type="text" id="assetTitle" class="form-control m-auto" name="title">
                     <div id="titleHelp" class="form-text">
-                        Enter the asset title
+                        Enter a title for your asset.
                     </div>
                 </div>
-                <!-- <div class="mb-3">
-                    <label for="assetType" class="form-label">
-                        Type
-                    </label>
-                    <select class="form-select m-auto" id="assetType" aria-label="Asset type selection menu" aria-describedby="typeHelp" style="width: 500px" name="type">
-                        <option selected></option>
-                        <option value="Type 1">Type 1</option>
-                        <option value="Type 2">Type 2</option>
-                        <option value="Type 3">Type 3</option>
-                    </select>
-                    <div id="typeHelp" class="form-text">
-                        Choose the asset type from the dropdown menu
-                    </div>
-                </div> -->
+
                 <div class="mb-3">
                     <label for="assetAssociations" class="form-label">
                         Association(s)
                     </label>
-                    <select class="form-select m-auto" id="assetAssociations" aria-label="Asset association(s) selection menu" aria-describedby="associationsHelp" style="width: 500px" name="assoc">
-                        <option selected></option>
-                        <!-- Ideally, this will be a preloaded dropdown menu of pre-existing assets already in the database -->
-                        <option value="Asset 1">Asset 1</option>
-                        <option value="Asset 2">Asset 2</option>
-                        <option value="Asset 3">Asset 3</option>
-                        <option value="Asset 4">Asset 4</option>
+                    <select multiple id="assetAssociations" class="form-select m-auto" name="assoc">
+                        <!-- Populates dropdown list with pre-existing assets from database using controller method with "/create-asset.html" mapping -->
+                        <option th:each="asset : ${assets}" th:text="${asset}"></option>
                     </select>
                     <div id="associationsHelp" class="form-text">
-                        Choose any asset(s) that your new asset is associated with
+                        Choose any asset(s) that your new asset should be associated with.<br>Ctrl + Click to select multiple items.
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="assetDate" class="form-label">
-                        Date
+
+                <div class="mb-4">
+                    <label for="assetType" class="form-label">
+                        Type
                     </label>
-                    <input type="text" class="form-control m-auto" id="assetDate" aria-describedby="dateHelp" style="width: 500px" name="date">
-                    <div id="linkHelp" class="form-text">
-                        Write down the date the asset was created (in the format dd/mm/yyyy)
+                    <select id="type" class="form-select m-auto" name="type">
+                        <option selected></option>
+                        <!-- Populates dropdown list with pre-existing asset types from database using controller method with "/create-asset.html" mapping -->
+                        <option th:each="type : ${types}" th:text="${type}"></option>
+                    </select>
+                    <div id="typeHelp" class="form-text">
+                        Select an asset type from the dropdown menu to reveal additional form fields.
                     </div>
                 </div>
-                <button class="btn btn-outline-primary" type="button" id="createButton" onclick="validateEntries()">
-                    <i class="bi bi-check-lg"></i> Create
+
+                <!-- Container for additional (type-dependent) attributes -->
+                <div id="attributesContainer" class="mb-3">
+                    <!-- Input fields for assigning attributes their data are dynamically added here via the JavaScript fetchAttributes function -->
+                </div>
+
+                <button id="createButton" class="btn btn-outline-primary mt-3 mb-3" type="button" onclick="validateEntries()">
+                    Create <i class="bi bi-check-lg"></i>
                 </button>
             </form>
         </div>
@@ -102,5 +98,91 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="script.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+            // Assigning constants to the type dropdown and the (initially invisible) container for additional attributes
+            const typeSelect = document.getElementById('type');
+            const attributesContainer = document.getElementById('attributesContainer');
+            
+            typeSelect.addEventListener('change', function() {
+                // Clears existing additional attribute input fields before populating w/ new ones
+                attributesContainer.innerHTML = '';
+                // Calls fetchAttributes to receive additional form fields, given that the user has successfully selected an asset type
+                if (typeSelect.value != '') {
+                    fetchAttributes(typeSelect.value);
+                }
+            });
+
+            // Fetches all attribute data corresponding to the selected asset type
+            // Dynamically populates attributes container with input fields, allowing users to give each attribute an input
+            async function fetchAttributes(selectedType) {
+                try {
+                    // Calls the server endpoint to fetch all attribute data corresponding to the selected asset type
+                    const response = await fetch(`/attributes/${selectedType}`);
+                    // Returns a 2D array containing pairs in the form [attribute name, attribute datatype]
+                    // e.g. [['Description', 'Text'], ['Format', 'Text'], ...]
+                    const data = await response.json();
+                    // Iterates over the 2D array, dealing with a single pair each iteration
+                    data.forEach(attribute => {
+                        // Defines a label element and an input element
+                        const attributeName = document.createElement('label');
+                        attributeName.classList.add('form-label');
+                        attributeName.innerHTML = attribute[0];
+                        const attributeInput = document.createElement('input');
+                        // Applies Bootstrap styling for a form field
+                        attributeInput.className = 'form-control m-auto';
+                        // Determines the kind of input field to provide based on the datatype, reducing additional validation requirements
+                        if (attribute[1] == "Text") {
+                            attributeInput.type = 'text';
+                        }
+                        if (attribute[1] == "Number") {
+                            attributeInput.type = 'number';
+                            attributeInput.min = '0';
+                        }
+                        if (attribute[1] == "Decimal") {
+                            attributeInput.type = 'number';
+                            attributeInput.min = '0';
+                            attributeInput.step = '0.01';
+                        }
+                        // Adds both the label element and the input element to a div, resulting in a container which represents an individual attribute
+                        let individualAttr = document.createElement('div');
+                        individualAttr.classList = 'mb-4'
+                        individualAttr.appendChild(attributeName);
+                        individualAttr.appendChild(attributeInput);
+                        // Adds the individual attribute to the parent container, attributesContainer
+                        attributesContainer.appendChild(individualAttr);
+                        // If the datatype of the current attribute is any kind of list, we provide a text input and an appropriate prompt
+                        if (attribute[1].endsWith("(List)")) {
+                            switch(attribute[1]) {
+                                case "Text (List)":
+                                    attributeInput.pattern = '^[a-zA-Z0-9]+(, [a-zA-Z0-9]+)*$';
+                                    break;
+                                case "Number (List)":
+                                    attributeInput.pattern = '^[0-9]+(, [0-9]+)*$';
+                                    break;
+                                case "Decimal (List)":
+                                    attributeInput.pattern = '^\d+(\.\d+)?(?:, \d+(\.\d+)?)*$';
+                                    break;
+                                default:
+                                    attributeInput.removeAttribute('pattern');
+                                    break;
+                            }
+                            // Text input field, but custom datatypes enforced via regular expressions
+                            attributeInput.type = 'text';
+                            attributeInput.classList.add('listAttr');
+                            // The prompt is contained within a div
+                            let promptForList = document.createElement('div');
+                            promptForList.innerText = "Please separate list items by a comma.";
+                            promptForList.classList = 'form-text';
+                            // Add the div containing the prompt to the individual attribute container
+                            individualAttr.appendChild(promptForList);
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error fetching attributes:', error);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
