@@ -53,15 +53,26 @@ function checkLogin() {
                 })
             }
         })
-        .then(data => {
+        .then(async data => {
             if(data.message == "This password is not correct") {
                 appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + data.message, 'danger', 'successAlertPlaceholder');
             } else {
                 appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'success', 'successAlertPlaceholder');
+                await sleep(2000);
+                window.location.replace('index.html');
             }
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'danger', 'successAlertPlaceholder');
         });
     }
+}
+
+// Variable to represent the sleep interval
+var sleepInterval;
+
+// Function that allows an action to be performed, then pause before performing another action
+function sleep(ms) {
+    clearInterval(sleepInterval);
+    return new Promise(resolve => sleepInterval = setTimeout(resolve, ms));
 }
