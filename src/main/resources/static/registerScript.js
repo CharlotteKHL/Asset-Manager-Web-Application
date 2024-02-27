@@ -62,9 +62,11 @@ function checkRegister() {
                 })
             }
         })
-        .then(data => {
+        .then(async data => {
 			if(data.message == "Registration successful"){
-				appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'success', 'successAlertPlaceholder');
+				appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message + ", redirecting to login", 'success', 'successAlertPlaceholder');
+				await sleep(2000);
+				window.location.replace('login.html');
 			} else {
 				appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'danger', 'successAlertPlaceholder');
 			}
@@ -73,4 +75,13 @@ function checkRegister() {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'danger', 'successAlertPlaceholder');
         });
     }
+}
+
+// Variable to represent the sleep interval
+var sleepInterval;
+
+// Function that allows an action to be performed, then pause before performing another action
+function sleep(ms) {
+    clearInterval(sleepInterval);
+    return new Promise(resolve => sleepInterval = setTimeout(resolve, ms));
 }
