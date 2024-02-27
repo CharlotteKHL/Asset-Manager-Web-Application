@@ -1,189 +1,319 @@
 package com.team05.assetsrepo;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
- * Controller responsible for extracting and processing data entered into the asset creation form.
+ * Controller responsible for creating assets, creating / updating asset types, and fetching 
+ * types / attributes.
  */
 @Controller
 public class FormController {
 
   private final NamedParameterJdbcTemplate jdbcTemplate;
 
-  private Set<String> langSet;
-
   /**
-   * Injecting the JdbcTemplate registered in the Spring appliction context by the DBConfig class.
+   * Injecting the JdbcTemplate registered in the Spring application context by the DBConfig class.
    */
   public FormController(NamedParameterJdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
-    setProgLangSet();
   }
-
+  
   /**
-   * Sets up a HashSet comprised of the valid options for the programming language field.
-   */
-  public void setProgLangSet() {
-    langSet = new HashSet<String>();
-    langSet.add("Java");
-    langSet.add("JavaScript");
-    langSet.add("C++");
-    langSet.add("Other");
-  }
-
-  /**
-   * This method can be used to add a new programming language to the set of possible selections.
+   * Creates a new row in the type table representing the new asset type, given a JSON string 
+   * representing its attributes.
    *
-   * @param value the programming language to be added to the set.
+   * @param pairs the JSON string from the POST request body.
+   * @return String a message indicating whether the creation of a new asset type was successful.
    */
-  public void addProgLangSet(String value) {
-    langSet.add(value);
-  }
-
-  /**
-   * The extractForm method handles POST requests to the "/submit" URL.
-   * RequestParam annotations are used to extract necessary form parameters.
-   *
-   * @return a HTTP response indicating whether the asset data was successfully processed.
-   * @throws InvalidSelection if an invalid programming language was detected.
-   * @throws DbUpdateException if an error was encountered whilst attempting to update the database.
-   * @throws NotUniqueException if the title and/or link is determined to be non-unique.
-   */
-  @PostMapping("/submit")
-  /* N.B. Spring binds the parameters from the FormData JSON body (see script.js) to the method 
-  parameters via @RequestParam. */
-  public ResponseEntity<?> extractForm(@RequestParam String title, @RequestParam int lines,
-      @RequestParam String link, @RequestParam String lang, @RequestParam String assoc,
-      @RequestParam String date) throws InvalidSelection, DbUpdateException, NotUniqueException {
-
+  @PostMapping("/createType")
+  public ResponseEntity<?> createType(@RequestBody String pairs) {
     try {
-      /* 
-       * We call the methods for title and link validation, programming language validation, and 
-       * insertion into the database.
-       * 
-       * If all run without throwing any exceptions, the asset form data was successfully processed.
-       * 
-       * Otherwise, the relevant exception is caught, and the user is notified (on the front-end) 
-       * accordingly.
-      */
-      validateTitleAndLink(title, link);
-      validateLang(lang);
-      insertAssetData(title, lines, link, lang, assoc, date);
-      return ResponseEntity.ok().body("{\"message\": \"Asset created successfully!\"}");
-    } catch (InvalidSelection | DbUpdateException | NotUniqueException e) {
+
+      /* Uses the Jackson library to convert the JSON string from the POST request body into a 
+      JSON object. */
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode jsonNode = objectMapper.readTree(pairs);
+
+      // Extracts the name of the new asset type from the first pairing, then removes the pairing.
+      String typeName = (jsonNode.get("type")).asText();
+      ObjectNode object = (ObjectNode) jsonNode;
+      object.remove("type");
+      pairs = objectMapper.writeValueAsString(object);
+
+      /* Iterates over the JSON object.
+      Sets up two lists: one for the attribute names, one for the attribute values. 
+      These serve the purpose of storing the order of attributes.
+      These can then be displayed as required. */
+      List<String> attrKeysList = new ArrayList<>();
+      List<String> attrValuesList = new ArrayList<>();
+      jsonNode.fields().forEachRemaining(entry -> {
+        attrKeysList.add(entry.getKey());
+        attrValuesList.add(entry.getValue().asText());
+      });
+
+      /* Converts both lists from ArrayList<String> to String[] to ensure they can be 
+      stored in the database. */
+      String[] attrKeys = attrKeysList.toArray(new String[0]);
+      String[] attrValues = attrValuesList.toArray(new String[0]);
+
+      // Creates a new row in the type table
+      String sql = "INSERT INTO type (type_name, attributes, attr_keys, attr_backend_types) "
+            + "VALUES (:typeName, CAST(:pairs AS JSON), :attrKeys, :attrValues)";
+
+      // Defines what Java variable / object each parameter in the SQL statement corresponds to.
+      MapSqlParameterSource params = new MapSqlParameterSource()
+          .addValue("typeName", typeName)
+          .addValue("pairs", pairs)
+          .addValue("attrKeys", attrKeys)
+          .addValue("attrValues", attrValues);
+
+      jdbcTemplate.update(sql, params);
+
+      return ResponseEntity.ok().body("{\"message\": \"New asset type created successfully!\"}");
+
+    } catch (JsonProcessingException e) {
+
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+
+    } catch (DuplicateKeyException e) {
+
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body("{\"error\": \"" 
+      + "Please check that the name of your asset type is unique!" + "\"}");
+      
+    }
+  }
+  
+  /**
+   * Updates an existing row in the type table, given a JSON string representing an asset type's 
+   * new attributes.
+   *
+   * @param pairs the JSON string from the POST request body.
+   * @return String a message indicating whether updating the asset type was successful.
+   */
+  @PostMapping("/updateType")
+  public ResponseEntity<?> updateType(@RequestBody String pairs) {
+    try {
+
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode jsonNode = objectMapper.readTree(pairs);
+
+      String typeName = (jsonNode.get("type")).asText();
+      ObjectNode object = (ObjectNode) jsonNode;
+      object.remove("type");
+      pairs = objectMapper.writeValueAsString(object);
+
+      List<String> attrKeysList = new ArrayList<>();
+      List<String> attrValuesList = new ArrayList<>();
+      jsonNode.fields().forEachRemaining(entry -> {
+        attrKeysList.add(entry.getKey());
+        attrValuesList.add(entry.getValue().asText());
+      });
+
+      String[] attrKeys = attrKeysList.toArray(new String[0]);
+      String[] attrValues = attrValuesList.toArray(new String[0]);
+
+      String sql = "UPDATE type SET type_name = :typeName, attributes = CAST(:pairs AS JSON), "
+          + "attr_keys = :attrKeys, attr_backend_types = :attrValues WHERE type_name = :typeName";
+
+      MapSqlParameterSource params = new MapSqlParameterSource()
+          .addValue("typeName", typeName)
+          .addValue("pairs", pairs)
+          .addValue("attrKeys", attrKeys)
+          .addValue("attrValues", attrValues);
+
+      jdbcTemplate.update(sql, params);
+
+      return ResponseEntity.ok().body("{\"message\": \"Asset type updated successfully!\"}");
+
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
       return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
     }
-
   }
-
-  /**
-   * Inserts a row representing the asset into the "std_assets" table in the database.
+  
+  /** 
+   * Creates a new row in the asset table representing a new asset, given a JSON string representing
+   * its attributes.
    *
-   * @param title the asset's title.
-   * @param lines the number of lines of the asset.
-   * @param link the link to the asset.
-   * @param lang the programming language the asset is written in.
-   * @param assoc the asset's association(s).
-   * @param date the asset's creation date.
+   * @param obj the JSON string from the POST request body.
+   * @return String a message indicating whether the creation of a new asset was successful.
    */
-  public void insertAssetData(String title, int lines, String link, String lang, String assoc, 
-      String date) throws DbUpdateException {
-
-    String statement = "INSERT INTO std_assets (title, lines, link, lang, assoc, date) "
-        + "VALUES (:title, :lines, :link, :lang, :assoc, :date)";
-
+  @PostMapping("/submitAsset")
+  public ResponseEntity<?> submitAsset(@RequestBody String obj) {
     try {
 
-      // Date entered by the user is parsed so that it conforms to the dd/MM/yyyy format.
-      SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-      java.util.Date dateObj = format.parse(date);
-      // Convert date from (Java) Util to (Java) SQL object.
-      java.sql.Date sqlDate = new java.sql.Date(dateObj.getTime());
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode jsonNode = objectMapper.readTree(obj);
 
-      /*
-        * Here, the database is updated using the jdbcTemplate object. This is done by
-        * passing the previously written SQL statement along with the map of parameters
-        * to the update method.
-        *
-        * The key corresponds to the named parameters written after "VALUES" in the SQL
-        * statement. The value corresponds to the actual values that will replace those
-        * named parameters in the SQL query.
-        */
-      MapSqlParameterSource params = new MapSqlParameterSource().addValue("title", title)
-          .addValue("lines", lines).addValue("link", link).addValue("lang", lang)
-          .addValue("assoc", assoc).addValue("date", sqlDate);
+      String title = (jsonNode.get("Title").asText());
+      String typeAsStr = (jsonNode.get("Type").asText());
 
-      jdbcTemplate.update(statement, params);
+      String sqlGetTypeId = "SELECT id FROM type WHERE type_name = :typeAsStr";
+      
+      MapSqlParameterSource params = new MapSqlParameterSource()
+          .addValue("typeAsStr", typeAsStr);
 
-    } catch (Exception e) {
-      e.printStackTrace();
-      if (e instanceof ParseException) {
-        throw new DbUpdateException("Please ensure your date is in dd/MM/yyyy format.");
+      /* Since the type of an asset is stored as integer in the database, which also acts as
+      a foreign key, we execute the following operation to get the id from the type's name. */
+      int type = jdbcTemplate.queryForObject(sqlGetTypeId, params, Integer.class);
+
+      /* Extracts the array representing asset associations from the JSON object, 
+      converts to Java List. */
+      JsonNode associationsNode = jsonNode.get("Association(s)");
+      List<String> associationsList = new ArrayList<>();
+      for (JsonNode node : associationsNode) {
+        associationsList.add(node.asText());
       }
-      throw new DbUpdateException(e.getClass().getSimpleName()
-      + " encountered whilst updating the database.");
-    }
+      
+      /* Iterates over the list of associations, executing the below SQL statement for each 
+      associated asset to obtain its id. These are stored in the list associationIds. */
+      List<Integer> associationIds = new ArrayList<>();
+      for (String assetName : associationsList) {
+        String sqlGetAssociationId = "SELECT id FROM assets WHERE title = :assetName";
+        params = new MapSqlParameterSource().addValue("assetName", assetName);
+        Integer assetId = jdbcTemplate.queryForObject(sqlGetAssociationId, params, Integer.class);
+        associationIds.add(assetId);
+      }
 
+      /* Converts from ArrayList<Integer> to Integer[] to ensure associations can be stored 
+      in the database. */
+      Integer[] associations = associationIds.toArray(new Integer[0]);
+
+      /* Ensures we pass a JSON string which only contains the type-specific 
+      attributes - this is for the additional_attrs column. */
+      ObjectNode object = (ObjectNode) jsonNode;
+      object.remove(jsonNode.fieldNames().next());
+      object.remove(jsonNode.fieldNames().next());
+      object.remove(jsonNode.fieldNames().next());
+      /* Converts from JSON object --> JSON string to ensure it can be successfully stored in the 
+      database. */
+      obj = objectMapper.writeValueAsString(object);
+
+      String sql = "INSERT INTO assets (title, type, associations, additional_attrs) "
+          + "VALUES (:title, :type, :associations, CAST(:obj AS JSONB))";
+
+      params = new MapSqlParameterSource()
+          .addValue("title", title)
+          .addValue("type", type)
+          .addValue("associations", associations)
+          .addValue("obj", obj);
+
+      jdbcTemplate.update(sql, params);
+
+      return ResponseEntity.ok().body("{\"message\": \"Asset created successfully!\"}");
+
+    } catch (JsonProcessingException e) {
+
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+
+    } catch (DuplicateKeyException e) {
+
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body("{\"error\": \"" 
+      + "Please check that the name of your asset is unique!" + "\"}");
+
+    }
   }
 
   /**
-   * Validates the title and link attributes of the form via SQL queries, thus preventing the
-   * creation of assets with a pre-existing title and/or link.
+   * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
+   * drop-down menu.
    *
-   * @param title the title of the asset.
-   * @param link the link of the asset.
+   * @param model The model to which types retrieved from the database will be added.
+   * @return The name of the HTML page for creating an asset ("create-asset").
    */
-  public void validateTitleAndLink(String title, String link)
-      throws NotUniqueException {
-
-    String uniqueTitleQuery = "SELECT DISTINCT COUNT(title) FROM std_assets WHERE title = :title";
-    String uniqueLinkQuery = "SELECT DISTINCT COUNT(link) FROM std_assets WHERE link = :link";
-
-    Map<String, String> parameters = new HashMap<String, String>();
-
-    parameters.put("title", title);
-
-    int titleResult = (int) jdbcTemplate
-        .queryForObject(uniqueTitleQuery, parameters, Integer.class);
-
-    parameters.clear();
-    parameters.put("link", link);
-
-    int linkResult = (int) jdbcTemplate
-        .queryForObject(uniqueLinkQuery, parameters, Integer.class);
-
-    if (titleResult != 0) {
-      throw new NotUniqueException("This title is not unique.");
-    } else if (linkResult != 0) {
-      throw new NotUniqueException("This link is not unique.");
-    }
-
+  @GetMapping("/create-asset.html")
+  public String populateTypesCreateAsset(Model model) {
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("types", types);
+    List<String> assets = jdbcTemplate.queryForList("SELECT DISTINCT title FROM assets",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("assets", assets);
+    return "create-asset";
+  }
+  
+  /**
+   * Retrieves the HTML page for creating a type and fetches types from the database to populate a
+   * drop-down menu.
+   *
+   * @param model The model to which types retrieved from the database will be added.
+   * @return The name of the HTML page for creating a type ("create-type").
+   */
+  @GetMapping("/create-type.html")
+  public String populateTypesCreateType(Model model) {
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("types", types);
+    return "create-type";
   }
 
   /**
-   * Validates the form's programming language field, preventing the creation of invalid database
-   * entries due to intentional client-side modifications.
+   * Intermediary method for getting attributes associated with a given type from the database.
    *
-   * @param lang the programming language extracted from the form.
-   * @throws InvalidSelection if the programming language is found to be something other than one
-   *     of the dropdown options.
+   * @param type The given asset type.
+   * @return A ResponseEntity containing a list of attributes associated with the provided type.
    */
-  public void validateLang(String lang) throws InvalidSelection {
-    if (!langSet.contains(lang)) {
-      throw new InvalidSelection("This programming language is not valid.");
+  @GetMapping("/attributes/{type}")
+  public ResponseEntity<List<String[]>> getAttributesForType(@PathVariable String type) {
+    if (type.equals("newType")) {
+      return ResponseEntity.ok(Collections.emptyList());
     }
+    List<String[]> attributes = fetchAttributesForTypeFromDatabase(type);
+    return ResponseEntity.ok(attributes);
+  }
+
+  /**
+   * Fetches attributes for the selected type from the database.
+   *
+   * @param type The selected asset type for which attributes are to be fetched.
+   * @return A list of attributes associated with the provided type.
+   */
+  private List<String[]> fetchAttributesForTypeFromDatabase(String type) {
+    String sql = "SELECT attr_keys, attr_backend_types FROM type WHERE type_name = :type";
+
+    MapSqlParameterSource params = new MapSqlParameterSource()
+            .addValue("type", type);
+
+    String[] keysAndTypes = jdbcTemplate.queryForObject(sql, params, (rs, rowNum) -> {
+      String keys = rs.getString("attr_keys");
+      String types = rs.getString("attr_backend_types");
+      return new String[] { keys, types };
+    });
+
+    String keys = keysAndTypes[0].replaceAll("[{}\"]", "");
+    String types = keysAndTypes[1].replaceAll("[{}\"]", "");
+    String[] parsedKeys = keys.split(",");
+    String[] parsedTypes = types.split(",");
+
+    List<String[]> attributesWithTypes = new ArrayList<>();
+    for (int i = 0; i < parsedKeys.length; i++) {
+      String key = parsedKeys[i].trim();
+      String backendType = parsedTypes[i].trim();
+      attributesWithTypes.add(new String[] { key, backendType });
+    }
+    System.out.println(Arrays.deepToString(attributesWithTypes.toArray()));
+    return attributesWithTypes;
   }
 
 }
