@@ -4,12 +4,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 public class AccountController {
@@ -29,13 +37,11 @@ public class AccountController {
 	 * @throws InvalidLogin
 	 */
 	@PostMapping("/login")
-	public String extractLogin(@RequestParam(required = true, value="username") String username, @RequestParam(required = true, value="password") String password, Model model)
-			throws InvalidLogin {
-	    System.out.println("HI");
+	public ResponseEntity<String> extractLogin(@RequestParam String username, @RequestParam String password)
+			throws InvalidLogin, JsonProcessingException {
+	  
 		String message = validateLoginDetails(username, password);
-		model.addAttribute("error", message);
-
-		return "successful-login";
+		return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
 	}
 
 	/*
@@ -69,7 +75,7 @@ public class AccountController {
 			System.out.println("Error!");
 			return e.getMessage();
 		}
-		return "successful-login";
+		return "Login successful";
 	}
 
 	/**
