@@ -54,7 +54,11 @@ function checkLogin() {
             }
         })
         .then(data => {
-            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'success', 'successAlertPlaceholder');
+            if(data.message == "This password is not correct") {
+                appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + data.message, 'danger', 'successAlertPlaceholder');
+            } else {
+                appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'success', 'successAlertPlaceholder');
+            }
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'danger', 'successAlertPlaceholder');
