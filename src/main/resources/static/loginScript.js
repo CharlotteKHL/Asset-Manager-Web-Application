@@ -4,10 +4,7 @@ function checkLogin() {
 
     let valid = true;
 
-    var formData = {
-    	username: "",
-    	password : ""
-   };
+    var formData = new FormData();
 
     // The functions required to have the placeholder allow the alert(s) to appear above the form if input validation fails
     const appendAlert = (message, type, placeholder, alertId) => {
@@ -26,19 +23,19 @@ function checkLogin() {
     }
     
     // validating the username 
-    if((document.getElementById("exampleInputEmail1").value) == ""){
+    if((document.getElementById("exampleInputEmail").value) == ""){
         valid = false;
         appendAlert("Please enter your email", 'danger', 'loginEmailAlertPlaceholder', 'exampleInputEmail1');
     }else{
-        formData["username"] = document.getElementById("exampleInputEmail1").value;
+        formData.append("username", document.getElementById("exampleInputEmail").value);
     }
 
     // validating the password 
-    if((document.getElementById("exampleInputPassword1")) == ""){
+    if((document.getElementById("exampleInputPassword")) == ""){
         valid = false;
         appendAlert("Please enter your password", 'danger', 'loginPasswordAlertPlaceholder', 'exampleInputPassword1');
     }else{
-        formData["password"] = document.getElementById("exampleInputPassword1").value;
+        formData.append("password", document.getElementById("exampleInputPassword").value);
     }
 
     // Portion that check if the server side validation has worked.
