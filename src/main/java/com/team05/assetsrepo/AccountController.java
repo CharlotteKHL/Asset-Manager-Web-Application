@@ -88,16 +88,13 @@ public class AccountController {
 	 *         page
 	 */
 	@PostMapping("/register")
-	public String register(@RequestParam String username, @RequestParam String password, Model model) {
+	public ResponseEntity<String> register(@RequestParam String username, @RequestParam String password) {
 
-		// Sets the user's password to the hashed version
-
-	    System.out.println("hello");
 		String count = "SELECT COUNT(user_id) FROM user2";
-		String insert = "INSERT INTO user (user_id, username, password, role) "
+		String insert = "INSERT INTO user2 (user_id, username, password, role) "
 				+ "VALUES (:user_id, :username, :password, :role)";
 		String uniqueName = "SELECT COUNT(user_id) FROM user2 WHERE username = :username";
-		String message = "Registration successul";
+		String message = "Registration successful";
 
 		Map<String, String> parameters = new HashMap();
 
@@ -106,21 +103,19 @@ public class AccountController {
 		parameters.put("username", username);
 
 		int nameCount = (int) jdbcTemplate.queryForObject(uniqueName, parameters, Integer.class);
+		
+		if (nameCount == 0) {
 
-		if (nameCount != 0) {
-
-			MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", count + 1)
+			MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", idCount + 1)
 					.addValue("username", username).addValue("password", password).addValue("role", "admin");
 
 			jdbcTemplate.update(insert, params);
-			model.addAttribute("message", message);
 
 		} else {
-			message = "Registration unsuccessful, username must be unique";
-			model.addAttribute("message", message);
+			message = "Registration unsuccessful, this email already has an account";
 		}
 
-		return "successful-register";
+        return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
 	}
 
 	/* A method to allow you to get a user's password */
