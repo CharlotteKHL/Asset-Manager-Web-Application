@@ -57,10 +57,35 @@
         <h1>
             Find Assets
         </h1>
-        <input type="text" class="form-control m-auto" id="searchKeyWord" aria-describedby="searchKeyWordHelp" style="width: 600px" name="searchKeyWord">
+        <h3>
+            Keyword Search
+        </h3>
+        <input type="text" class="form-control m-auto" id="searchKeyWord" aria-describedby="searchKeyWordHelp" style="width: 600px" name="filterType">
 		<!-- Should add in Search Image Later (Magnifying Glass) -->
         <div id="searchKeyWordHelp" class="form-text">
             Keyword(s) here...
+        </div>
+        <!-- Adding in the filter section under the search bar where users can select between the types or date -->
+        <div>
+            <h3>
+                Filter Search
+            </h3>
+            <div>
+                <input type="checkbox" id="filterType1" name="filterType1">
+                <label for="filterType1">Type1</label>   
+                <input type="checkbox" id="filterType2" name="filterType2">
+                <label for="filterType2">Type2</label>
+            </div>
+            <div>    
+                <input type="checkbox" id="filterType3" name="filterType3">
+                <label for="filterType3">Type3</label>  
+                <input type="checkbox" id="filterType4" name="filterType4">
+                <label for="filterType4">Type4</label>
+            </div>
+            <div>   
+                <input type="checkbox" id="filterDate" name="filterDate">
+                <label for="filterDate">Date</label>
+            </div>    
         </div>
 	</section>
 	<!-- Currently the assets should be displayed as buttons in a grid. This may be subject to change if a better data type is known -->
