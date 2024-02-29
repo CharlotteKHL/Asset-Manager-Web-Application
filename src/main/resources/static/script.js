@@ -166,6 +166,8 @@ function renameType() {
     }
     // Creates the initial pairing - this is for the name of the new asset type
     pairs["type"] = document.getElementById("customType").value;
+    // Add the type value to the pairs object
+    pairs["overarchingType"] = document.getElementById("type").value;
     const spans = document.querySelectorAll('#attributesContainer span');
     // Iterates over each pair of form fields, obtaining the attribute name and the attribute datatype
     spans.forEach(span => {
@@ -206,6 +208,7 @@ function renameType() {
         });
     }
 }
+
 
 // Obtains the entries from the asset creation form, sends POST request to create a new row in the database table "assets"
 function validateEntries() {
