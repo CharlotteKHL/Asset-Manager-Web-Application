@@ -1,7 +1,5 @@
 function checkRegister() {
-
-    const loginButton = document.getElementById('loginButton');
-
+	
     let valid = true;
 
     var formData = new FormData();
@@ -25,7 +23,7 @@ function checkRegister() {
     // validating the username 
     if((document.getElementById("email").value) == ""){
         valid = false;
-        appendAlert("Please enter your email", 'danger', 'loginEmailAlertPlaceholder', 'exampleInputEmail1');
+        appendAlert("Please enter your email", 'danger', 'registerEmailAlertPlaceholder', 'exampleInputEmail1');
     }else{
         formData.append("username", document.getElementById("email").value);
     }
@@ -36,18 +34,18 @@ function checkRegister() {
     if(password == ""){
         
         valid = false;
-        appendAlert("Please enter your password", 'danger', 'loginPasswordAlertPlaceholder', 'exampleInputPassword1');
+        appendAlert("Please enter your password", 'danger', 'registerPasswordAlertPlaceholder', 'exampleInputPassword1');
         
     } else if(password != password2){
 		
 		valid = false;
-		appendAlert("Your password does not match your re-entry", 'danger', 'loginPasswordAlertPlaceholder', 'exampleInputPassword1');
+		appendAlert("Your password does not match your re-entry", 'danger', 'registerPasswordAlertPlaceholder', 'exampleInputPassword1');
 	
 	} else {
         formData.append("password", password);
     }
 
-    // Portion that check if the server side validation has worked.
+    // Sends fetch to backend with user input to check if username unique and to input into database
     if(valid){
         
         fetch('/register', {
