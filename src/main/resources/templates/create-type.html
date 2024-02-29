@@ -152,6 +152,7 @@
 			
 			deleteTypeCheckbox.addEventListener('change', function() {
 				if (deleteTypeCheckbox.checked) {
+				  submitBtn.setAttribute('onclick','deleteType()');
 				  submitBtnText.innerText = "Delete" + "\u00A0";
 				} else {
 				  submitBtnText.innerText = "Update" + "\u00A0";
