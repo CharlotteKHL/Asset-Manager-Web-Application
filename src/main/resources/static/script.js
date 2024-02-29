@@ -81,6 +81,31 @@ function createType() {
     }
 }
 
+function deleteType() {
+	resetAlerts();
+	selectedType = document.getElementById("type").value;
+	
+	fetch('/deleteType', {
+            method: 'POST',
+            body: selectedType,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
+}
+
 // Obtains the entries from the type management form, sends POST request to update an existing row in the database table "type"
 function updateType() {
     // Resets the page, removing all previously given alerts
