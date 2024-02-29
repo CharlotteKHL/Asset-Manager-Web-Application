@@ -153,6 +153,12 @@ public class FormController {
     }
   }
 
+  /**
+   * Handles the HTTP POST request to delete an asset type.
+   *
+   * @param selectedType The name of the asset type to be deleted.
+   * @return ResponseEntity containing a JSON response indicating success or failure of the operation.
+   */
   @PostMapping("/deleteType")
   public ResponseEntity<?> deleteType(@RequestBody String selectedType) {
     try {
@@ -175,6 +181,12 @@ public class FormController {
     }
   }
 
+  /**
+   * Handles the HTTP POST request to rename an asset type.
+   *
+   * @param pairs A JSON string containing the old and new type names, along with attribute details.
+   * @return ResponseEntity containing a JSON response indicating success or failure of the operation.
+   */
   @PostMapping("/renameType")
   public ResponseEntity<?> renameType(@RequestBody String pairs) {
       try {
