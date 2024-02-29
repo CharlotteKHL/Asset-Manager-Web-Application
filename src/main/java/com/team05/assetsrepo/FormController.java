@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 /**
  * Controller responsible for creating assets, creating / updating asset types, and fetching 
@@ -266,6 +268,19 @@ public class FormController {
         Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     return "create-type";
+  }
+
+  /** 
+   * This method is required to load the search-asset.html page / template.
+   *
+   * @return The "search-asset.html" HTML page.
+   */
+  @GetMapping("/search-asset.html")
+  public String getSearchAssetPage(Model model) {
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("types", types);
+    return "search-asset";
   }
 
   /**
