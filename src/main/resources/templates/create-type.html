@@ -84,7 +84,7 @@
 
                 <!-- Contains input field for entering the name of the new type. Appears when "Create Custom Type" option is selected -->
                 <div id="customTypeInputDiv" class="mb-3 d-none">
-                    <label for="customType" class="form-label">
+                    <label for="customType" class="form-label" id="customTypeLabel">
                         Custom Type
                     </label>
                     <input type="text" id="customType" class="form-control m-auto" name="customType">
@@ -163,6 +163,11 @@
             // Assigns a constant to the container for editing attributes
             const attributesContainer = document.getElementById('attributesContainer');
 			
+			
+			// Assigns constants to edit text of the input fields
+			const customTypeLabel = document.getElementById('customTypeLabel');
+			const customTypeHelp = document.getElementById('customTypeHelp');
+			
 			// Sets the value for the deletion checkbox to be unchecked when the page is loaded
 			deleteTypeCheckbox.checked = false;
 			// Hide the delete checkbox when the page is loaded
@@ -181,6 +186,7 @@
 				if (deleteTypeCheckbox.checked) {
 				  submitBtn.setAttribute('onclick','deleteType()');
 				  submitBtnText.innerText = "Delete" + "\u00A0";
+				  changeTypeNameCheckbox.checked = false;
 				} else {
 				  submitBtn.setAttribute('onclick','updateType()');
 				  submitBtnText.innerText = "Update" + "\u00A0";
@@ -192,10 +198,15 @@
 				  submitBtn.setAttribute('onclick','renameType()');
 				  submitBtnText.innerText = "Rename and update" + "\u00A0";
 				  customTypeInputDiv.classList.remove('d-none');
+				  customTypeLabel.textContent = 'Rename Type';
+				  customTypeHelp.textContent = 'Please enter the updated name for your asset type.';
+				  deleteTypeCheckbox.checked = false;
 				} else {
 				  submitBtn.setAttribute('onclick','updateType()');
 				  submitBtnText.innerText = "Update" + "\u00A0";
 				  customTypeInputDiv.classList.add('d-none');
+				  customTypeLabel.textContent = 'Custom Type';
+				  customTypeHelp.textContent = 'Please enter the name for your new asset type.';
 				}
 			});
 
@@ -203,6 +214,7 @@
             typeDropdown.addEventListener("change", function() {
 				// Resets the value for the checkbox to be unchecked when a new type is selected
 				deleteTypeCheckbox.checked = false;
+				changeTypeNameCheckbox.checked = false;
 				// Hide the delete checkbox by default
 				deleteTypeDiv.classList.add('d-none');
 				document.querySelector('label[for="deleteTypeCheckbox"]').classList.add('d-none');
