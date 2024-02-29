@@ -157,7 +157,8 @@ public class FormController {
    * Handles the HTTP POST request to delete an asset type.
    *
    * @param selectedType The name of the asset type to be deleted.
-   * @return ResponseEntity containing a JSON response indicating success or failure of the operation.
+   * @return ResponseEntity containing a JSON response indicating success or failure of the
+   *         operation.
    */
   @PostMapping("/deleteType")
   public ResponseEntity<?> deleteType(@RequestBody String selectedType) {
@@ -172,8 +173,8 @@ public class FormController {
     } catch (DataIntegrityViolationException e) {
       // Catch the specific exception for foreign key violation
       // Return a custom error message indicating the foreign key constraint violation
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body("{\"error\": \"Unable to delete type: This type is still referenced by other records.\"}");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+          "{\"error\": \"Unable to delete type: This type is still referenced by other records.\"}");
     } catch (Exception e) {
       // Catch other exceptions and return a JSON response with a generic error message
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -185,66 +186,66 @@ public class FormController {
    * Handles the HTTP POST request to rename an asset type.
    *
    * @param pairs A JSON string containing the old and new type names, along with attribute details.
-   * @return ResponseEntity containing a JSON response indicating success or failure of the operation.
+   * @return ResponseEntity containing a JSON response indicating success or failure of the
+   *         operation.
    */
   @PostMapping("/renameType")
   public ResponseEntity<?> renameType(@RequestBody String pairs) {
-      try {
-          // Use Jackson library to parse the JSON string from the request body
-          ObjectMapper objectMapper = new ObjectMapper();
-          JsonNode jsonNode = objectMapper.readTree(pairs);
+    try {
+      // Use Jackson library to parse the JSON string from the request body
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode jsonNode = objectMapper.readTree(pairs);
 
-          // Extract the new type name and remove it from the JSON object
-          String newTypeName = (jsonNode.get("customType")).asText();
-          ObjectNode object = (ObjectNode) jsonNode;
-          // Extract the old type name from the JSON object
-          String oldTypeName = (jsonNode.get("overarchingType")).asText();
-          object.remove("customType");
-          object.remove("overarchingType");
-          pairs = objectMapper.writeValueAsString(object);
+      // Extract the new type name and remove it from the JSON object
+      String newTypeName = (jsonNode.get("customType")).asText();
+      ObjectNode object = (ObjectNode) jsonNode;
+      // Extract the old type name from the JSON object
+      String oldTypeName = (jsonNode.get("overarchingType")).asText();
+      object.remove("customType");
+      object.remove("overarchingType");
+      pairs = objectMapper.writeValueAsString(object);
 
 
-          // Convert the JSON object into lists of attribute names and values
-          List<String> attrKeysList = new ArrayList<>();
-          List<String> attrValuesList = new ArrayList<>();
-          jsonNode.fields().forEachRemaining(entry -> {
-              attrKeysList.add(entry.getKey());
-              attrValuesList.add(entry.getValue().asText());
-          });
+      // Convert the JSON object into lists of attribute names and values
+      List<String> attrKeysList = new ArrayList<>();
+      List<String> attrValuesList = new ArrayList<>();
+      jsonNode.fields().forEachRemaining(entry -> {
+        attrKeysList.add(entry.getKey());
+        attrValuesList.add(entry.getValue().asText());
+      });
 
-          // Convert the lists into arrays to store in the database
-          String[] attrKeys = attrKeysList.toArray(new String[0]);
-          String[] attrValues = attrValuesList.toArray(new String[0]);
+      // Convert the lists into arrays to store in the database
+      String[] attrKeys = attrKeysList.toArray(new String[0]);
+      String[] attrValues = attrValuesList.toArray(new String[0]);
 
-          // Update the row in the type table with the new type name and attributes
-          String sql = "UPDATE type SET type_name = :newTypeName, attributes = CAST(:pairs AS JSON), " +
-                  "attr_keys = :attrKeys, attr_backend_types = :attrValues WHERE type_name = :oldTypeName";
+      // Update the row in the type table with the new type name and attributes
+      String sql = "UPDATE type SET type_name = :newTypeName, attributes = CAST(:pairs AS JSON), "
+          + "attr_keys = :attrKeys, attr_backend_types = :attrValues WHERE type_name = :oldTypeName";
 
-          // Define the parameters for the SQL statement
-          MapSqlParameterSource params = new MapSqlParameterSource()
-                  .addValue("newTypeName", newTypeName)
-                  .addValue("pairs", pairs)
-                  .addValue("attrKeys", attrKeys)
-                  .addValue("attrValues", attrValues)
-                  .addValue("oldTypeName", oldTypeName);
+      // Define the parameters for the SQL statement
+      MapSqlParameterSource params =
+          new MapSqlParameterSource().addValue("newTypeName", newTypeName).addValue("pairs", pairs)
+              .addValue("attrKeys", attrKeys).addValue("attrValues", attrValues)
+              .addValue("oldTypeName", oldTypeName);
 
-          // Execute the update query
-          jdbcTemplate.update(sql, params);
+      // Execute the update query
+      jdbcTemplate.update(sql, params);
 
-          // Return success message
-          return ResponseEntity.ok().body("{\"message\": \"Asset type renamed successfully!\"}");
+      // Return success message
+      return ResponseEntity.ok().body("{\"message\": \"Asset type renamed successfully!\"}");
 
-      } catch (JsonProcessingException e) {
-          e.printStackTrace();
-          return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
 
-      } catch (Exception e) {
-          e.printStackTrace();
-          return ResponseEntity.badRequest().body("{\"error\": \"" + "An error occurred while renaming asset type!" + "\"}");
-      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest()
+          .body("{\"error\": \"" + "An error occurred while renaming asset type!" + "\"}");
+    }
   }
 
-  
+
   /**
    * Creates a new row in the asset table representing a new asset, given a JSON string representing
    * its attributes.
