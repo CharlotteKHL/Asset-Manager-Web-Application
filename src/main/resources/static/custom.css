@@ -5,6 +5,26 @@
 
 .nav-link { white-space: nowrap; }
 
-input, select {
+form input {
     width: 50% !important;
+}
+
+form select {
+    width: 50% !important;
+}
+
+#mainContainer {
+    display: inline;
+}
+
+#filterBox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 5%;
+    padding: 1%;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    width: min-content;
+    background-color: #FFFFFF;
 }
