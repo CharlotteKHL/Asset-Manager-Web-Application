@@ -42,7 +42,11 @@ public class ViewController {
     @PostMapping("/view")
     public ResponseEntity<Map<String,String>> getAssetFromDatabase(@RequestParam String asset) {
         Map<String,String> response = new HashMap<>();
-        response.put("title", getAsset(asset));
+        response.put("title", getAsset(asset, "title"));
+        response.put("type", getAsset(asset, "type"));
+        response.put("associations", getAsset(asset, "associations"));
+        response.put("additionalAttributes", getAsset(asset, "additional_attrs"));
+        response.put("timeStamp", getAsset(asset, "last_updated"));
         return ResponseEntity.ok().body(response);
     }
 
@@ -52,11 +56,11 @@ public class ViewController {
      * @param asset the asset id of asset to be found within the asset database.
      * @return String a containing the asset information directly from the table.
      */
-    public String getAsset(String asset) {
+    public String getAsset(String asset, String assetFields) {
         String assetValues = null;
 
         try {
-            String sqlQuery = "SELECT title FROM assets WHERE id = " + asset;
+            String sqlQuery = "SELECT "+ assetFields + " FROM assets WHERE id = " + asset;
 
             Map<String, String> assetList = new HashMap<>();
 

@@ -22,6 +22,12 @@ function replacePlaceholder() {
         }
     }).then( 
         data => {assetTitle.innerText = data.title;
+                 var assetDBVariables = "Type: " + data.type + " \n \n" 
+                                    +   "Associations: " + data.associations + " \n \n" 
+                                    +   "Additional Attributes: " + data.additionalAttributes + " \n \n"
+                                    +   "Last Updated: " + data.timeStamp + " \n \n"
+                assetVariables.innerText = assetDBVariables
+                
     }).catch(
         error => {console.log(error);
     });
