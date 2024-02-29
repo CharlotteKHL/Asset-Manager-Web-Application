@@ -165,7 +165,7 @@ function renameType() {
         isValid = false;
     }
     // Creates the initial pairing - this is for the name of the new asset type
-    pairs["type"] = document.getElementById("customType").value;
+    pairs["customType"] = document.getElementById("customType").value;
     // Add the type value to the pairs object
     pairs["overarchingType"] = document.getElementById("type").value;
     const spans = document.querySelectorAll('#attributesContainer span');
