@@ -33,6 +33,12 @@
            </div>
         </div>
      </nav>
+     
+    <!-- Alert placeholders -->
+    <div id="loginEmailAlertPlaceholder"></div>
+    <div id="loginPasswordAlertPlaceholder"></div>
+    <div id="successAlertPlaceholder"></div>
+     
     <!-- Main body -->
     <section class="section p-2 text-center">
         <h1>Log In</h1>
@@ -45,18 +51,19 @@
                     <div id="emailHelp" class="form-text">Enter your username above.</div>
                 </div>
                 <div class="mb-4">
-                  <label for="exampleInputPassword" class="form-label">Username</label>
+                  <label for="exampleInputPassword" class="form-label">Password</label>
                   <input type="password" class="form-control m-auto" id="exampleInputPassword" placeholder="Password">
                   <div id="passwordHelp" class="form-text">Do not share your password with anyone else.</div>
               </div>
-                <button class="btn btn-outline-primary">
-                    <a class="nav-link" href="index.html">Log In</a>
-                </button>
+              <button class="btn btn-outline-primary" type="button" id ="loginButton" onclick= "checkLogin()">
+                        Login
+              </button>
             </form>
         </div>
     </section>
     <!-- Javascript -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+	<script src="loginScript.js"></script>
 </body>
 </html>
