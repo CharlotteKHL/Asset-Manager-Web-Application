@@ -20,10 +20,19 @@ function checkRegister() {
         placeholderElement.append(wrapper);
     }
     
+    let email = document.getElementById("email").value;
+    
     // validating the username 
-    if((document.getElementById("email").value) == ""){
+    if(email == ""){
+		
         valid = false;
-        appendAlert("Please enter your email", 'danger', 'registerEmailAlertPlaceholder', 'exampleInputEmail1');
+        appendAlert("Please enter your email", 'danger', 'registerEmailAlertPlaceholder', 'email');
+        
+    }else if(email.search("@") == -1){
+		
+        valid = false;
+        appendAlert("Please enter a valid email, must include an '@'", 'danger', 'registerEmailAlertPlaceholder', 'email');
+    
     }else{
         formData.append("username", document.getElementById("email").value);
     }
@@ -34,12 +43,12 @@ function checkRegister() {
     if(password == ""){
         
         valid = false;
-        appendAlert("Please enter your password", 'danger', 'registerPasswordAlertPlaceholder', 'exampleInputPassword1');
+        appendAlert("Please enter your password", 'danger', 'registerPasswordAlertPlaceholder', 'password');
         
     } else if(password != password2){
 		
 		valid = false;
-		appendAlert("Your password does not match your re-entry", 'danger', 'registerPasswordAlertPlaceholder', 'exampleInputPassword1');
+		appendAlert("Your password does not match your re-entry", 'danger', 'registerPasswordAlertPlaceholder', 'password');
 	
 	} else {
         formData.append("password", password);
