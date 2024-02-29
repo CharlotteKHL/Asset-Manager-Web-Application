@@ -6,6 +6,16 @@
 
 .nav-link { white-space: nowrap; }
 
+#assetTitle {
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
+#assetAssociations {
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
 #type {
 	width: 30%; /* Take up the full width of its container */
 	margin: 0.0 auto; /* Horizontally center the dropdown list */
