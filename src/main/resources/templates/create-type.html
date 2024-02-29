@@ -1,204 +1,258 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Asset Metadata Repository - Create a Type</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Metadata Repository | Manage Types</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" type="text/css" href="custom.css">
 </head>
 <body>
-  <!-- Navigation bar -->
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="navbar-brand">
-        Asset Metadata Repository
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation bar">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <button class="btn btn-lg btn-outline-primary" onclick="window.location.href='/create-asset.html'">
-            Create/edit assets
-          </button>
-          <button class="btn btn-lg btn-outline-primary" onclick="window.location.href='/login.html'">
-            Login
-          </button>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main page body -->
-  <section class="section bg-body-tertiary p-2 text-center">
-    <h1>
-      Create a Type
-    </h1>
-    <h3 class="fst-italic">
-      Enter the information about the type below to add it to the repository
-    </h3>
-    <br>
-    <!-- Creating a type form starts here -->
-    <div class="container">
-      <form action="/submit" method="post">
-        <div class="mb-3">
-          <label for="type" class="form-label">
-            Type
-          </label>
-          <select class="form-select m-auto" id="type" aria-label="Type selection menu" aria-describedby="typeHelp" style="width: 500px" name="type">
-            <option selected></option>
-            <!-- Populate options using Thymeleaf -->
-            <option th:each="type : ${types}" th:text="${type}"></option>
-            <!-- Add the "Other" option -->
-            <option value="Other">Other</option>
-          </select>
-          <div id="typeHelp" class="form-text">
-            Choose the type from the dropdown menu
-          </div>
+	<!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+        <div class="container-fluid">
+           <a class="navbar-brand" href="index.html">Asset Metadata Repository</a>
+           <div class="d-flex w-100">
+              <div class="mr-auto">
+                 <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="create-type.html">Manage Asset Types</a>
+                 </button>
+                 <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="create-asset.html">Create an Asset</a>
+                 </button>
+              </div>
+              <div class="ms-auto">
+                 <button class="btn btn-outline-primary mx-1">
+                    <a class="nav-link" href="login.html">Log In</a>
+                 </button>
+                 <button class="btn btn-outline-primary mx-1">
+                    <a class="nav-link" href="register.html">Register</a>
+                 </button>
+              </div>
+           </div>
         </div>
-		
-		<!-- Checkbox to toggle visibility of type name input -->
-        <div class="mb-3 form-check d-none" id="changeTypeNameCheckboxDiv">
-          <input class="form-check-input" type="checkbox" id="changeTypeNameCheckbox" name = "changeTypeNameCheckbox">
-          <label class="form-check-label" for="changeTypeNameCheckbox">
-            Change type name?
-          </label>
+     </nav>
+    <!-- Main page body -->
+    <section class="section p-2 text-center">
+        <h1>
+            Manage Asset Types
+        </h1>
+        <h3 class="fst-italic">
+            Choose an option below to update an existing asset type or create a new one
+        </h3>
+        <br>
+        <!-- Form for managing asset types begins here -->
+        <div class="container">
+            <div id="successAlertPlaceholder"></div>
+            <div id="errorAlertPlaceholder"></div>
+            <form>
+                <div class="mb-3">
+                    <label for="type" class="form-label">
+                        Type
+                    </label>
+                    <select id="type" class="form-select m-auto" name="type">
+                        <option selected></option>
+                        <option disabled>Existing Types:</option>
+                        <option disabled>──────────</option>
+                        <!-- Populates dropdown list with pre-existing asset types from database using controller method with "/create-type.html" mapping -->
+                        <option th:each="type : ${types}" th:text="${type}"></option>
+                        <!-- Option for creating a new (custom) type -->
+                        <option disabled>──────────</option>
+                        <option value="newType">Create Custom Type &#128393;</option>
+                    </select>
+                    <div id="typeHelp" class="form-text">
+                        Choose the asset type from the dropdown menu.
+                    </div>
+                </div>
+
+                <!-- Contains input field for entering the name of the new type. Appears when "Create Custom Type" option is selected -->
+                <div id="customTypeInputDiv" class="mb-3 d-none">
+                    <label for="customType" class="form-label">
+                        Custom Type
+                    </label>
+                    <input type="text" id="customType" class="form-control m-auto" name="customType">
+                    <div id="customTypeHelp" class="form-text">
+                        Please enter the name for your new asset type.
+                    </div>
+                </div>
+
+                <!-- Container for the (additional) type-dependent attributes -->
+                <div id="attributesContainer" style="display: flex; flex-direction: column;">
+                    <!-- Attributes will be dynamically displayed here alongside their respective datatypes -->
+                </div>
+
+                <!-- Container for buttons e.g. "Add attribute", "Remove attribute", "Update" etc. -->
+                <div id="buttons" class="d-none">
+                    <!-- Button to add another attribute -->
+                    <button id="addAttributeButton" class="btn btn-outline-primary mt-3 mb-3" type="button">
+                        Add attribute <i class="bi bi-plus"></i>  
+                    </button>
+
+                    <!-- Button to remove the bottom attribute -->
+                    <button id="removeAttributeButton" class="btn btn-outline-primary mt-3 mb-3" type="button">
+                        Remove attribute <i class="bi bi-trash"></i>  
+                    </button>
+
+                    <!-- Dynamic submission button: toggles between "Update" and "Create" based on whether we are dealing with a pre-existing or new asset type -->
+                    <button id="createButton" class="btn btn-outline-primary mt-3 mb-3" type="button">
+                        <span id="btnText">Update&nbsp;</span><i id="btnIcon" class="bi bi-arrow-repeat"></i> 
+                    </button>
+                </div>
+            </form>
         </div>
-		
-		<!-- Edit type name (appears when a type from the DB is selected) -->
-        <div class="mb-3 d-none" id="editTypeInputDiv">
-          <label for="editType" class="form-label">
-            Updated type name
-          </label>
-          <input type="text" class="form-control m-auto" id="editType" aria-describedby="editTypeHelp" style="width: 500px" name="editType">
-          <div id="editTypeHelp" class="form-text">
-            Enter the new name for the type (if needed)
-          </div>
-        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Sets up a dropdown (i.e. "select" input) containing predefined options
+            // These options correspond to basic datatypes for an asset type's specific attributes
+            // N.B. Assists with validation when creating assets: determines the kind of input field provided
+            const backendTypes = ["Text", "Number", "Decimal", "Text (List)", "Number (List)", "Decimal (List)"];
+            const attrBackendTypeField = document.createElement('select');
+            attrBackendTypeField.className = 'form-select m-auto mb-3';
+            // Iterates over the backendTypes list, creating an option from each item
+            backendTypes.forEach(function(backendType) {
+                const option = document.createElement('option');
+                option.text = backendType;
+                attrBackendTypeField.appendChild(option);
+            });
 
-		<!-- Checkbox to change create button to delete -->
-        <div class="mb-3 form-check d-none" id="deleteTypeDiv">
-          <input class="form-check-input" type="checkbox" id="deleteTypeCheckbox" name = "deleteTypeCheckbox">
-          <label class="form-check-label" for="deleteTypeCheckbox">
-            Delete selected type?
-          </label>
-        </div>
+            // Initial dropdown where the user selects the asset type to edit
+            const typeDropdown = document.getElementById('type');
 
-        <!-- Custom type input (appears when "Other" option is selected) -->
-        <div class="mb-3 d-none" id="customTypeInputDiv">
-          <label for="customType" class="form-label">
-            Custom Type
-          </label>
-          <input type="text" class="form-control m-auto" id="customType" aria-describedby="customTypeHelp" style="width: 500px" name="customType">
-          <div id="customTypeHelp" class="form-text">
-            Please enter the custom type value
-          </div>
-        </div>
+            // Defines a span element so that an attribute's name and datatype can be placed side-by-side
+            const spanContainer = document.createElement('span');
+            spanContainer.className = 'd-inline-flex align-items-center';
 
-        <!-- Container for attributes -->
-        <div id="attributesContainer" class="mb-3 m-auto" style="width: 500px">
-		  <label for="attributesContainer" class="form-label" >
-            Associated attributes
-          </label>
-          <!-- Attributes will be populated dynamically here -->
-        </div>
+            // Assigning button-related elements to appropriate constants
+            const buttonsDiv = document.getElementById('buttons');
+            const submitBtn = document.getElementById('createButton');
+            const submitBtnText = document.getElementById('btnText');
+            const submitBtnIcon = document.getElementById('btnIcon');
 
-        <!-- Button to add another attribute -->
-        <button class="btn btn-outline-primary" type="button" id="addAttributeButton">
-          Add another attribute
-        </button>
+            // Assigns a constant to the container for entering the name of a new asset type
+            const customTypeInputDiv = document.getElementById('customTypeInputDiv');
+            // Assigns a constant to the container for editing attributes
+            const attributesContainer = document.getElementById('attributesContainer');
 
-        <button class="btn btn-outline-primary" type="submit" id="createButton">
-          <i class="bi bi-check-lg"></i> Create
-        </button>
-      </form>
-    </div>
-  </section>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const typeSelect = document.getElementById('type');
-	  const changeTypeNameCheckboxDiv = document.getElementById('changeTypeNameCheckboxDiv');
-	  const changeTypeNameCheckbox = document.getElementById('changeTypeNameCheckbox');
-	  const deleteTypeDiv = document.getElementById('deleteTypeDiv');
-	  const deleteTypeCheckbox = document.getElementById('deleteTypeCheckbox');
-	  const editTypeInputDiv = document.getElementById('editTypeInputDiv');
-      const customTypeInputDiv = document.getElementById('customTypeInputDiv');
-      const attributesContainer = document.getElementById('attributesContainer');
-      const addAttributeButton = document.getElementById('addAttributeButton');
-	  const createButton = document.getElementById('createButton');
+            // Checks whether the user has made a change to the selection in the initial type dropdown
+            typeDropdown.addEventListener("change", function() {
+                // Resets the container for attributes, avoiding unintended persistence of input fields
+                attributesContainer.innerHTML = '';
+                buttonsDiv.classList.add('d-none');
+                // Populates the container with the attributes of the selected asset type
+                fetchAttributes(typeDropdown.value);
+                if (typeDropdown.value == "newType") {
+                    // Hide the "Create" button as no attributes have been added yet
+                    submitBtn.classList.add('d-none');
+                    // Minor adjustment to margin styling by resetting class
+                    attributesContainer.className = '';
+                    // Displays the input field for entering the name of the new asset type
+                    customTypeInputDiv.classList.remove('d-none');
+                    // Button text is set to "Create". The "createType()" function is called upon clicking
+                    submitBtn.setAttribute('onclick','createType()');
+                    submitBtnText.innerText = "Create" + "\u00A0";
+                    submitBtnIcon.className = 'bi bi-check-lg';
+                    // Displays buttons div (for adding / removing attributes) after the user has chosen to create a new asset type
+                    buttonsDiv.classList.remove('d-none');
+                } else {
+                    // Otherwise, we are dealing with existing asset types, hence we hide the div for naming a new asset type
+                    customTypeInputDiv.classList.add('d-none');
+                    // Button text is set to "Update". The "updateType()" function is called upon clicking
+                    submitBtn.setAttribute('onclick','updateType()');
+                    submitBtnText.innerText = "Update" + "\u00A0";
+                    submitBtnIcon.className = 'bi bi-arrow-repeat';
+                    // Covers the case where the user reselects the blank option from the type dropdown
+                    // Attribute fields are automatically removed by way of the "change" event listener
+                    if (typeDropdown.value == '') {
+                        buttonsDiv.classList.add('d-none');
+                    } 
+                    // It's an existing type, so we show the buttons
+                    submitBtn.classList.remove('d-none');
+                    buttonsDiv.classList.remove('d-none');
+                }
+            });
 
-	  changeTypeNameCheckbox.addEventListener('change', function() {
-        if (changeTypeNameCheckbox.checked) {
-          editTypeInputDiv.classList.remove('d-none'); 
-        } else {
-          editTypeInputDiv.classList.add('d-none'); 
-        }
-      });
-	  
-	  deleteTypeCheckbox.addEventListener('change', function() {
-        if (deleteTypeCheckbox.checked) {
-		  createButton.textContent = 'Delete';
-        } else {
-		  createButton.textContent = 'Create';
-        }
-      });
+            // Assigning constants to buttons for adding / removing attributes
+            const addAttributeButton = document.getElementById('addAttributeButton');
+            const removeAttributeButton = document.getElementById('removeAttributeButton');
 
-      typeSelect.addEventListener('change', function() {
-        if (typeSelect.value === '' || typeSelect.value === 'Other') {
-          customTypeInputDiv.classList.remove('d-none');
-		  changeTypeNameCheckboxDiv.classList.add('d-none');
-		  document.querySelector('label[for="changeTypeNameCheckbox"]').classList.add('d-none');
-		  editTypeInputDiv.classList.add('d-none'); 
-		  deleteTypeDiv.classList.add('d-none');
-		  document.querySelector('label[for="deleteTypeCheckbox"]').classList.add('d-none');
-        } else {
-		  customTypeInputDiv.classList.add('d-none'); 
-		  changeTypeNameCheckboxDiv.classList.remove('d-none');
-		  document.querySelector('label[for="changeTypeNameCheckbox"]').classList.remove('d-none');
-		  deleteTypeDiv.classList.remove('d-none');
-		  document.querySelector('label[for="deleteTypeCheckbox"]').classList.remove('d-none');
-        }
+            // This function dynamically adds the inputs for an individual attribute's name and datatype side-by-side
+            addAttributeButton.addEventListener('click', function() {
+                // Displays the submission (i.e. "Create" / "Update") button
+                submitBtn.classList.remove('d-none');
+                const attributeInput = document.createElement('input');
+                attributeInput.type = 'text';
+                attributeInput.className = 'form-control m-auto mb-3';
+                attributeInput.placeholder = 'Enter the attribute name';
 
-        // Clear existing attributes before populating with new ones
-        attributesContainer.innerHTML = '';
+                if (attributesContainer.childElementCount == 10) {
+                    return;
+                }
 
-        // Fetch attributes for the selected type and populate the attributes container
-        fetchAttributes(typeSelect.value).then(() => {
-          // Fetch documents for the selected type and populate the documents container
-          fetchDocuments(typeSelect.value);
+                let currentSpan = spanContainer.cloneNode(true);
+                let currentBackendTypeField = attrBackendTypeField.cloneNode(true);
+                currentSpan.appendChild(attributeInput);
+                currentSpan.appendChild(currentBackendTypeField);
+
+                attributesContainer.classList.add('mt-5', 'mb-3');
+                attributesContainer.appendChild(currentSpan);
+            });
+
+            // This function removes the bottommost pair of attribute input fields
+            removeAttributeButton.addEventListener('click', function() {
+                // Checks whether a child element of the attributes container actually exists
+                if (attributesContainer.childElementCount > 0) {
+                    attributesContainer.removeChild(attributesContainer.lastElementChild);
+                }
+                // Hides the submission button if the user has removed all fields for entering attribute data
+                if (attributesContainer.childElementCount == 0) {
+                    submitBtn.classList.add('d-none');
+                    // Minor adjustment to margin styling by resetting class
+                    attributesContainer.className = '';
+                }
+            });
+
+            // Function to fetch attributes for the selected type from the server
+            async function fetchAttributes(selectedType) {
+                try {
+                    // Calls the server endpoint to fetch all attribute data corresponding to the selected asset type
+                    const response = await fetch(`/attributes/${selectedType}`);
+                    // Returns a 2D array containing pairs in the form [attribute name, attribute datatype]
+                    // e.g. [['Description', 'Text'], ['Format', 'Text'], ...]
+                    const data = await response.json();
+                    // Iterates over the 2D array, dealing with a single pair each iteration
+                    data.forEach(attribute => {
+                        const key = attribute[0]; // Assigns the name of the current attribute to the constant "key"
+                        const backendType = attribute[1]; // Assigns the datatype of the current attribute to the constant "backendType"
+
+                        const attributeInput = document.createElement('input');
+                        attributeInput.type = 'text';
+                        attributeInput.className = 'form-control m-auto mb-3';
+                        attributeInput.placeholder = 'Enter the attribute name';
+                        // Preloads the above input field with the current attribute's name
+                        attributeInput.value = key;
+
+                        // Creates a new span container and datatype dropdown
+                        const currentSpan = spanContainer.cloneNode(true);
+                        const currentBackendTypeField = attrBackendTypeField.cloneNode(true);
+                        // Preloads the datatype dropdown with the current attribute's datatype
+                        currentBackendTypeField.value = backendType;
+                        // Adds both input fields to the span container
+                        currentSpan.appendChild(attributeInput);
+                        currentSpan.appendChild(currentBackendTypeField);
+                        // Display the dynamically generated span container, containing the two input fields side-by-side
+                        attributesContainer.classList.add('mt-5', 'mb-3');
+                        attributesContainer.appendChild(currentSpan);
+                    });
+                } catch (error) {
+                    console.error('Error fetching attributes:', error);
+                }
+            }
         });
-      });
-
-      addAttributeButton.addEventListener('click', function() {
-        const attributeInput = document.createElement('input');
-        attributeInput.type = 'text';
-        attributeInput.className = 'form-control m-auto mb-3';
-        attributeInput.placeholder = 'Enter attribute';
-        attributeInput.name = 'attributesContainer'; // Set the name to match the parameter name in the controller method
-        attributesContainer.appendChild(attributeInput);
-      });
-
-      // Function to fetch attributes for the selected type from the server
-      async function fetchAttributes(selectedType) {
-        try {
-          const response = await fetch(`/attributes/${selectedType}`);
-          const data = await response.json();
-          data.forEach(attribute => {
-            const attributeInput = document.createElement('input');
-            attributeInput.type = 'text';
-            attributeInput.className = 'form-control m-auto mb-3';
-            attributeInput.placeholder = 'Enter attribute';
-            attributeInput.value = attribute;
-            attributeInput.name = 'attributesContainer'; // Set the name to match the parameter name in the controller method
-            attributesContainer.appendChild(attributeInput);
-          });
-        } catch (error) {
-          console.error('Error fetching attributes:', error);
-        }
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>

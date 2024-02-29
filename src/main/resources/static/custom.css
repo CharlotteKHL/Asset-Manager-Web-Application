@@ -1,0 +1,10 @@
+.navbar {
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.nav-link { white-space: nowrap; }
+
+input, select {
+    width: 50% !important;
+}
