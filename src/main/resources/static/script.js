@@ -82,10 +82,10 @@ function createType() {
 }
 
 function deleteType() {
-	resetAlerts();
-	selectedType = document.getElementById("type").value;
-	
-	fetch('/deleteType', {
+    resetAlerts();
+    selectedType = document.getElementById("type").value;
+    
+    fetch('/deleteType', {
             method: 'POST',
             body: selectedType,
         })
