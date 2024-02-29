@@ -279,7 +279,10 @@ public class FormController {
   public String getSearchAssetPage(Model model) {
     List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
         Collections.emptyMap(), String.class);
+    List<String> assets = jdbcTemplate.queryForList("SELECT DISTINCT title FROM assets",
+            Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
+    model.addAttribute("assets", assets);
     return "search-asset";
   }
 
