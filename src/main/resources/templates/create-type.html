@@ -215,9 +215,14 @@
 				// Resets the value for the checkbox to be unchecked when a new type is selected
 				deleteTypeCheckbox.checked = false;
 				changeTypeNameCheckbox.checked = false;
+				customTypeLabel.textContent = 'Custom Type';
+				customTypeHelp.textContent = 'Please enter the name for your new asset type.';
 				// Hide the delete checkbox by default
 				deleteTypeDiv.classList.add('d-none');
 				document.querySelector('label[for="deleteTypeCheckbox"]').classList.add('d-none');
+				// Hide the renaming checkbox by default
+				changeTypeNameCheckboxDiv.classList.add('d-none');
+				document.querySelector('label[for="changeTypeNameCheckbox"]').classList.add('d-none');
                 // Resets the container for attributes, avoiding unintended persistence of input fields
                 attributesContainer.innerHTML = '';
                 buttonsDiv.classList.add('d-none');
