@@ -42,9 +42,13 @@
         <h1>Search</h1>
     </div>
 
-    <!-- individual Asset result -->
-    <button id= "tempButton" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" onclick="replacePlaceholder()" value="1">Placeholder button</button>
-
+    <!-- individual Asset result - search buttons should be added here -->
+    <!-- Buttons need to have an id, use onclick = "replacePlaceHolder()", and have the value set to the asset id -->
+    <div id = "buttonContainer" class="container-fluid">
+        <button id= "tempButton" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" onclick="replacePlaceholder()" value="1">Placeholder button</button>
+    </div>
+    
+    <!-- Off canvas window - Important section of code to view the asset -->
     <!-- Off canvas window -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
     <div class="offcanvas-header">
