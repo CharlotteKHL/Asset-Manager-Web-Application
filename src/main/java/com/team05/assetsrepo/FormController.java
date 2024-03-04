@@ -388,6 +388,24 @@ public class FormController {
   }
 
   /**
+   * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
+   * drop-down menu.
+   *
+   * @param model The model to which types retrieved from the database will be added.
+   * @return The name of the HTML page for creating an asset ("create-asset").
+   */
+  @GetMapping("/manage-asset.html")
+  public String populateTypesManageAsset(Model model) {
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("types", types);
+    List<String> assets = jdbcTemplate.queryForList("SELECT DISTINCT title FROM assets",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("assets", assets);
+    return "manage-asset";
+  }
+  
+  /**
    * Fetches attributes for the selected type from the database.
    *
    * @param type The selected asset type for which attributes are to be fetched.
