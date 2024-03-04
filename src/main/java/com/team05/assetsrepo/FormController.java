@@ -1,6 +1,8 @@
 package com.team05.assetsrepo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -389,6 +391,20 @@ public class FormController {
   }
 
   /**
+   * Intermediary method for getting attributes associated with a given type from the database.
+   *
+   * @param type The given asset type.
+   * @return A ResponseEntity containing a list of attributes associated with the provided type.
+   * @throws JsonProcessingException 
+   * @throws JsonMappingException 
+   */
+  @GetMapping("/attributesWassetData/{id}")
+  public ResponseEntity<List<String[]>> getAttributesForAsset(@PathVariable int id) throws JsonMappingException, JsonProcessingException {
+    List<String[]> attributeData = fetchAttributesForAssetFromDatabase(id);
+    return ResponseEntity.ok(attributeData);
+  }
+
+  /**
    * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
    * drop-down menu.
    *
@@ -397,20 +413,19 @@ public class FormController {
    */
   @GetMapping("/manage-asset.html")
   public String populateTypesManageAsset(Model model) {
-      List<Map<String, Object>> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
-          Collections.emptyMap());
-      model.addAttribute("types", types);
+    List<Map<String, Object>> types =
+        jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type", Collections.emptyMap());
+    model.addAttribute("types", types);
 
-      List<Map<String, Object>> assets = jdbcTemplate.queryForList("SELECT assets.title, type.type_name\r\n"
-          + "FROM assets\r\n"
-          + "JOIN type ON assets.type = type.id",
-          Collections.emptyMap());
-      model.addAttribute("assets", assets);
+    List<Map<String, Object>> assets =
+        jdbcTemplate.queryForList("SELECT assets.title, assets.id, type.type_name\r\n"
+            + "FROM assets\r\n" + "JOIN type ON assets.type = type.id", Collections.emptyMap());
+    model.addAttribute("assets", assets);
 
-      return "manage-asset";
+    return "manage-asset";
   }
 
-  
+
   /**
    * Fetches attributes for the selected type from the database.
    *
@@ -442,5 +457,36 @@ public class FormController {
     System.out.println(Arrays.deepToString(attributesWithTypes.toArray()));
     return attributesWithTypes;
   }
+
+  /**
+   * Fetches attributes for the selected type from the database.
+   *
+   * @param type The selected asset type for which attributes are to be fetched.
+   * @return A list of attributes associated with the provided type.
+   * @throws JsonProcessingException
+   * @throws JsonMappingException
+   */
+  public List<String[]> fetchAttributesForAssetFromDatabase(int id)
+      throws JsonMappingException, JsonProcessingException {
+    String sql = "SELECT additional_attrs FROM assets WHERE id = :id";
+
+    MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+
+    String jsonString = jdbcTemplate.queryForObject(sql, params, String.class);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, Object> attributeMap =
+        objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {});
+
+    List<String[]> descriptionValue = new ArrayList<>();
+    for (Map.Entry<String, Object> entry : attributeMap.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      descriptionValue.add(new String[] {key, value.toString()});
+    }
+    System.out.println(Arrays.deepToString(descriptionValue.toArray()));
+    return descriptionValue;
+  }
+
 
 }
