@@ -397,16 +397,19 @@ public class FormController {
    */
   @GetMapping("/manage-asset.html")
   public String populateTypesManageAsset(Model model) {
-      List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
-          Collections.emptyMap(), String.class);
+      List<Map<String, Object>> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+          Collections.emptyMap());
       model.addAttribute("types", types);
 
-      List<Map<String, Object>> assets = jdbcTemplate.queryForList("SELECT title, type FROM assets",
+      List<Map<String, Object>> assets = jdbcTemplate.queryForList("SELECT assets.title, type.type_name\r\n"
+          + "FROM assets\r\n"
+          + "JOIN type ON assets.type = type.id",
           Collections.emptyMap());
       model.addAttribute("assets", assets);
 
       return "manage-asset";
   }
+
   
   /**
    * Fetches attributes for the selected type from the database.
