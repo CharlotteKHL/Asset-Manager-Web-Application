@@ -99,13 +99,11 @@ table, th, td {
         <div id="resultsTable">
             <table id ="resTable" style="width:100%">
                 <tr>
-                    <th>Title</th>
-                    <th>Type</th>
-                    <th>Associations</th>
+                    <th>Asset</th>
                 </tr>
 				<!-- Should add all assets from database to the page -->
 				<tr th:each="asset : ${assets}">
-                    <td th:text="${asset}"></td>
+                    <td><button type="button" th:text="${asset}" th:id="${asset}" class="btn btn-secondary btn btn-lg btn-block"></button></td>
                 </tr>
             </table>
         </div>
