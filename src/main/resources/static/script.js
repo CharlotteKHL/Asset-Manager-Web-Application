@@ -81,6 +81,31 @@ function createType() {
     }
 }
 
+function deleteType() {
+    resetAlerts();
+    selectedType = document.getElementById("type").value;
+    
+    fetch('/deleteType', {
+            method: 'POST',
+            body: selectedType,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
+}
+
 // Obtains the entries from the type management form, sends POST request to update an existing row in the database table "type"
 function updateType() {
     // Resets the page, removing all previously given alerts
@@ -124,6 +149,66 @@ function updateType() {
         });
     }
 }
+
+function renameType() {
+    // Resets the page, removing all previously given alerts
+    resetAlerts();
+    // Boolean used to keep track of whether an invalid entry has been detected
+    let isValid = true;
+    // Defining a JavaScript object to populate with pairs in the form attribute name to attribute datatype
+    let pairs = {};
+    // Checks whether a name has been provided for the new asset type
+    if (document.getElementById("customType").value == '') {
+        if (document.getElementById("noNameAlert") == null) {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Please enter a new name for the asset type.', 'alert-danger', 'errorAlertPlaceholder', 'noNameAlert');
+        }
+        isValid = false;
+    }
+    // Creates the initial pairing - this is for the name of the new asset type
+    pairs["customType"] = document.getElementById("customType").value;
+    // Add the type value to the pairs object
+    pairs["overarchingType"] = document.getElementById("type").value;
+    const spans = document.querySelectorAll('#attributesContainer span');
+    // Iterates over each pair of form fields, obtaining the attribute name and the attribute datatype
+    spans.forEach(span => {
+        const inputVal = span.querySelector('input').value.trim();
+        const selectVal = span.querySelector('select').value.trim();
+        // Checks whether the name for an attribute has been left blank or is greater than 50 characters long
+        if (!inputVal || inputVal.length > 50) {
+            if (document.getElementById("invalidLengthAlert") == null) {
+                appendAlert('<i class="bi bi-exclamation-triangle"></i> Please check the length of each attribute name.', 'alert-danger', 'errorAlertPlaceholder', 'invalidLengthAlert');
+            }
+            isValid = false;
+            return;
+        }
+        // Creates the subsequent pairings
+        pairs[inputVal] = selectVal;
+    });
+    // All entries detected to be valid - convert the JavaScript object to a JSON string and send as the body of the POST request
+    if (isValid) {
+        pairs = JSON.stringify(pairs);
+        fetch('/renameType', {
+            method: 'POST',
+            body: pairs,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
+    }
+}
+
 
 // Obtains the entries from the asset creation form, sends POST request to create a new row in the database table "assets"
 function validateEntries() {
