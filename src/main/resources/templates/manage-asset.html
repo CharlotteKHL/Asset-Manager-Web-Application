@@ -21,7 +21,7 @@
                  <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="create-asset.html">Create an Asset</a>
                  </button>
-				 				 <button class="btn btn-outline-primary mx-3">
+				 <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="manage-asset.html">Manage Assets</a>
                  </button>
               </div>
@@ -53,15 +53,15 @@
 				
                 <div class="mb-3">
                     <label for="assetAssociations" class="form-label">
-                        Association(s)
+                        Existing asset(s)
                     </label>
                     <select id="assetAssociations" class="form-select m-auto" name="assoc">
 						<option selected></option>
                         <!-- Populates dropdown list with pre-existing assets from database using controller method with "/create-asset.html" mapping -->
-                        <option th:each="asset : ${assets}" th:text="${asset}"></option>
-                    </select>
+						<option th:each="asset : ${assets}" th:value="${asset['type_name']}" th:text="${asset['title'] + ' (of type: ' + asset['type_name'] + ')'}"></option>
+					</select>
                     <div id="associationsHelp" class="form-text">
-                        Choose any asset(s) that your new asset should be associated with.<br>Ctrl + Click to select multiple items.
+                        Select an asset to be edited.
                     </div>
                 </div>
 				
@@ -91,20 +91,22 @@
 			const attributesContainer = document.getElementById('attributesContainer');
 			
 			assetSelect.addEventListener('change', function() {
-                // Clears existing additional attribute input fields before populating w/ new ones
-                attributesContainer.innerHTML = '';
-                // Calls fetchAttributes to receive additional form fields, given that the user has successfully selected an asset type
-                if (assetSelect.value != '') {
-                    fetchAttributes(assetSelect.value);
-                }
-            });
+				// Clears existing additional attribute input fields before populating w/ new ones
+				attributesContainer.innerHTML = '';
+				// Get the type of the selected asset
+				const selectedAssetType = assetSelect.options[assetSelect.selectedIndex].value;
+				// Calls fetchAttributes to receive additional form fields, given that the user has successfully selected an asset type
+				if (selectedAssetType != '') {
+					fetchAttributes(selectedAssetType);
+				}
+			});
 
             // Fetches all attribute data corresponding to the selected asset type
             // Dynamically populates attributes container with input fields, allowing users to give each attribute an input
             async function fetchAttributes(selectedAsset) {
                 try {
                     // Calls the server endpoint to fetch all attribute data corresponding to the selected asset type
-                    const response = await fetch(`/attributes/${selectedAsset`);
+                    const response = await fetch(`/attributes/${selectedAsset}`);
                     // Returns a 2D array containing pairs in the form [attribute name, attribute datatype]
                     // e.g. [['Description', 'Text'], ['Format', 'Text'], ...]
                     const data = await response.json();
@@ -164,6 +166,7 @@
                             individualAttr.appendChild(promptForList);
                         }
                     });
+					attributesContainer.style.display = 'block';
                 } catch (error) {
                     console.error('Error fetching attributes:', error);
                 }
