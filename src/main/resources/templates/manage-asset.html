@@ -122,15 +122,11 @@
                         const attributeInput = document.createElement('input');
                         // Applies Bootstrap styling for a form field
                         attributeInput.className = 'form-control m-auto';
-                        // Determines the kind of input field to provide based on the datatype, reducing additional validation requirements
+						// Find the corresponding data from data2 based on the attribute name
+						const matchingData = data2.find(attributeData => attributeData[0] === attribute[0]);
+						// Determines the kind of input field to provide based on the datatype, reducing additional validation requirements
                         if (attribute[1] == "Text") {
 							attributeInput.type = 'text';
-							// Find the corresponding data from data2 based on the attribute name
-							const matchingData = data2.find(attributeData => attributeData[0] === attribute[0]);
-							if (matchingData) {
-								// Set the value of the input field to the corresponding data
-								attributeInput.value = matchingData[1];
-							}
 						}
                         if (attribute[1] == "Number") {
                             attributeInput.type = 'number';
@@ -174,6 +170,11 @@
                             // Add the div containing the prompt to the individual attribute container
                             individualAttr.appendChild(promptForList);
                         }
+						// Find the corresponding data from data2 based on the attribute name
+						if (matchingData) {
+							// Set the value of the input field to the corresponding data
+							attributeInput.value = matchingData[1];
+						}
                     });
 					attributesContainer.style.display = 'block';
                 } catch (error) {
