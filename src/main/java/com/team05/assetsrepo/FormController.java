@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -396,13 +397,15 @@ public class FormController {
    */
   @GetMapping("/manage-asset.html")
   public String populateTypesManageAsset(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
-        Collections.emptyMap(), String.class);
-    model.addAttribute("types", types);
-    List<String> assets = jdbcTemplate.queryForList("SELECT DISTINCT title FROM assets",
-        Collections.emptyMap(), String.class);
-    model.addAttribute("assets", assets);
-    return "manage-asset";
+      List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+          Collections.emptyMap(), String.class);
+      model.addAttribute("types", types);
+
+      List<Map<String, Object>> assets = jdbcTemplate.queryForList("SELECT title, type FROM assets",
+          Collections.emptyMap());
+      model.addAttribute("assets", assets);
+
+      return "manage-asset";
   }
   
   /**
