@@ -45,7 +45,7 @@
             Select an asset from the form below to be edited
         </h3>
         <br>
-        <!-- Form for asset creation begins here -->
+        <!-- Form for selecting an existing asset for editing begins here -->
         <div class="container">
             <div id="successAlertPlaceholder"></div>
             <div id="errorAlertPlaceholder"></div>
@@ -57,7 +57,7 @@
                     </label>
                     <select id="assetAssociations" class="form-select m-auto" name="assoc">
 						<option selected></option>
-                        <!-- Populates dropdown list with pre-existing assets from database using controller method with "/create-asset.html" mapping -->
+                        <!-- Populates dropdown list with pre-existing assets from the database using controller method with the "/manage-asset.html" mapping -->
 						<option th:each="asset : ${assets}" th:value="${asset['type_name']}" th:text="${asset['title'] + ' (of type: ' + asset['type_name'] + ')'}"></option>
 					</select>
                     <div id="associationsHelp" class="form-text">
@@ -71,7 +71,7 @@
                 </div>
 
                 <!-- Container for additional (type-dependent) attributes -->
-                <div id="attributesContainer" class="mb-3">
+                <div class="mb-3">
                     <!-- Input fields for assigning attributes their data are dynamically added here via the JavaScript fetchAttributes function -->
                 </div>
 
@@ -106,7 +106,7 @@
             async function fetchAttributes(selectedAsset) {
                 try {
                     // Calls the server endpoint to fetch all attribute data corresponding to the selected asset type
-                    const response = await fetch(`/attributes/${selectedAsset}`);
+                    const response = await fetch(`/attributesWassetData/${selectedAsset}`);
                     // Returns a 2D array containing pairs in the form [attribute name, attribute datatype]
                     // e.g. [['Description', 'Text'], ['Format', 'Text'], ...]
                     const data = await response.json();
@@ -125,7 +125,7 @@
                         }
                         if (attribute[1] == "Number") {
                             attributeInput.type = 'number';
-                            attributeInput.min = '0';
+                            attribute
                         }
                         if (attribute[1] == "Decimal") {
                             attributeInput.type = 'number';
