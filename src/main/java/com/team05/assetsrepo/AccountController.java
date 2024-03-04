@@ -107,10 +107,6 @@ public class AccountController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestParam String username, @RequestParam String password) {
-
-		// sets the user's password to the hashed version
-		setPassword(username, encoder().encode(getPassword(username)));
-
 	    // prepared sql statements
 		String count = "SELECT COUNT(user_id) FROM user2";
 		String insert = "INSERT INTO user2 (user_id, username, password, role) "
@@ -141,6 +137,9 @@ public class AccountController {
 		    
 			message = "Registration unsuccessful, this email may already have an account";
 		}
+
+		// sets the user's password to the hashed version
+		setPassword(username, encoder().encode(getPassword(username)));
 
         return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
 	}
@@ -181,6 +180,6 @@ public class AccountController {
 		parameters.put("username", username);
 		parameters.put("password", password);
 
-		jdbcTemplate.execute(setPassword, parameters, null);
+		jdbcTemplate.update(setPassword, parameters);
 	}
 }
