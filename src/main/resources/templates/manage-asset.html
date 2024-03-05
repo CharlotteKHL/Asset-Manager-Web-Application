@@ -172,8 +172,16 @@
                         }
 						// Find the corresponding data from data2 based on the attribute name
 						if (matchingData) {
-							// Set the value of the input field to the corresponding data
-							attributeInput.value = matchingData[1];
+							// Check if the data is a list
+							if (matchingData[1].startsWith('[') && matchingData[1].endsWith(']')) {
+								// Remove the brackets at the beginning and end
+								const listData = matchingData[1].substring(1, matchingData[1].length - 1);
+								// Set the value of the input field to the modified list data
+								attributeInput.value = listData;
+							} else {
+								// Set the value of the input field to the original data
+								attributeInput.value = matchingData[1];
+							}
 						}
                     });
 					attributesContainer.style.display = 'block';
