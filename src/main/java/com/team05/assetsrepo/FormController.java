@@ -11,12 +11,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -342,6 +344,61 @@ public class FormController {
     }
   }
 
+  @PostMapping("/updateAsset/{id}")
+  public ResponseEntity<?> updateAsset(@PathVariable("id") int id, @RequestBody String obj) {
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode jsonNode = objectMapper.readTree(obj);
+      System.out.println(jsonNode);
+
+      String title = "";
+      try {
+        // Extract the title from the JSON object
+        title = jsonNode.get("Title").asText();
+      } catch (Exception e) {
+        System.out.println("Title not changed");
+      }
+
+      // Remove the fields from the JSON object that you don't want to update
+      ObjectNode object = (ObjectNode) jsonNode;
+      object.remove(jsonNode.fieldNames().next());
+
+      // Convert the modified JSON object back to a string
+      obj = objectMapper.writeValueAsString(object);
+
+      String sql = null;
+      SqlParameterSource params = null;
+
+      if (!(title.equals(""))) {
+        // Update the title and additional_attrs in the assets table
+        sql =
+            "UPDATE assets SET title = :title, additional_attrs = CAST(:obj AS JSONB) WHERE id = :id";
+        params = new MapSqlParameterSource().addValue("title", title).addValue("obj", obj)
+            .addValue("id", id);
+      } else {
+        sql = "UPDATE assets SET additional_attrs = CAST(:obj AS JSONB) WHERE id = :id";
+        params = new MapSqlParameterSource().addValue("obj", obj).addValue("id", id);
+      }
+
+      jdbcTemplate.update(sql, params);
+
+      return ResponseEntity.ok().body("{\"message\": \"Asset updated successfully!\"}");
+
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+    } catch (DuplicateKeyException e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest()
+          .body("{\"error\": \"" + "Please check that the name of your asset is unique!" + "\"}");
+    } catch (DataAccessException e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest()
+          .body("{\"error\": \"" + "Failed to update the asset in the database." + "\"}");
+    }
+  }
+
+
   /**
    * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
    * drop-down menu.
@@ -395,11 +452,12 @@ public class FormController {
    *
    * @param type The given asset type.
    * @return A ResponseEntity containing a list of attributes associated with the provided type.
-   * @throws JsonProcessingException 
-   * @throws JsonMappingException 
+   * @throws JsonProcessingException
+   * @throws JsonMappingException
    */
   @GetMapping("/attributesWassetData/{id}")
-  public ResponseEntity<List<String[]>> getAttributesForAsset(@PathVariable int id) throws JsonMappingException, JsonProcessingException {
+  public ResponseEntity<List<String[]>> getAttributesForAsset(@PathVariable int id)
+      throws JsonMappingException, JsonProcessingException {
     List<String[]> attributeData = fetchAttributesForAssetFromDatabase(id);
     return ResponseEntity.ok(attributeData);
   }
