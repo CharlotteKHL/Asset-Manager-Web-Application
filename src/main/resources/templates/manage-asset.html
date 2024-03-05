@@ -74,8 +74,8 @@
                     <!-- Input fields for assigning attributes their data are dynamically added here via the JavaScript fetchAttributes function -->
                 </div>
 
-                <button id="createButton" class="btn btn-outline-primary mt-3 mb-3" type="button" onclick="validateEntries()">
-                    Create <i class="bi bi-check-lg"></i>
+                <button id="updateButton" class="btn btn-outline-primary mt-3 mb-3" type="button" onclick="assetSelectError()">
+                    Update <i class="bi bi-check-lg"></i>
                 </button>
             </form>
         </div>
@@ -89,6 +89,8 @@
 			const assetSelect = document.getElementById('assetAssociations');
 			const attributesContainer = document.getElementById('attributesContainer');
 			
+			const updateButton = document.getElementById('updateButton');
+
 			assetSelect.addEventListener('change', function() {
 				// Clears existing additional attribute input fields before populating w/ new ones
 				attributesContainer.innerHTML = '';
@@ -98,6 +100,14 @@
 				// Calls fetchAttributes to receive additional form fields, given that the user has successfully selected an asset type
 				if (selectedAssetType != '') {
 					fetchAttributes(typeName, id);
+					// Assign the updateAsset function as an event handler
+					updateButton.onclick = function() {
+						updateAsset(id);
+					};
+				} else {
+					updateButton.onclick = function() {
+						assetSelectError();
+					};
 				}
 			});
 
