@@ -17,6 +17,11 @@ form select {
     display: inline;
 }
 
+#filterAndResultsContainer {
+    display: flex;
+    justify-content: space-around;
+}
+
 #filterBox {
     position: absolute;
     top: 0;
@@ -28,3 +33,10 @@ form select {
     width: min-content;
     background-color: #FFFFFF;
 }
+
+#resultsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 5%;
+    grid-row-gap: 10%;
+  }
