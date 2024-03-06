@@ -64,6 +64,25 @@
                     </div>
                 </div>
 				
+				<!-- Checkbox to toggle visibility of type name input -->
+				<div class="mb-3 form-check" id="changeAssetNameCheckboxDiv">
+				  <input class="form-check-input" type="checkbox" id="changeAssetNameCheckbox" name = "changeAssetNameCheckbox">
+				  <label class="form-check-label" for="changeAssetNameCheckbox">
+					Change asset name?
+				  </label>
+				</div>
+				
+				<!-- Contains input field for entering the name of the new type. Appears when "Create Custom Type" option is selected -->
+                <div id="newNameInputDiv" class="mb-3">
+                    <label for="newName" class="form-label" id="newNameLabel">
+                        Re-name asset
+                    </label>
+                    <input type="text" id="newName" class="form-control m-auto" name="newName">
+                    <div id="newNameHelp" class="form-text">
+                        Please enter the updated name for your asset.
+                    </div>
+                </div>
+				
 				<!-- Container for the (additional) type-dependent attributes -->
                 <div id="attributesContainer" style="display: flex; flex-direction: column;">
                     <!-- Attributes will be dynamically displayed here alongside their respective datatypes -->
@@ -90,6 +109,38 @@
 			const attributesContainer = document.getElementById('attributesContainer');
 			
 			const updateButton = document.getElementById('updateButton');
+			
+			const changeAssetNameCheckbox = document.getElementById('changeAssetNameCheckbox');
+			const changeAssetNameCheckboxDiv = document.getElementById('changeAssetNameCheckboxDiv');
+			const newNameInputDiv = document.getElementById('newNameInputDiv');
+			const newName = document.getElementById('newName');
+			hideNameElements();
+			
+			function hideNameElements(){
+				changeAssetNameCheckbox.checked = false;
+				changeAssetNameCheckboxDiv.classList.add('d-none');
+				newNameInputDiv.classList.add('d-none');
+				newNameInputDiv.querySelector('input').value = '';
+			}
+			
+			function hideNameField(){
+				newNameInputDiv.classList.add('d-none');
+				newNameInputDiv.querySelector('input').value = '';
+			}
+			
+			function showNameCheckbox(){
+				changeAssetNameCheckbox.checked = false;
+				changeAssetNameCheckboxDiv.classList.remove('d-none');
+				hideNameField();
+			}
+			
+			changeAssetNameCheckbox.addEventListener('change', function() {
+				if (changeAssetNameCheckbox.checked) {
+				  newNameInputDiv.classList.remove('d-none');
+				} else {
+					hideNameField();
+				}
+			});
 
 			assetSelect.addEventListener('change', function() {
 				// Clears existing additional attribute input fields before populating w/ new ones
@@ -99,6 +150,7 @@
 				const [typeName, id, title] = selectedAssetType.split(',');
 				// Calls fetchAttributes to receive additional form fields, given that the user has successfully selected an asset type
 				if (selectedAssetType != '') {
+					showNameCheckbox();
 					fetchAttributes(typeName, id);
 					// Assign the updateAsset function as an event handler
 					updateButton.onclick = function() {
@@ -108,6 +160,7 @@
 					updateButton.onclick = function() {
 						assetSelectError();
 					};
+					hideNameElements();
 				}
 			});
 
