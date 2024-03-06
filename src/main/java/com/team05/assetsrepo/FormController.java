@@ -344,6 +344,13 @@ public class FormController {
     }
   }
 
+  /**
+   * Updates an existing asset in the database with the specified ID using the provided JSON object.
+   *
+   * @param id The ID of the asset to be updated.
+   * @param obj The JSON object containing the updated asset data.
+   * @return ResponseEntity indicating the success or failure of the update operation.
+   */
   @PostMapping("/updateAsset/{id}")
   public ResponseEntity<?> updateAsset(@PathVariable("id") int id, @RequestBody String obj) {
     try {
@@ -451,12 +458,12 @@ public class FormController {
   }
 
   /**
-   * Intermediary method for getting attributes associated with a given type from the database.
+   * Retrieves attribute data for a specific asset identified by the provided ID.
    *
-   * @param type The given asset type.
-   * @return A ResponseEntity containing a list of attributes associated with the provided type.
-   * @throws JsonProcessingException
-   * @throws JsonMappingException
+   * @param id The ID of the asset for which attribute data is to be retrieved.
+   * @return ResponseEntity containing the attribute data for the asset.
+   * @throws JsonMappingException If there is an issue with mapping JSON data.
+   * @throws JsonProcessingException If there is an issue with processing JSON data.
    */
   @GetMapping("/attributesWassetData/{id}")
   public ResponseEntity<List<String[]>> getAttributesForAsset(@PathVariable int id)
@@ -466,11 +473,10 @@ public class FormController {
   }
 
   /**
-   * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
-   * drop-down menu.
+   * Populates the "Manage Assets" page with types and assets data.
    *
-   * @param model The model to which types retrieved from the database will be added.
-   * @return The name of the HTML page for creating an asset ("create-asset").
+   * @param model The model to which the types and assets data will be added.
+   * @return The name of the view to render, in this case, "manage-asset.html".
    */
   @GetMapping("/manage-asset.html")
   public String populateTypesManageAsset(Model model) {
@@ -486,12 +492,18 @@ public class FormController {
     return "manage-asset";
   }
 
+  /**
+   * Deletes the asset with the specified ID from the database.
+   *
+   * @param id The ID of the asset to be deleted.
+   * @return A ResponseEntity containing a JSON response with a success message if the asset is
+   *         deleted successfully, or an error message if an exception occurs.
+   */
   @PostMapping("/deleteAsset/{id}")
   public ResponseEntity<?> deleteType(@PathVariable("id") int id) {
     try {
       String statement = "DELETE FROM assets WHERE id = :assetid";
-      MapSqlParameterSource params =
-          new MapSqlParameterSource().addValue("assetid", id);
+      MapSqlParameterSource params = new MapSqlParameterSource().addValue("assetid", id);
       jdbcTemplate.update(statement, params);
 
       // Return a JSON response with the success message
@@ -536,12 +548,13 @@ public class FormController {
   }
 
   /**
-   * Fetches attributes for the selected type from the database.
+   * Fetches the attributes for the asset with the specified ID from the database. Retrieves
+   * additional attributes stored as JSON in the 'additional_attrs' column of the 'assets' table.
    *
-   * @param type The selected asset type for which attributes are to be fetched.
-   * @return A list of attributes associated with the provided type.
-   * @throws JsonProcessingException
-   * @throws JsonMappingException
+   * @param id The ID of the asset for which attributes are to be fetched.
+   * @return A list of string arrays containing attribute names and their corresponding values.
+   * @throws JsonMappingException If there is an issue with mapping JSON data.
+   * @throws JsonProcessingException If there is an issue with processing JSON data.
    */
   public List<String[]> fetchAttributesForAssetFromDatabase(int id)
       throws JsonMappingException, JsonProcessingException {
