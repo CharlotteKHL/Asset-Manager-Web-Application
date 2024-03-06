@@ -64,7 +64,7 @@
                     </div>
                 </div>
 				
-				<!-- Checkbox to toggle visibility of type name input -->
+				<!-- Checkbox to toggle visibility of the new asset name input -->
 				<div class="mb-3 form-check" id="changeAssetNameCheckboxDiv">
 				  <input class="form-check-input" type="checkbox" id="changeAssetNameCheckbox" name = "changeAssetNameCheckbox">
 				  <label class="form-check-label" for="changeAssetNameCheckbox">
@@ -72,7 +72,15 @@
 				  </label>
 				</div>
 				
-				<!-- Contains input field for entering the name of the new type. Appears when "Create Custom Type" option is selected -->
+				<!-- Checkbox to change update button to delete -->
+				<div class="mb-3 form-check" id="deleteAssetCheckboxDiv">
+					<input class="form-check-input" type="checkbox" id="deleteAssetCheckbox" name="deleteAssetCheckbox">
+					<label class="form-check-label" for="deleteAssetCheckbox">
+						Delete selected asset?
+					</label>
+				</div>
+				
+				<!-- Contains input field for entering the new name of the asset. Appears when "Change asset name?" option is selected -->
                 <div id="newNameInputDiv" class="mb-3">
                     <label for="newName" class="form-label" id="newNameLabel">
                         Re-name asset
@@ -94,7 +102,7 @@
                 </div>
 
                 <button id="updateButton" class="btn btn-outline-primary mt-3 mb-3" type="button" onclick="assetSelectError()">
-                    Update <i class="bi bi-check-lg"></i>
+                    <span id="btnText">Update&nbsp;</span><i id="btnIcon" class="bi bi-arrow-repeat"></i> 
                 </button>
             </form>
         </div>
@@ -114,13 +122,19 @@
 			const changeAssetNameCheckboxDiv = document.getElementById('changeAssetNameCheckboxDiv');
 			const newNameInputDiv = document.getElementById('newNameInputDiv');
 			const newName = document.getElementById('newName');
-			hideNameElements();
+			const deleteAssetCheckbox = document.getElementById('deleteAssetCheckbox');
+			const deleteAssetCheckboxDiv = document.getElementById('deleteAssetCheckboxDiv');
+			const btnText = document.getElementById('btnText');
 			
-			function hideNameElements(){
+			hideCheckboxes();
+			
+			function hideCheckboxes(){
 				changeAssetNameCheckbox.checked = false;
 				changeAssetNameCheckboxDiv.classList.add('d-none');
 				newNameInputDiv.classList.add('d-none');
 				newNameInputDiv.querySelector('input').value = '';
+				deleteAssetCheckbox.checked = false;
+				deleteAssetCheckboxDiv.classList.add('d-none');
 			}
 			
 			function hideNameField(){
@@ -128,17 +142,46 @@
 				newNameInputDiv.querySelector('input').value = '';
 			}
 			
-			function showNameCheckbox(){
+			function untickDelete(){
+				deleteAssetCheckbox.checked = false;
+				updateButton.onclick = function() {
+					updateAsset(id);
+				};
+				btnText.innerText = "Update" + "\u00A0";
+			}
+			
+			function tickDelete(){
+				changeAssetNameCheckbox.checked = false;
+				updateButton.onclick = function() {
+					deleteAsset(id);
+				};
+				btnText.innerText = "Delete" + "\u00A0";
+			}
+			
+			function showCheckboxes(){
 				changeAssetNameCheckbox.checked = false;
 				changeAssetNameCheckboxDiv.classList.remove('d-none');
+				deleteAssetCheckbox.checked = false;
+				deleteAssetCheckboxDiv.classList.remove('d-none');
 				hideNameField();
 			}
 			
 			changeAssetNameCheckbox.addEventListener('change', function() {
 				if (changeAssetNameCheckbox.checked) {
 				  newNameInputDiv.classList.remove('d-none');
+				  untickDelete();
 				} else {
 					hideNameField();
+				}
+			});
+			
+			deleteAssetCheckbox.addEventListener('change', function() {
+				if (deleteAssetCheckbox.checked) {
+				  hideNameField();
+				  tickDelete();
+				} else {
+					hideNameField();
+					untickDelete();
 				}
 			});
 
@@ -150,7 +193,7 @@
 				const [typeName, id, title] = selectedAssetType.split(',');
 				// Calls fetchAttributes to receive additional form fields, given that the user has successfully selected an asset type
 				if (selectedAssetType != '') {
-					showNameCheckbox();
+					showCheckboxes();
 					fetchAttributes(typeName, id);
 					// Assign the updateAsset function as an event handler
 					updateButton.onclick = function() {
@@ -160,7 +203,7 @@
 					updateButton.onclick = function() {
 						assetSelectError();
 					};
-					hideNameElements();
+					hideCheckboxes();
 				}
 			});
 
