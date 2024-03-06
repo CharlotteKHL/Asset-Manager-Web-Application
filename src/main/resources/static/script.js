@@ -202,3 +202,70 @@ function validateEntries() {
         });
     }
 }
+
+function fetchAssets() {
+    resetAlerts();
+
+    let assetToQuery = document.getElementById("searchField").value;
+
+    if (assetToQuery.trim() == '') {
+        document.getElementById('resultsGrid').innerHTML = '';
+        return;
+    }
+
+    let chosenType = document.getElementById("typeFilter").value;
+    let dateFrom = document.getElementById("from").value;
+    let dateTo = document.getElementById("to").value;
+    let sortBy = document.getElementById("sortFilter").value;
+
+    if ((dateFrom == '' && dateTo != '') && document.getElementById('incompleteDateAlert') == null) {
+        appendAlert('<i class="bi bi-exclamation-triangle"></i> Please enter the starting date.', 'alert-danger', 'errorAlertPlaceholder', 'incompleteDateAlert');
+    } else if ((dateFrom != '' && dateTo == '') && document.getElementById('incompleteDateAlert') == null) {
+        appendAlert('<i class="bi bi-exclamation-triangle"></i> Please enter the ending date.', 'alert-danger', 'errorAlertPlaceholder', 'incompleteDateAlert');
+    }
+
+    let searchData = [assetToQuery, chosenType, dateFrom, dateTo, sortBy];
+
+    fetch('/searchAssetQuery', {
+        method: 'POST',
+        body: JSON.stringify(searchData),
+    })
+    .then(response => response.json())
+    .then(matchingAssets => {
+        console.log(matchingAssets);
+        if (matchingAssets.length == 0) {
+            document.getElementById('resultsGrid').innerHTML = '';
+            let invisBtn = document.createElement('button');
+            invisBtn.style.visibility = 'hidden';
+            document.getElementById('resultsGrid').appendChild(invisBtn);
+            let msg = document.createElement('span');
+            msg.style.width = 'max-content';
+            msg.innerText = "No matching assets.";
+            document.getElementById('resultsGrid').appendChild(msg);
+            return;
+        }
+        document.getElementById('resultsGrid').innerHTML = '';
+        matchingAssets.forEach(title => {
+            const button = document.createElement('button');
+            button.textContent = title;
+            button.classList.add('btn', 'btn-primary');
+            button.setAttribute('type', 'button');
+            button.setAttribute('data-bs-toggle', 'offcanvas');
+            button.setAttribute('data-bs-target', '#offcanvasRight');
+            button.setAttribute('onclick', 'replacePlaceholder()');
+            document.getElementById('resultsGrid').appendChild(button);
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching assets:', error);
+    });
+    
+}
+
+function resetFilters() {
+    document.getElementById("typeFilter").selectedIndex = -1;
+    document.getElementById("from").value = null;
+    document.getElementById("to").value = null;
+    document.getElementById("sortFilter").selectedIndex = -1;
+    fetchAssets();
+}
