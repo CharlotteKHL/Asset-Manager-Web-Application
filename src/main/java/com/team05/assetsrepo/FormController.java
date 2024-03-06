@@ -350,18 +350,21 @@ public class FormController {
       ObjectMapper objectMapper = new ObjectMapper();
       JsonNode jsonNode = objectMapper.readTree(obj);
       System.out.println(jsonNode);
+      ObjectNode object = (ObjectNode) jsonNode;
 
       String title = "";
       try {
         // Extract the title from the JSON object
-        title = jsonNode.get("Title").asText();
+        title = jsonNode.get("Re-name asset").asText();
+        object.remove(jsonNode.fieldNames().next());
+        object.remove(jsonNode.fieldNames().next());
       } catch (Exception e) {
         System.out.println("Title not changed");
       }
 
       // Remove the fields from the JSON object that you don't want to update
-      ObjectNode object = (ObjectNode) jsonNode;
       object.remove(jsonNode.fieldNames().next());
+      System.out.println(jsonNode);
 
       // Convert the modified JSON object back to a string
       obj = objectMapper.writeValueAsString(object);
