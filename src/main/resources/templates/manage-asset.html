@@ -112,6 +112,7 @@
     <script src="script.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
+			let deletionId;
 	
 			const assetSelect = document.getElementById('assetAssociations');
 			const attributesContainer = document.getElementById('attributesContainer');
@@ -142,18 +143,18 @@
 				newNameInputDiv.querySelector('input').value = '';
 			}
 			
-			function untickDelete(id){
+			function untickDelete(deletionId){
 				deleteAssetCheckbox.checked = false;
 				updateButton.onclick = function() {
-					updateAsset(id);
+					updateAsset(deletionId);
 				};
 				btnText.innerText = "Update" + "\u00A0";
 			}
 			
-			function tickDelete(id){
+			function tickDelete(deletionId){
 				changeAssetNameCheckbox.checked = false;
 				updateButton.onclick = function() {
-					deleteAsset(id);
+					deleteAsset(deletionId);
 				};
 				btnText.innerText = "Delete" + "\u00A0";
 			}
@@ -169,7 +170,7 @@
 			changeAssetNameCheckbox.addEventListener('change', function() {
 				if (changeAssetNameCheckbox.checked) {
 				  newNameInputDiv.classList.remove('d-none');
-				  untickDelete(id);
+				  untickDelete(deletionId);
 				} else {
 					hideNameField();
 				}
@@ -178,10 +179,10 @@
 			deleteAssetCheckbox.addEventListener('change', function() {
 				if (deleteAssetCheckbox.checked) {
 				  hideNameField();
-				  tickDelete(id);
+				  tickDelete(deletionId);
 				} else {
 					hideNameField();
-					untickDelete(id);
+					untickDelete(deletionId);
 				}
 			});
 
@@ -191,6 +192,7 @@
 				// Get the type of the selected asset
 				const selectedAssetType = assetSelect.options[assetSelect.selectedIndex].value;
 				const [typeName, id, title] = selectedAssetType.split(',');
+				deletionId = id;
 				// Calls fetchAttributes to receive additional form fields, given that the user has successfully selected an asset type
 				if (selectedAssetType != '') {
 					showCheckboxes();
