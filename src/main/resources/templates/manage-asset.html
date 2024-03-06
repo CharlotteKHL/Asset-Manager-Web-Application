@@ -142,7 +142,7 @@
 				newNameInputDiv.querySelector('input').value = '';
 			}
 			
-			function untickDelete(){
+			function untickDelete(id){
 				deleteAssetCheckbox.checked = false;
 				updateButton.onclick = function() {
 					updateAsset(id);
@@ -150,7 +150,7 @@
 				btnText.innerText = "Update" + "\u00A0";
 			}
 			
-			function tickDelete(){
+			function tickDelete(id){
 				changeAssetNameCheckbox.checked = false;
 				updateButton.onclick = function() {
 					deleteAsset(id);
@@ -169,7 +169,7 @@
 			changeAssetNameCheckbox.addEventListener('change', function() {
 				if (changeAssetNameCheckbox.checked) {
 				  newNameInputDiv.classList.remove('d-none');
-				  untickDelete();
+				  untickDelete(id);
 				} else {
 					hideNameField();
 				}
@@ -178,10 +178,10 @@
 			deleteAssetCheckbox.addEventListener('change', function() {
 				if (deleteAssetCheckbox.checked) {
 				  hideNameField();
-				  tickDelete();
+				  tickDelete(id);
 				} else {
 					hideNameField();
-					untickDelete();
+					untickDelete(id);
 				}
 			});
 
