@@ -339,7 +339,7 @@ function updateAsset(id) {
     });
     // Iterates over the user's entries, checks whether they have been left blank / are over 50 characters long
     for (let i = 0; i < entries.length; i++) {
-		if(!document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Re-name asset' || !document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Change asset name?') {
+		if(!document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Re-name asset' || !document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Change asset name?' || labelArray[i] === 'Delete selected asset?') {
 			continue;
 		}
         if(entries[i] == '' || entries[i].length > 50) {
