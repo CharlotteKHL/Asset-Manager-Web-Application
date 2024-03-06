@@ -486,6 +486,22 @@ public class FormController {
     return "manage-asset";
   }
 
+  @PostMapping("/deleteAsset/{id}")
+  public ResponseEntity<?> deleteType(@PathVariable("id") int id) {
+    try {
+      String statement = "DELETE FROM assets WHERE id = :assetid";
+      MapSqlParameterSource params =
+          new MapSqlParameterSource().addValue("assetid", id);
+      jdbcTemplate.update(statement, params);
+
+      // Return a JSON response with the success message
+      return ResponseEntity.ok().body("{\"message\": \"Asset deleted successfully!\"}");
+    } catch (Exception e) {
+      // Catch other exceptions and return a JSON response with a generic error message
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("{\"error\": \"An error occurred while deleting the asset\"}");
+    }
+  }
 
   /**
    * Fetches attributes for the selected type from the database.
