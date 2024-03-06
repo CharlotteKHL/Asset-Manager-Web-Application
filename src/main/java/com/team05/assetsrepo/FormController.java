@@ -1,6 +1,7 @@
 package com.team05.assetsrepo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
@@ -279,11 +280,69 @@ public class FormController {
   public String getSearchAssetPage(Model model) {
     List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
         Collections.emptyMap(), String.class);
-    List<String> assets = jdbcTemplate.queryForList("SELECT DISTINCT title FROM assets",
-            Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
-    model.addAttribute("assets", assets);
     return "search-asset";
+  }
+
+  @PostMapping("/searchAssetQuery")
+  @ResponseBody
+  public List<String> searchAssetQuery(@RequestBody String searchData) {
+
+    try {
+
+      ObjectMapper mapper = new ObjectMapper();
+      String[] searchDataArr = mapper.readValue(searchData, String[].class);
+
+      String assetToQuery = searchDataArr[0];
+
+      String sql = "SELECT title FROM assets WHERE title ILIKE :assetToQuery";
+
+      MapSqlParameterSource params = new MapSqlParameterSource()
+          .addValue("assetToQuery", "%" + assetToQuery + "%");
+
+      if (searchDataArr[1] != "") {
+        if (searchDataArr[2] != "" && searchDataArr[3] != "") {
+          sql = "SELECT title FROM assets JOIN type ON assets.type = type.id WHERE assets.title ILIKE :assetToQuery AND type.type_name = :chosenType AND assets.last_updated BETWEEN CAST(:dateFrom AS TIMESTAMP) AND CAST(:dateTo AS TIMESTAMP)";
+          params.addValue("chosenType", searchDataArr[1]);
+          params.addValue("dateFrom", searchDataArr[2]);
+          params.addValue("dateTo", searchDataArr[3]);
+        } else {
+          sql = "SELECT title FROM assets JOIN type ON assets.type = type.id WHERE assets.title ILIKE :assetToQuery AND type.type_name = :chosenType";
+          params.addValue("chosenType", searchDataArr[1]);
+        }
+      } else {
+        if (searchDataArr[2] != "" && searchDataArr[3] != "") {
+          sql = "SELECT title FROM assets WHERE title ILIKE :assetToQuery AND assets.last_updated BETWEEN CAST(:dateFrom AS TIMESTAMP) AND CAST(:dateTo AS TIMESTAMP)";
+          params.addValue("dateFrom", searchDataArr[2]);
+          params.addValue("dateTo", searchDataArr[3]);
+        }
+      }
+
+      switch (searchDataArr[4]) {
+        case "Alphabetical: A-Z":
+          sql = sql + " ORDER BY title ASC";
+          break;
+        case "Alphabetical: Z-A":
+          sql = sql + " ORDER BY title DESC";
+          break;
+        case "Date: Most Recent Update - Oldest Update":
+          sql = sql + " ORDER BY assets.last_updated ASC";
+          break;
+        case "Date: Oldest Update - Most Recent Update":
+          sql = sql + " ORDER BY assets.last_updated DESC";
+          break;
+        default:
+          break;
+      }
+
+      List<String> matchingAssets = jdbcTemplate.queryForList(sql, params, String.class);
+
+      return matchingAssets;
+
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return Collections.emptyList();
+    }
   }
 
   /**
