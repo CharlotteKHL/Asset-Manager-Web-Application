@@ -339,6 +339,9 @@ function updateAsset(id) {
     });
     // Iterates over the user's entries, checks whether they have been left blank / are over 50 characters long
     for (let i = 0; i < entries.length; i++) {
+		if(!document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Re-name asset' || !document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Change asset name?') {
+			continue;
+		}
         if(entries[i] == '' || entries[i].length > 50) {
             if (document.getElementById("invalidLengthAlert") == null) {
                 appendAlert('<i class="bi bi-exclamation-triangle"></i> Please ensure no fields are left blank / are over 50 characters long.', 'alert-danger', 'errorAlertPlaceholder', 'invalidLengthAlert');
