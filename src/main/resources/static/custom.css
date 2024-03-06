@@ -38,6 +38,19 @@ input, select {
     height: 1.5rem; /* Set the height of the checkbox */
 }
 
+/* Styling for the renaming checkbox */
+#changeAssetNameCheckboxDiv {
+    display: flex;
+    justify-content: center; /* Align checkbox to the middle horizontally */
+    align-items: center; /* Align checkbox to the middle vertically */
+    margin-bottom: 1.0rem; /* Add some space below the checkbox */
+}
+
+#changeAssetNameCheckbox {
+    width: 1.5rem; /* Set the width of the checkbox */
+    height: 1.5rem; /* Set the height of the checkbox */
+}
+
 /* Styling for the delete checkbox */
 #deleteTypeDiv {
     display: flex;
@@ -56,7 +69,22 @@ input, select {
 	margin: 0.0 auto; /* Horizontally center the dropdown list */
 }
 
+#newNameInputDiv{
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
 #attributesContainer{
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
+#exampleInputEmail {
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
+#exampleInputPassword {
 	width: 30%; /* Take up the full width of its container */
 	margin: 0.0 auto; /* Horizontally center the dropdown list */
 }
