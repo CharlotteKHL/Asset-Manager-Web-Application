@@ -278,9 +278,13 @@ function replacePlaceholder(assetName) {
     .then(assetData => {
         // Update off-canvas elements with actual asset data
         document.getElementById('assetName').innerText = assetData.title;
+        
+        // Split the additional attributes by commas and join them with newline characters
+        const additionalAttributes = assetData.additional_attrs.split(',').join('\n');
+        
         document.getElementById('assetVariables').innerText = "Type: " + assetData.type + " \n \n" 
                                     +   "Associations: " + assetData.associations + " \n \n" 
-                                    +   "Additional Attributes: " + assetData.additional_attrs + " \n \n"
+                                    +   "Additional Attributes: \n" + additionalAttributes + " \n \n"
                                     +   "Last Updated: " + assetData.last_updated + " \n \n"
     })
     .catch(error => {
