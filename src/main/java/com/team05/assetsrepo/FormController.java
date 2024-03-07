@@ -1,7 +1,6 @@
 package com.team05.assetsrepo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -9,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 
 /**
  * Controller responsible for creating assets, creating / updating asset types, and fetching 
@@ -342,6 +341,55 @@ public class FormController {
     } catch (JsonProcessingException e) {
       e.printStackTrace();
       return Collections.emptyList();
+    }
+  }
+
+  @PostMapping("/getAssetData")
+  @ResponseBody
+  public String getAssetData(@RequestBody String assetName) {
+    String sql = "SELECT * FROM assets WHERE title = :assetName";
+
+    MapSqlParameterSource params = new MapSqlParameterSource()
+        .addValue("assetName", assetName);
+
+    Map<String, Object> assetData = jdbcTemplate.queryForMap(sql, params);
+
+    assetData.remove("id");
+    Object additionalAttrs = assetData.remove("additional_attrs");
+
+    Object typeId = assetData.get("type");
+
+    sql = "SELECT type_name FROM type WHERE id = :typeId";
+      
+    params = new MapSqlParameterSource()
+        .addValue("typeId", typeId);
+
+    String type = jdbcTemplate.queryForObject(sql, params, String.class);
+
+    assetData.put("type", type);
+
+    System.out.println(assetData);
+
+    try {
+
+      ObjectMapper mapper = new ObjectMapper();
+      ObjectNode assetDataJson = mapper.createObjectNode();
+
+      assetData.forEach((key, value) -> {
+        assetDataJson.put(key, value.toString());
+      });
+      
+      JsonNode additionalAttrsNode = mapper.valueToTree(additionalAttrs);
+      JsonNode additionalAttrsData = additionalAttrsNode.get("value");
+      assetDataJson.set("additional_attrs", additionalAttrsData);
+
+      String assetDataJsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(assetDataJson);
+
+      return assetDataJsonStr;
+
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return e.getMessage();
     }
   }
 
