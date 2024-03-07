@@ -276,7 +276,8 @@ function replacePlaceholder(assetName) {
     })
     .then(response => response.json())
     .then(assetData => {
-        console.log(assetData);
+        // Update off-canvas elements with actual asset data
+        document.getElementById('assetName').innerText = assetData.title;
     })
     .catch(error => {
         console.error('Error fetching asset data:', error);
