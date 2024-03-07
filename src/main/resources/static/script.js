@@ -278,6 +278,10 @@ function replacePlaceholder(assetName) {
     .then(assetData => {
         // Update off-canvas elements with actual asset data
         document.getElementById('assetName').innerText = assetData.title;
+        document.getElementById('assetVariables').innerText = "Type: " + assetData.type + " \n \n" 
+                                    +   "Associations: " + assetData.associations + " \n \n" 
+                                    +   "Additional Attributes: " + assetData.additional_attrs + " \n \n"
+                                    +   "Last Updated: " + assetData.last_updated + " \n \n"
     })
     .catch(error => {
         console.error('Error fetching asset data:', error);
