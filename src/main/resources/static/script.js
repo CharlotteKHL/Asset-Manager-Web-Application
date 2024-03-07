@@ -232,7 +232,6 @@ function fetchAssets() {
     })
     .then(response => response.json())
     .then(matchingAssets => {
-        console.log(matchingAssets);
         if (matchingAssets.length == 0) {
             document.getElementById('resultsGrid').innerHTML = '';
             let invisBtn = document.createElement('button');
@@ -252,7 +251,7 @@ function fetchAssets() {
             button.setAttribute('type', 'button');
             button.setAttribute('data-bs-toggle', 'offcanvas');
             button.setAttribute('data-bs-target', '#offcanvasRight');
-            button.setAttribute('onclick', 'replacePlaceholder()');
+            button.setAttribute('onclick', 'replacePlaceholder("' + button.textContent + '")');
             document.getElementById('resultsGrid').appendChild(button);
         });
     })
@@ -266,6 +265,22 @@ function resetFilters() {
     document.getElementById("typeFilter").selectedIndex = -1;
     document.getElementById("from").value = null;
     document.getElementById("to").value = null;
-    document.getElementById("sortFilter").selectedIndex = -1;
+    document.getElementById("sortFilter").selectedIndex = 0;
     fetchAssets();
+}
+
+function replacePlaceholder(assetName) {
+    fetch('/getAssetData', {
+        method: 'POST',
+        body: assetName,
+    })
+    .then(response => response.json())
+    .then(assetData => {
+        console.log(assetData);
+    })
+    .catch(error => {
+        console.error('Error fetching asset data:', error);
+    });
+    // fetch data from backend function including asset title, asset type, date last updated, and additional attrs
+    // display (somewhat) according to picture...
 }
