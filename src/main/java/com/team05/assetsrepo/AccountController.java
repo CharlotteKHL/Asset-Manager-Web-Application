@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class AccountController {
 	private final NamedParameterJdbcTemplate jdbcTemplate;
+	private final String INVALID_LOGIN_MSG = "This username or password is not correct";
 
 	/** Constructor for AccountController object.
 	 * 
@@ -66,28 +67,32 @@ public class AccountController {
 	public String validateLoginDetails(String username, String password) {
 
 		String UNIQUE_USERNAME = "SELECT DISTINCT COUNT(username) FROM user2 WHERE username = :username";
-		String CORRECT_PASSWORD = "SELECT DISTINCT COUNT(password) FROM user2 WHERE username = :username AND password = :password";
-
+		
 		try {
 			Map<String, String> parameters = new HashMap<String, String>();
 			parameters.put("username", username);
 
 			int usernameResult = (int) jdbcTemplate.queryForObject(UNIQUE_USERNAME, parameters, Integer.class);
-
+			
 			System.out.println(usernameResult);
-
-			parameters.put("password", password);
-
-			int passwordResult = (int) jdbcTemplate.queryForObject(CORRECT_PASSWORD, parameters, Integer.class);
-
-			System.out.println(passwordResult);
-
-			if (passwordResult == 0) {
-				throw new InvalidLogin("This password is not correct");
+			
+			//checks username exists in database
+			if(usernameResult == 1) {
+			  
+			  String passwordResult = getPassword(username);
+			  
+			  //checks if password in database for username matches input from user
+			  if (!encoder().matches(password, passwordResult)){
+				throw new InvalidLogin(INVALID_LOGIN_MSG);
+			  }
+			  
+			} else {
+			   throw new InvalidLogin(INVALID_LOGIN_MSG);
 			}
+			
 		} catch (InvalidLogin e) {
 			e.printStackTrace();
-			System.out.println("Error!");
+			System.out.println("Error! Invalid login");
 			return e.getMessage();
 		}
 		return "Login successful";
@@ -126,7 +131,10 @@ public class AccountController {
 		int nameCount = (int) jdbcTemplate.queryForObject(uniqueName, parameters, Integer.class);
 		
 		if (nameCount == 0) { // if username is unique
-
+		    
+		    //hash password
+		    password = encoder().encode(password);
+		    
 		    // if username unique add new user to the database
 			MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", idCount + 1)
 					.addValue("username", username).addValue("password", password).addValue("role", "admin");
@@ -137,9 +145,6 @@ public class AccountController {
 		    
 			message = "Registration unsuccessful, this email may already have an account";
 		}
-
-		// sets the user's password to the hashed version
-		setPassword(username, encoder().encode(getPassword(username)));
 
         return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
 	}

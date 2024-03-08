@@ -49,8 +49,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(request -> request.requestMatchers("/login*").permitAll()).csrf(AbstractHttpConfigurer::disable);
-        http.formLogin(form -> form.loginPage("/login.html").defaultSuccessUrl("/", true));
+        http.authorizeHttpRequests(request -> request.requestMatchers("/*").permitAll()).csrf(AbstractHttpConfigurer::disable);
+        http.formLogin(form -> form.loginPage("/login.html").defaultSuccessUrl("/index.html", true));
         http.headers(header -> header.frameOptions(frameOptions -> frameOptions.disable().contentTypeOptions(cto -> cto.disable())));
         return http.build();
     }

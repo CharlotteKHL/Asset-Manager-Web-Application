@@ -54,7 +54,7 @@ function checkLogin() {
             }
         })
         .then(async data => {
-            if(data.message == "This password is not correct") {
+            if(data.message == "This username or password is not correct") {
                 appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + data.message, 'danger', 'successAlertPlaceholder');
             } else {
                 appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'success', 'successAlertPlaceholder');
