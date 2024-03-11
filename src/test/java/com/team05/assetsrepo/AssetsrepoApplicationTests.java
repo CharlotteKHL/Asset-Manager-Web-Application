@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class AssetsrepoApplicationTests {
 
   
-  // private final NamedParameterJdbcTemplate jdbcTemplate;
   @Autowired
   private FormController controller;
 
