@@ -147,6 +147,10 @@
                             attributeInput.min = '0';
                             attributeInput.step = '0.01';
                         }
+                        if (attribute[1] == "Version Number") {
+                            attributeInput.type = 'text';
+                            attributeInput.classList.add('versionNumber');
+                        }
                         // Adds both the label element and the input element to a div, resulting in a container which represents an individual attribute
                         let individualAttr = document.createElement('div');
                         individualAttr.classList = 'mb-4'
@@ -158,7 +162,7 @@
                         if (attribute[1].endsWith("(List)")) {
                             switch(attribute[1]) {
                                 case "Text (List)":
-                                    attributeInput.pattern = '^[a-zA-Z0-9]+(, [a-zA-Z0-9]+)*$';
+                                    attributeInput.pattern = '^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*(?:, [a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*)*$';
                                     break;
                                 case "Number (List)":
                                     attributeInput.pattern = '^[0-9]+(, [0-9]+)*$';
