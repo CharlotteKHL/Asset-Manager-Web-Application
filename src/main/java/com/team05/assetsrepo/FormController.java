@@ -393,7 +393,7 @@ public class FormController {
    * @param type The selected asset type for which attributes are to be fetched.
    * @return A list of attributes associated with the provided type.
    */
-  private List<String[]> fetchAttributesForTypeFromDatabase(String type) {
+  List<String[]> fetchAttributesForTypeFromDatabase(String type) {
     String sql = "SELECT attr_keys, attr_backend_types FROM type WHERE type_name = :type";
 
     MapSqlParameterSource params = new MapSqlParameterSource().addValue("type", type);

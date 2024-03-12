@@ -1,9 +1,7 @@
 package com.team05.assetsrepo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,8 +22,7 @@ class AccountControllerTests {
   //checks to see if the FormController Exists
   @Test
   void contextLoads() {
-      assertNotEquals(accountController, null);
-      System.out.println(accountController);
+      assertNotNull(accountController);
   }
   
   //Testing the extractLogin method (with static variables)
