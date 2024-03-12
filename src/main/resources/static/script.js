@@ -15,7 +15,7 @@ const appendAlert = (message, type, placeholder, alertId) => {
     placeholderDiv.append(wrapper);
 }
 
-// All appended alerts are assigned the class alertMsg, hence we remove each element with the alertMsg class from the page.
+// All appended alerts are assigned the class alertMsg, hence we remove each element with the alertMsg class from the page
 function resetAlerts() {
     const alerts = Array.from(document.getElementsByClassName('alertMsg'));
     alerts.forEach(alert => {
@@ -150,7 +150,18 @@ function validateEntries() {
                     appendAlert('<i class="bi bi-exclamation-triangle"></i> Please ensure list items are of the correct type and separated by a comma.', 'alert-danger', 'errorAlertPlaceholder', 'invalidListAlert');
                 }
                 isValid = false;
-                return;
+            }
+        }
+        // Checks whether the value of an input relating to a version number conforms to either the x.y or x.y.z format
+        if (input.classList.contains("versionNumber")) {
+            let pattern = /^(\d+)\.(\d+)(?:\.(\d+))?$/;
+            let regex = new RegExp(pattern);
+            let testValidity = regex.test(input.value);
+            if (!testValidity) {
+                if (document.getElementById("invalidVersionNumberAlert") == null) {
+                    appendAlert('<i class="bi bi-exclamation-triangle"></i> Please enter a valid version number.', 'alert-danger', 'errorAlertPlaceholder', 'invalidVersionNumberAlert');
+                }
+                isValid = false;
             }
         }
         // Handles associations field, where all selected options need to be collected
@@ -169,7 +180,6 @@ function validateEntries() {
                 appendAlert('<i class="bi bi-exclamation-triangle"></i> Please ensure no fields are left blank / are over 50 characters long.', 'alert-danger', 'errorAlertPlaceholder', 'invalidLengthAlert');
             }
             isValid = false;
-            return;
         } else {
             // Handles associations field, as trim() is not possible on an array
             if (Array.isArray(entries[i])) {
@@ -200,39 +210,51 @@ function validateEntries() {
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
         });
+    } else {
+        return;
     }
 }
 
+// Function called upon the input changing in the keyword search field
 function fetchAssets() {
+    // Resets any alerts e.g. alerts given due to the lack of a start / end date
     resetAlerts();
 
+    // Retrieves the keyword entered into the search field
     let assetToQuery = document.getElementById("searchField").value;
 
+    // If the keyword search field is blank, do not display any results
     if (assetToQuery.trim() == '') {
         document.getElementById('resultsGrid').innerHTML = '';
         return;
     }
 
+    // Obtain the selected choice from each filter
     let chosenType = document.getElementById("typeFilter").value;
     let dateFrom = document.getElementById("from").value;
     let dateTo = document.getElementById("to").value;
     let sortBy = document.getElementById("sortFilter").value;
 
+    // Checks whether either the "From" date or "To" date has been left blank, providing an appropriate alert if so
     if ((dateFrom == '' && dateTo != '') && document.getElementById('incompleteDateAlert') == null) {
         appendAlert('<i class="bi bi-exclamation-triangle"></i> Please enter the starting date.', 'alert-danger', 'errorAlertPlaceholder', 'incompleteDateAlert');
     } else if ((dateFrom != '' && dateTo == '') && document.getElementById('incompleteDateAlert') == null) {
         appendAlert('<i class="bi bi-exclamation-triangle"></i> Please enter the ending date.', 'alert-danger', 'errorAlertPlaceholder', 'incompleteDateAlert');
     }
 
+    // Define an array which starts with the entered keyword and is followed by the selected choices from each option within the filter section
     let searchData = [assetToQuery, chosenType, dateFrom, dateTo, sortBy];
 
+    // Send as body of POST request
     fetch('/searchAssetQuery', {
         method: 'POST',
         body: JSON.stringify(searchData),
     })
     .then(response => response.json())
     .then(matchingAssets => {
+        // If the list of matching assets is empty, inform the user that there are no matching assets
         if (matchingAssets.length == 0) {
+            // Resets any previously given results
             document.getElementById('resultsGrid').innerHTML = '';
             let invisBtn = document.createElement('button');
             invisBtn.style.visibility = 'hidden';
@@ -243,6 +265,8 @@ function fetchAssets() {
             document.getElementById('resultsGrid').appendChild(msg);
             return;
         }
+        // Otherwise, display each matching asset as a button in the grid of results
+        // N.B. Line below resets any previously given results
         document.getElementById('resultsGrid').innerHTML = '';
         matchingAssets.forEach(title => {
             const button = document.createElement('button');
@@ -251,6 +275,8 @@ function fetchAssets() {
             button.setAttribute('type', 'button');
             button.setAttribute('data-bs-toggle', 'offcanvas');
             button.setAttribute('data-bs-target', '#offcanvasRight');
+            // Clicking on a button should replace the placeholders in the off canvas window with the actual asset data
+            // N.B. The argument of the onclick function is dynamically assigned. Specifically, the name of the asset (as a string) is passed
             button.setAttribute('onclick', 'replacePlaceholder("' + button.textContent + '")');
             document.getElementById('resultsGrid').appendChild(button);
         });
@@ -261,6 +287,7 @@ function fetchAssets() {
     
 }
 
+// This function is called when the user clicks the "Reset" button on the Search for Assets page
 function resetFilters() {
     document.getElementById("typeFilter").selectedIndex = -1;
     document.getElementById("from").value = null;
@@ -269,27 +296,35 @@ function resetFilters() {
     fetchAssets();
 }
 
+
 function replacePlaceholder(assetName) {
+    // POST request - linked to corresponding backend Java method getAssetData
+    // Name of the asset is passed as the body
     fetch('/getAssetData', {
         method: 'POST',
         body: assetName,
     })
     .then(response => response.json())
     .then(assetData => {
-        // Update off-canvas elements with actual asset data
+        // Receives a JSON object representing the rest of the asset's data, including its name
+        // Sets the text within the placeholder given by the id assetName
         document.getElementById('assetName').innerText = assetData.title;
         
-        // Split the additional attributes by commas and join them with newline characters
-        const additionalAttributes = assetData.additional_attrs.split(',').join('\n');
+        const additionalAttributes = JSON.parse(assetData.additional_attrs);
+
+        // Construct a string used to set the HTML for each of the asset's attributes
+        let attributesString = '';
+        for (const [key, value] of Object.entries(additionalAttributes)) {
+            attributesString += '<strong>' + key + '</strong>: ' + value + '<br>';
+        }
         
-        document.getElementById('assetVariables').innerText = "Type: " + assetData.type + " \n \n" 
-                                    +   "Associations: " + assetData.associations + " \n \n" 
-                                    +   "Additional Attributes: \n" + additionalAttributes + " \n \n"
-                                    +   "Last Updated: " + assetData.last_updated + " \n \n"
+        // Sets the HTML within the placeholder given by the id assetInfo
+        // Displays the rest of the data besides the asset's name
+        document.getElementById('assetInfo').innerHTML = "<strong>Type</strong>: " + assetData.type + "<br><br>" 
+        + "<strong><u>Attributes</u></strong><br><br>" + attributesString + "<br>" 
+        + "<strong>Last Updated</strong>: " + assetData.last_updated;
     })
     .catch(error => {
         console.error('Error fetching asset data:', error);
     });
-    // fetch data from backend function including asset title, asset type, date last updated, and additional attrs
-    // display (somewhat) according to picture...
 }
