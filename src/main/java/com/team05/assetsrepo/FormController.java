@@ -488,7 +488,6 @@ public class FormController {
       return ResponseEntity.ok(Collections.emptyList());
     }
     List<String[]> attributes = fetchAttributesForTypeFromDatabase(type);
-    System.out.println(attributes);
     return ResponseEntity.ok(attributes);
   }
 
