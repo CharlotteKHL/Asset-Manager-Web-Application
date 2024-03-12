@@ -101,6 +101,8 @@
                     <button id="createButton" class="btn btn-outline-primary mt-3 mb-3" type="button">
                         <span id="btnText">Update&nbsp;</span><i id="btnIcon" class="bi bi-arrow-repeat"></i> 
                     </button>
+                    <br>
+                    <span class="form-text">Note: If identical attribute names have been chosen, the bottommost attribute will be used.</span>
                 </div>
             </form>
         </div>
@@ -113,7 +115,7 @@
             // Sets up a dropdown (i.e. "select" input) containing predefined options
             // These options correspond to basic datatypes for an asset type's specific attributes
             // N.B. Assists with validation when creating assets: determines the kind of input field provided
-            const backendTypes = ["Text", "Number", "Decimal", "Text (List)", "Number (List)", "Decimal (List)"];
+            const backendTypes = ["Text", "Number", "Decimal", "Version Number", "Text (List)", "Number (List)", "Decimal (List)"];
             const attrBackendTypeField = document.createElement('select');
             attrBackendTypeField.className = 'form-select m-auto mb-3';
             // Iterates over the backendTypes list, creating an option from each item
@@ -161,6 +163,11 @@
                     submitBtnIcon.className = 'bi bi-check-lg';
                     // Displays buttons div (for adding / removing attributes) after the user has chosen to create a new asset type
                     buttonsDiv.classList.remove('d-none');
+                // Covers the case where the user reselects the blank option from the type dropdown
+                // Attribute fields are automatically removed by way of the "change" event listener
+                } else if (typeDropdown.value == ''){
+                    buttonsDiv.classList.add('d-none');
+                    customTypeInputDiv.classList.add('d-none');
                 } else {
                     // Otherwise, we are dealing with existing asset types, hence we hide the div for naming a new asset type
                     customTypeInputDiv.classList.add('d-none');
@@ -168,11 +175,6 @@
                     submitBtn.setAttribute('onclick','updateType()');
                     submitBtnText.innerText = "Update" + "\u00A0";
                     submitBtnIcon.className = 'bi bi-arrow-repeat';
-                    // Covers the case where the user reselects the blank option from the type dropdown
-                    // Attribute fields are automatically removed by way of the "change" event listener
-                    if (typeDropdown.value == '') {
-                        buttonsDiv.classList.add('d-none');
-                    } 
                     // It's an existing type, so we show the buttons
                     submitBtn.classList.remove('d-none');
                     buttonsDiv.classList.remove('d-none');
