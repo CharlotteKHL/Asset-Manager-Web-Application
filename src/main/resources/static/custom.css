@@ -39,4 +39,4 @@ form select {
     grid-template-columns: repeat(3, 1fr);
     grid-column-gap: 5%;
     grid-row-gap: 10%;
-  }
+}
