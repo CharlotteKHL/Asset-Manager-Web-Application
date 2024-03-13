@@ -53,11 +53,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http.authorizeHttpRequests(request -> request.requestMatchers("/login*").permitAll()).csrf(AbstractHttpConfigurer::disable);
-//        http.authorizeHttpRequests(request -> request.requestMatchers("/index.html").authenticated());
-        http.formLogin(form -> form.loginPage("/login.html").defaultSuccessUrl("/", true));
-        http.authorizeHttpRequests(request -> request.requestMatchers(new AntPathRequestMatcher("/login*")).permitAll()
-            .anyRequest().authenticated());
+        http.authorizeHttpRequests(request -> request.requestMatchers("/login*").permitAll()).csrf(AbstractHttpConfigurer::disable);
+        http.authorizeHttpRequests(request -> request.requestMatchers(new AntPathRequestMatcher("/")).hasRole("admin"));
         http.headers(header -> header.frameOptions(frameOptions -> frameOptions.disable().contentTypeOptions(cto -> cto.disable())));
         return http.build();
     }
@@ -65,9 +62,9 @@ public class SecurityConfig {
     @Autowired
     @Bean
     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-      UserDetails user = User.withUsername("admin")
-          .password(passwordEncoder.encode("password"))
-          .roles("ADMIN")
+      UserDetails user = User.withUsername("hi2@gmail.com")
+          .password(passwordEncoder.encode("hi"))
+          //.roles("ADMIN")
           .build();
       return new InMemoryUserDetailsManager(user);
     }
