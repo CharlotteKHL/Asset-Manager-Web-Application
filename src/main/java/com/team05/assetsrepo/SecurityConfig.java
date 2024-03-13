@@ -50,8 +50,37 @@ public class SecurityConfig {
     @Autowired
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(request -> request.anyRequest().permitAll()).csrf(AbstractHttpConfigurer::disable);
-        http.formLogin(form -> form.loginPage("/login.html").permitAll());
+        http
+            // First, specify the authorisation for specific paths
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/create-type/**").hasAuthority("ADMIN")
+                .requestMatchers("/create-asset/**", "/manage-asset/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers("/search-asset/**").hasAnyAuthority("VIEWER", "USER", "ADMIN")
+                .requestMatchers("/register.html").permitAll()
+            )
+            // Next, configure form login
+            .formLogin(form -> form
+                .loginPage("/login.html")
+                .permitAll() // Allow everyone to see the login page
+            )
+            // Configure logout
+            .logout(logout -> logout
+                .logoutSuccessUrl("/index.html")
+                .permitAll() // Allow everyone to access logout success URL
+            )
+            // Finally, handle all other requests
+            .authorizeHttpRequests(authorize -> authorize
+                .anyRequest().authenticated()
+            )
+            // Disable CSRF if necessary
+            .csrf(csrf -> csrf.disable());
+
         return http.build();
     }
+
+
+
+
+
+
 }
