@@ -1,8 +1,9 @@
 package com.team05.assetsrepo;
 
 import java.util.Collection;
-
+import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
@@ -29,6 +30,9 @@ public class UserEntity implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "role")
+    private String role;
+    
     public int getID() {
         return id;
     }
@@ -37,9 +41,23 @@ public class UserEntity implements UserDetails {
         this.id = id;
     }
 
+    public String getRole() {
+      return role;
+    }
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+      String userRole = getRole();
+      
+      if ("admin".equalsIgnoreCase(userRole)) {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+      } else if ("user".equalsIgnoreCase(userRole)) {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+      } else if ("viewer".equalsIgnoreCase(userRole)) {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_VIEWER"));
+      } else {
         return null;
+      }
     }
 
     @Override
