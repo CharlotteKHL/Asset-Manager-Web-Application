@@ -2,9 +2,13 @@ package com.team05.assetsrepo;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +27,11 @@ public class AccountController {
 	
 	public AccountController(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
+	}
+
+	@Bean
+	public PasswordEncoder encoder() {
+		return new BCryptPasswordEncoder();
 	}
 
 	/**
@@ -98,7 +107,6 @@ public class AccountController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestParam String username, @RequestParam String password) {
-
 	    // prepared sql statements
 		String count = "SELECT COUNT(user_id) FROM user2";
 		String insert = "INSERT INTO user2 (user_id, username, password, role) "
@@ -129,6 +137,9 @@ public class AccountController {
 		    
 			message = "Registration unsuccessful, this email may already have an account";
 		}
+
+		// sets the user's password to the hashed version
+		setPassword(username, encoder().encode(getPassword(username)));
 
         return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
 	}
@@ -169,6 +180,6 @@ public class AccountController {
 		parameters.put("username", username);
 		parameters.put("password", password);
 
-		jdbcTemplate.execute(setPassword, parameters, null);
+		jdbcTemplate.update(setPassword, parameters);
 	}
 }
