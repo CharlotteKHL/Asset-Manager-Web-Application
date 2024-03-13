@@ -1,103 +1,67 @@
-// Client-side form validation - this method is called upon form submission.
-function validateEntries() {
+// Appends an alert to a (placeholder) div given an id specified by the placeholder parameter
+// Aside from the placeholder, this function requires that the message, Bootstrap class type, and desired id for the alert is given
+const appendAlert = (message, type, placeholder, alertId) => {
+    const placeholderDiv = document.getElementById(`${placeholder}`);
+    const wrapper = document.createElement('div');
+    // Setting an id allows us to identify whether a specific alert already exists, thus preventing alerts from stacking
+    wrapper.id = alertId;
+    wrapper.classList.add("alertMsg");
+    wrapper.innerHTML = [
+        `<div class="alert ${type} alert-dismissible" role="alert">
+            <div>${message}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`
+    ].join('');
+    placeholderDiv.append(wrapper);
+}
 
-    const assetForm = document.getElementById("assetForm");
-    // Regular expression to ensure date entered is valid i.e. dd/MM/yyyy.
-    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
-    // Creates an array containing all entries entered / selected by the user.
-    let entries = [...assetForm.elements]
-        .filter(element => element.tagName === 'INPUT' || element.tagName === 'SELECT')
-        .map(input => input.value);
-
-    // The code below "resets" any previously displayed alerts.
+// All appended alerts are assigned the class alertMsg, hence we remove each element with the alertMsg class from the page.
+function resetAlerts() {
     const alerts = Array.from(document.getElementsByClassName('alertMsg'));
     alerts.forEach(alert => {
         alert.remove();
     });
+}
 
-    // Boolean used to keep track of whether any alerts were triggered after all checks.
-    let alertTriggered = false;
-
-    /* The block of code below is used to generate and display the necessary (Bootstrap) alert.
-    Each alert has its own specific id.
-    All alerts share the same class: "alertMsg". */
-    const appendAlert = (message, type, placeholder, alertId) => {
-        const placeholderElement = document.getElementById(`${placeholder}`);
-        const wrapper = document.createElement('div');
-        wrapper.id = alertId;
-        wrapper.classList.add("alertMsg");
-        wrapper.innerHTML = [
-            `<div class="alert alert-${type} alert-dismissible" role="alert">
-                <div>${message}</div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
-            </div>`
-        ].join('');
-
-        placeholderElement.append(wrapper);
+// Obtains the entries from the type management form, sends POST request to create a new row in the database table "type"
+function createType() {
+    // Resets the page, removing all previously given alerts
+    resetAlerts();
+    // Boolean used to keep track of whether an invalid entry has been detected
+    let isValid = true;
+    // Defining a JavaScript object to populate with pairs in the form attribute name to attribute datatype
+    let pairs = {};
+    // Checks whether a name has been provided for the new asset type
+    if (document.getElementById("customType").value == '') {
+        if (document.getElementById("noNameAlert") == null) {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Please enter a name for the new asset type.', 'alert-danger', 'errorAlertPlaceholder', 'noNameAlert');
+        }
+        isValid = false;
     }
-
-    /* N.B. All if statements below include an additional condition to check whether the alert already exists on the page.
-    This ensures that alerts do not stack i.e. pile up on the page. */
-
-    // Checks whether the asset title is empty.
-    if(entries[0].length == 0 && document.getElementById('titleAlert') === null) {
-        alertTriggered = true;
-        appendAlert('You must enter an asset title!', 'danger', 'titleAlertPlaceholder', 'titleAlert');
-    }
-
-    // Checks whether the asset title is over 50 characters long.
-    if(entries[0].length > 50 && document.getElementById('titleLengthAlert') === null) {
-        alertTriggered = true;
-        appendAlert('You cannot enter a title longer than 50 characters!', 'danger', 'titleAlertPlaceholder', 'titleLengthAlert');
-    }
-
-    // Checks whether the number of lines has been left empty / is less than or equal to 0.
-    if((entries[1] == "" || entries[1] <= 0) && document.getElementById('noOfLinesAlert') === null) {
-        alertTriggered = true;
-        appendAlert('You must enter a positive number of lines!', 'danger', 'noOfLinesAlertPlaceholder', 'noOfLinesAlert');
-    }
-
-    // Checks whether the asset link is empty.
-    if(entries[2].length == 0 && document.getElementById('linkAlert') === null) {
-        alertTriggered = true;
-        appendAlert('You must enter an asset link!', 'danger', 'linkAlertPlaceholder', 'linkAlert');
-    }
-
-    // Checks whether the programming language field is empty.
-    if(entries[3].length == 0 && document.getElementById('progLanguageAlert') === null) {
-        alertTriggered = true;
-        appendAlert('You must enter an asset programming language!', 'danger', 'progLanguageAlertPlaceholder', 'progLanguageAlert');
-    }
-
-    // Checks whether the associations field is empty.
-    if(entries[4].length == 0 && document.getElementById('associationsAlert') === null) {
-        alertTriggered = true;
-        appendAlert('You must enter asset association(s)!', 'danger', 'associationsAlertPlaceholder', 'associationsAlert');
-    }
-
-    // Checks whether date field has been left empty or does not conform to the date regular expression.
-    if((entries[5].length == 0 || !dateRegex.test(entries[5])) && document.getElementById('dateAlert') === null) {
-        alertTriggered = true;
-        appendAlert('You must enter an asset creation date in the dd/mm/yyyy format!', 'danger', 'dateAlertPlaceholder', 'dateAlert');
-    }
-
-    /* If no alerts were triggered, we can proceed to submit a POST request.
-    If an error (from the server / backend) is caught, this is appropriately displayed.
-    Otherwise a successful message is displayed to the user. */
-    if(!alertTriggered) {
-
-        var formData = new FormData();
-
-        formData.append("title", entries[0]);
-        formData.append("lines", entries[1]);
-        formData.append("link", entries[2]);
-        formData.append("lang", entries[3]);
-        formData.append("assoc", entries[4]);
-        formData.append("date", entries[5]);
-
-        fetch('/submit', {
+    // Creates the initial pairing - this is for the name of the new asset type
+    pairs["type"] = document.getElementById("customType").value;
+    const spans = document.querySelectorAll('#attributesContainer span');
+    // Iterates over each pair of form fields, obtaining the attribute name and the attribute datatype
+    spans.forEach(span => {
+        const inputVal = span.querySelector('input').value.trim();
+        const selectVal = span.querySelector('select').value.trim();
+        // Checks whether the name for an attribute has been left blank or is greater than 50 characters long
+        if (!inputVal || inputVal.length > 50) {
+            if (document.getElementById("invalidLengthAlert") == null) {
+                appendAlert('<i class="bi bi-exclamation-triangle"></i> Please check the length of each attribute name.', 'alert-danger', 'errorAlertPlaceholder', 'invalidLengthAlert');
+            }
+            isValid = false;
+            return;
+        }
+        // Creates the subsequent pairings
+        pairs[inputVal] = selectVal;
+    });
+    // All entries detected to be valid - convert the JavaScript object to a JSON string and send as the body of the POST request
+    if (isValid) {
+        pairs = JSON.stringify(pairs);
+        fetch('/createType', {
             method: 'POST',
-            body: formData,
+            body: pairs,
         })
         .then(response => {
             if (response.ok) {
@@ -109,12 +73,334 @@ function validateEntries() {
             }
         })
         .then(data => {
-            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'success', 'successAlertPlaceholder');
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
         })
         .catch(error => {
-            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'danger', 'successAlertPlaceholder');
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
         });
-
     }
+}
 
+function deleteType() {
+    resetAlerts();
+    selectedType = document.getElementById("type").value;
+    
+    fetch('/deleteType', {
+            method: 'POST',
+            body: selectedType,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
+}
+
+// Obtains the entries from the type management form, sends POST request to update an existing row in the database table "type"
+function updateType() {
+    // Resets the page, removing all previously given alerts
+    resetAlerts();
+    let isValid = true;
+    let pairs = {};
+    pairs["type"] = document.getElementById("type").value;
+    const spans = document.querySelectorAll('#attributesContainer span');
+    spans.forEach(span => {
+        const inputVal = span.querySelector('input').value.trim();
+        const selectVal = span.querySelector('select').value.trim();
+        if (!inputVal || inputVal.length > 50) {
+            if (document.getElementById("invalidLengthAlert") == null) {
+                appendAlert('<i class="bi bi-exclamation-triangle"></i> Please check the length of each attribute name.', 'alert-danger', 'errorAlertPlaceholder', 'invalidLengthAlert');
+            }
+            isValid = false;
+            return;
+        }
+        pairs[inputVal] = selectVal;
+    });
+    if (isValid) {
+        pairs = JSON.stringify(pairs);
+        fetch('/updateType', {
+            method: 'POST',
+            body: pairs,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
+    }
+}
+
+function renameType() {
+    // Resets the page, removing all previously given alerts
+    resetAlerts();
+    // Boolean used to keep track of whether an invalid entry has been detected
+    let isValid = true;
+    // Defining a JavaScript object to populate with pairs in the form attribute name to attribute datatype
+    let pairs = {};
+    // Checks whether a name has been provided for the new asset type
+    if (document.getElementById("customType").value == '') {
+        if (document.getElementById("noNameAlert") == null) {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Please enter a new name for the asset type.', 'alert-danger', 'errorAlertPlaceholder', 'noNameAlert');
+        }
+        isValid = false;
+    }
+    // Creates the initial pairing - this is for the name of the new asset type
+    pairs["customType"] = document.getElementById("customType").value;
+    // Add the type value to the pairs object
+    pairs["overarchingType"] = document.getElementById("type").value;
+    const spans = document.querySelectorAll('#attributesContainer span');
+    // Iterates over each pair of form fields, obtaining the attribute name and the attribute datatype
+    spans.forEach(span => {
+        const inputVal = span.querySelector('input').value.trim();
+        const selectVal = span.querySelector('select').value.trim();
+        // Checks whether the name for an attribute has been left blank or is greater than 50 characters long
+        if (!inputVal || inputVal.length > 50) {
+            if (document.getElementById("invalidLengthAlert") == null) {
+                appendAlert('<i class="bi bi-exclamation-triangle"></i> Please check the length of each attribute name.', 'alert-danger', 'errorAlertPlaceholder', 'invalidLengthAlert');
+            }
+            isValid = false;
+            return;
+        }
+        // Creates the subsequent pairings
+        pairs[inputVal] = selectVal;
+    });
+    // All entries detected to be valid - convert the JavaScript object to a JSON string and send as the body of the POST request
+    if (isValid) {
+        pairs = JSON.stringify(pairs);
+        fetch('/renameType', {
+            method: 'POST',
+            body: pairs,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
+    }
+}
+
+
+// Obtains the entries from the asset creation form, sends POST request to create a new row in the database table "assets"
+function validateEntries() {
+    // Resets the page, removing all previously given alerts
+    resetAlerts();
+    let isValid = true;
+    let obj = {};
+    // Creates a list of the attribute names in order to construct the key-value pairs (JSON) later on
+    const labels = document.querySelectorAll('label');
+    const labelArray = [];
+    labels.forEach(label => {
+        labelArray.push(label.textContent.trim());
+    });
+    const assetForm = document.getElementById("assetForm");
+    // Creates a list of all the user's entries into the asset creation form
+    let entries = [...assetForm.elements]
+    .filter(element => element.tagName === 'INPUT' || element.tagName === 'SELECT')
+    .map(input => {
+        // Whilst constructing the list, check whether any entries for list attributes do not conform to the pattern attribute (regular expression) 
+        // of their corresponding input field
+        if (input.classList.contains("listAttr")) {
+            if (!input.checkValidity()) {
+                if (document.getElementById("invalidListAlert") == null) {
+                    appendAlert('<i class="bi bi-exclamation-triangle"></i> Please ensure list items are of the correct type and separated by a comma.', 'alert-danger', 'errorAlertPlaceholder', 'invalidListAlert');
+                }
+                isValid = false;
+                return;
+            }
+        }
+        // Handles associations field, where all selected options need to be collected
+        if (input.tagName === 'SELECT' && input.multiple) {
+            return [...input.options]
+                .filter(option => option.selected)
+                .map(option => option.value);
+        } else {
+            return input.value;
+        }
+    });
+    // Iterates over the user's entries, checks whether they have been left blank / are over 50 characters long
+    for (let i = 0; i < entries.length; i++) {
+        if(entries[i] == '' || entries[i].length > 50) {
+            if (document.getElementById("invalidLengthAlert") == null) {
+                appendAlert('<i class="bi bi-exclamation-triangle"></i> Please ensure no fields are left blank / are over 50 characters long.', 'alert-danger', 'errorAlertPlaceholder', 'invalidLengthAlert');
+            }
+            isValid = false;
+            return;
+        } else {
+            // Handles associations field, as trim() is not possible on an array
+            if (Array.isArray(entries[i])) {
+                obj[labelArray[i]] = entries[i];
+            } else {
+                obj[labelArray[i]] = entries[i].trim();
+            }
+        }
+    }
+    if (isValid) {
+        obj = JSON.stringify(obj);
+        fetch('/submitAsset', {
+            method: 'POST',
+            body: obj,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
+    }
+}
+
+function assetSelectError() {
+    // Resets the page, removing all previously given alerts
+    resetAlerts();
+
+    // Create a new alert for the asset selection error
+    const alertPlaceholder = document.getElementById('errorAlertPlaceholder');
+    const alertDiv = document.createElement('div');
+    alertDiv.classList.add('alert', 'alert-danger');
+    alertDiv.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Please select an asset.';
+    alertPlaceholder.appendChild(alertDiv);
+}
+
+// Obtains the entries from the asset creation form, sends POST request to create a new row in the database table "assets"
+function updateAsset(id) {
+    // Resets the page, removing all previously given alerts
+    resetAlerts();
+    let isValid = true;
+    let obj = {};
+    // Creates a list of the attribute names in order to construct the key-value pairs (JSON) later on
+    const labels = document.querySelectorAll('label');
+    const labelArray = [];
+    labels.forEach(label => {
+        labelArray.push(label.textContent.trim());
+    });
+    const assetForm = document.getElementById("assetForm");
+    // Creates a list of all the user's entries into the asset creation form
+    let entries = [...assetForm.elements]
+    .filter(element => element.tagName === 'INPUT' || element.tagName === 'SELECT')
+    .map(input => {
+        // Whilst constructing the list, check whether any entries for list attributes do not conform to the pattern attribute (regular expression) 
+        // of their corresponding input field
+        if (input.classList.contains("listAttr")) {
+            if (!input.checkValidity()) {
+                if (document.getElementById("invalidListAlert") == null) {
+                    appendAlert('<i class="bi bi-exclamation-triangle"></i> Please ensure list items are of the correct type and separated by a comma.', 'alert-danger', 'errorAlertPlaceholder', 'invalidListAlert');
+                }
+                isValid = false;
+                return;
+            }
+        }
+        // Handles associations field, where all selected options need to be collected
+        if (input.tagName === 'SELECT' && input.multiple) {
+            return [...input.options]
+                .filter(option => option.selected)
+                .map(option => option.value);
+        } else {
+            return input.value;
+        }
+    });
+    // Iterates over the user's entries, checks whether they have been left blank / are over 50 characters long
+    for (let i = 0; i < entries.length; i++) {
+		if(!document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Re-name asset' || !document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Change asset name?' || labelArray[i] === 'Delete selected asset?') {
+			continue;
+		}
+        if(entries[i] == '' || entries[i].length > 50) {
+            if (document.getElementById("invalidLengthAlert") == null) {
+                appendAlert('<i class="bi bi-exclamation-triangle"></i> Please ensure no fields are left blank / are over 50 characters long.', 'alert-danger', 'errorAlertPlaceholder', 'invalidLengthAlert');
+            }
+            isValid = false;
+            return;
+        } else {
+            // Handles associations field, as trim() is not possible on an array
+            if (Array.isArray(entries[i])) {
+                obj[labelArray[i]] = entries[i];
+            } else {
+                obj[labelArray[i]] = entries[i].trim();
+            }
+        }
+    }
+    if (isValid) {
+        obj = JSON.stringify(obj);
+        fetch(`/updateAsset/${id}`, {
+            method: 'POST',
+            body: obj,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
+    }
+}
+
+function deleteAsset(id) {
+    resetAlerts();
+    
+    fetch(`/deleteAsset/${id}`, {
+            method: 'POST',
+            body: {},
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
 }

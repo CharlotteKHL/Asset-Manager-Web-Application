@@ -1,7 +1,5 @@
-function checkLogin() {
-
-    const loginButton = document.getElementById('loginButton');
-
+function checkRegister() {
+	
     let valid = true;
 
     var formData = new FormData();
@@ -22,26 +20,44 @@ function checkLogin() {
         placeholderElement.append(wrapper);
     }
     
+    let email = document.getElementById("email").value;
+    
     // validating the username 
-    if((document.getElementById("exampleInputEmail").value) == ""){
+    if(email == ""){
+		
         valid = false;
-        appendAlert("Please enter your email", 'danger', 'loginEmailAlertPlaceholder', 'exampleInputEmail1');
+        appendAlert("Please enter your email", 'danger', 'registerEmailAlertPlaceholder', 'email');
+        
+    }else if(email.search("@") == -1){
+		
+        valid = false;
+        appendAlert("Please enter a valid email, must include an '@'", 'danger', 'registerEmailAlertPlaceholder', 'email');
+    
     }else{
-        formData.append("username", document.getElementById("exampleInputEmail").value);
+        formData.append("username", document.getElementById("email").value);
     }
 
     // validating the password 
-    if((document.getElementById("exampleInputPassword")) == ""){
+    const password = document.getElementById("password").value;
+    const password2 = document.getElementById("password2").value;
+    if(password == ""){
+        
         valid = false;
-        appendAlert("Please enter your password", 'danger', 'loginPasswordAlertPlaceholder', 'exampleInputPassword1');
-    }else{
-        formData.append("password", document.getElementById("exampleInputPassword").value);
+        appendAlert("Please enter your password", 'danger', 'registerPasswordAlertPlaceholder', 'password');
+        
+    } else if(password != password2){
+		
+		valid = false;
+		appendAlert("Your password does not match your re-entry", 'danger', 'registerPasswordAlertPlaceholder', 'password');
+	
+	} else {
+        formData.append("password", password);
     }
 
-    // Portion that check if the server side validation has worked.
+    // Sends fetch to backend with user input to check if username unique and to input into database
     if(valid){
         
-        fetch('/login', {
+        fetch('/register', {
             method: 'POST',
             body: formData,
         }).then(response => {
@@ -54,13 +70,13 @@ function checkLogin() {
             }
         })
         .then(async data => {
-            if(data.message == "This password is not correct") {
-                appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + data.message, 'danger', 'successAlertPlaceholder');
-            } else {
-                appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'success', 'successAlertPlaceholder');
-                await sleep(2000);
-                window.location.replace('index.html');
-            }
+			if(data.message == "Registration successful"){
+				appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message + ", redirecting to login", 'success', 'successAlertPlaceholder');
+				await sleep(2000);
+				window.location.replace('login.html');
+			} else {
+				appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'danger', 'successAlertPlaceholder');
+			}
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'danger', 'successAlertPlaceholder');

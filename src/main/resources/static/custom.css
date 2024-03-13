@@ -1,0 +1,103 @@
+/* Navbar */
+.navbar {
+    padding-left: 10.0%;
+    padding-right: 10.0%;
+}
+
+.nav-link { white-space: nowrap; }
+
+#assetTitle {
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
+#assetAssociations {
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
+#type {
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+/* Input and select width */
+input, select {
+    width: 20.0%;
+}
+
+/* Styling for the renaming checkbox */
+#changeTypeNameCheckboxDiv {
+    display: flex;
+    justify-content: center; /* Align checkbox to the middle horizontally */
+    align-items: center; /* Align checkbox to the middle vertically */
+    margin-bottom: 1.0rem; /* Add some space below the checkbox */
+}
+
+#changeTypeNameCheckbox {
+    width: 1.5rem; /* Set the width of the checkbox */
+    height: 1.5rem; /* Set the height of the checkbox */
+}
+
+/* Styling for the renaming checkbox */
+#changeAssetNameCheckboxDiv {
+    display: flex;
+    justify-content: center; /* Align checkbox to the middle horizontally */
+    align-items: center; /* Align checkbox to the middle vertically */
+    margin-bottom: 1.0rem; /* Add some space below the checkbox */
+}
+
+#changeAssetNameCheckbox {
+    width: 1.5rem; /* Set the width of the checkbox */
+    height: 1.5rem; /* Set the height of the checkbox */
+}
+
+/* Styling for the delete checkbox */
+#deleteTypeDiv {
+    display: flex;
+    justify-content: center; /* Align checkbox to the middle horizontally */
+    align-items: center; /* Align checkbox to the middle vertically */
+    margin-bottom: 1.0rem; /* Add some space below the checkbox */
+}
+
+#deleteTypeCheckbox {
+    width: 1.5rem; /* Set the width of the checkbox */
+    height: 1.5rem; /* Set the height of the checkbox */
+}
+
+/* Styling for the delete checkbox */
+#deleteAssetCheckboxDiv {
+    display: flex;
+    justify-content: center; /* Align checkbox to the middle horizontally */
+    align-items: center; /* Align checkbox to the middle vertically */
+    margin-bottom: 1.0rem; /* Add some space below the checkbox */
+}
+
+#deleteAssetCheckbox {
+    width: 1.5rem; /* Set the width of the checkbox */
+    height: 1.5rem; /* Set the height of the checkbox */
+}
+
+#customTypeInputDiv{
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
+#newNameInputDiv{
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
+#attributesContainer{
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
+#exampleInputEmail {
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
+
+#exampleInputPassword {
+	width: 30%; /* Take up the full width of its container */
+	margin: 0.0 auto; /* Horizontally center the dropdown list */
+}
