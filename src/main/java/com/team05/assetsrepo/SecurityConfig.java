@@ -10,9 +10,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @ComponentScan(basePackages = { "com.team05.assetsrepo" })
@@ -49,9 +53,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(request -> request.requestMatchers("/*").permitAll()).csrf(AbstractHttpConfigurer::disable);
-        http.formLogin(form -> form.loginPage("/login.html").defaultSuccessUrl("/index.html", true));
+//        http.authorizeHttpRequests(request -> request.requestMatchers("/login*").permitAll()).csrf(AbstractHttpConfigurer::disable);
+//        http.authorizeHttpRequests(request -> request.requestMatchers("/index.html").authenticated());
+        http.formLogin(form -> form.loginPage("/login.html").defaultSuccessUrl("/", true));
+        http.authorizeHttpRequests(request -> request.requestMatchers(new AntPathRequestMatcher("/login*")).permitAll()
+            .anyRequest().authenticated());
         http.headers(header -> header.frameOptions(frameOptions -> frameOptions.disable().contentTypeOptions(cto -> cto.disable())));
         return http.build();
+    }
+    
+    @Autowired
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+      UserDetails user = User.withUsername("admin")
+          .password(passwordEncoder.encode("password"))
+          .roles("ADMIN")
+          .build();
+      return new InMemoryUserDetailsManager(user);
     }
 }

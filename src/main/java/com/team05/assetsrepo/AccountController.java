@@ -2,7 +2,7 @@ package com.team05.assetsrepo;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import org.springframework.boot.actuate.web.exchanges.HttpExchange.Principal;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -33,6 +33,13 @@ public class AccountController {
 	@Bean
 	public PasswordEncoder encoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@PostMapping("/")
+	public ResponseEntity<String> checkSession() {
+	  //check if username is logged in
+	  String username = "hi2@gmail.com";
+      return ResponseEntity.ok().body("{\"username\": \"" + username + "\"}");
 	}
 
 	/**

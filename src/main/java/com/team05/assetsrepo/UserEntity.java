@@ -28,6 +28,9 @@ public class UserEntity implements UserDetails {
 
     @Column(name = "password")
     private String password;
+    
+    @Column(name = "role")
+    private String role;
 
     public int getID() {
         return id;
@@ -51,9 +54,17 @@ public class UserEntity implements UserDetails {
     public String getUsername() {
         return username;
     }
+    
+    public String getRole() {
+      return role;
+    }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+    
+    public void setRole(String role) {
+      this.role = role;
     }
 
     @Override
