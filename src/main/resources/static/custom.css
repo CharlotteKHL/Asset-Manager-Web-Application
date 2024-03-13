@@ -6,6 +6,33 @@
 
 .nav-link { white-space: nowrap; }
 
+#mainContainer {
+    display: inline;
+}
+
+#filterAndResultsContainer {
+    display: flex;
+    justify-content: space-around;
+}
+
+#filterBox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 5%;
+    padding: 1%;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    width: min-content;
+    background-color: #FFFFFF;
+}
+
+#resultsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 5%;
+    grid-row-gap: 10%;
+}
 #assetTitle {
 	width: 30%; /* Take up the full width of its container */
 	margin: 0.0 auto; /* Horizontally center the dropdown list */
@@ -20,6 +47,7 @@
 	width: 30%; /* Take up the full width of its container */
 	margin: 0.0 auto; /* Horizontally center the dropdown list */
 }
+
 /* Input and select width */
 input, select {
     width: 20.0%;
