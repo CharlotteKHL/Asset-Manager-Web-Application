@@ -15,14 +15,17 @@
            <a class="navbar-brand" href="index.html">Asset Metadata Repository</a>
            <div class="d-flex w-100">
               <div class="mr-auto">
-                 <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="create-type.html">Manage Asset Types</a>
-                 </button>
-                 <button class="btn btn-outline-primary mx-3">
+                <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="create-asset.html">Create an Asset</a>
                  </button>
                  <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="search-asset.html">Search for Assets</a>
+                 </button>
+                <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="manage-asset.html">Manage Assets</a>
+                </button>
+                 <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="create-type.html">Manage Asset Types</a>
                  </button>
                  <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="audit-trail.html">Audit Trail</a>
@@ -150,6 +153,10 @@
                             attributeInput.min = '0';
                             attributeInput.step = '0.01';
                         }
+                        if (attribute[1] == "Version Number") {
+                            attributeInput.type = 'text';
+                            attributeInput.classList.add('versionNumber');
+                        }
                         // Adds both the label element and the input element to a div, resulting in a container which represents an individual attribute
                         let individualAttr = document.createElement('div');
                         individualAttr.classList = 'mb-4'
@@ -161,7 +168,7 @@
                         if (attribute[1].endsWith("(List)")) {
                             switch(attribute[1]) {
                                 case "Text (List)":
-                                    attributeInput.pattern = '^[a-zA-Z0-9]+(, [a-zA-Z0-9]+)*$';
+                                    attributeInput.pattern = '^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*(?:, [a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*)*$';
                                     break;
                                 case "Number (List)":
                                     attributeInput.pattern = '^[0-9]+(, [0-9]+)*$';

@@ -6,9 +6,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import java.util.ArrayList;
 import java.util.Arrays;
+// import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.DataAccessException;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Controller responsible for creating assets, creating / updating asset types, and fetching types /
@@ -47,7 +51,8 @@ public class FormController {
    * representing its attributes.
    *
    * @param pairs the JSON string from the POST request body.
-   * @return String a message indicating whether the creation of a new asset type was successful.
+   * @return ResponseEntity containing a message indicating whether the creation of a new asset 
+   *      type was successful.
    */
   @PostMapping("/createType")
   public ResponseEntity<?> createType(@RequestBody String pairs) {
@@ -100,15 +105,15 @@ public class FormController {
 
     } catch (JsonProcessingException e) {
 
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
 
     } catch (DuplicateKeyException e) {
 
-      e.printStackTrace();
-      return ResponseEntity.badRequest().body(
-          "{\"error\": \"" + "Please check that the name of your asset type is unique!" + "\"}");
-
+      System.err.println(e.getMessage());
+      return ResponseEntity.badRequest().body("{\"error\": \"" 
+      + "Please check that the name of your asset type is unique!" + "\"}");
+      
     }
   }
 
@@ -117,7 +122,8 @@ public class FormController {
    * attributes.
    *
    * @param pairs the JSON string from the POST request body.
-   * @return String a message indicating whether updating the asset type was successful.
+   * @return ResponseEntity containing a message indicating whether updating the asset type was 
+   *      successful.
    */
   @PostMapping("/updateType")
   public ResponseEntity<?> updateType(@RequestBody String pairs) {
@@ -153,7 +159,7 @@ public class FormController {
       return ResponseEntity.ok().body("{\"message\": \"Asset type updated successfully!\"}");
 
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
     }
   }
@@ -256,7 +262,8 @@ public class FormController {
    * its attributes.
    *
    * @param obj the JSON string from the POST request body.
-   * @return String a message indicating whether the creation of a new asset was successful.
+   * @return ResponseEntity containing a message indicating whether the creation of a new asset was 
+   *      successful.
    */
   @PostMapping("/submitAsset")
   public ResponseEntity<?> submitAsset(@RequestBody String obj) {
@@ -332,14 +339,14 @@ public class FormController {
 
     } catch (JsonProcessingException e) {
 
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
 
     } catch (DuplicateKeyException e) {
 
-      e.printStackTrace();
-      return ResponseEntity.badRequest()
-          .body("{\"error\": \"" + "Please check that the name of your asset is unique!" + "\"}");
+      System.err.println(e.getMessage());
+      return ResponseEntity.badRequest().body("{\"error\": \"" 
+      + "Please check that the name of your asset is unique!" + "\"}");
 
     }
   }
@@ -414,7 +421,7 @@ public class FormController {
    * drop-down menu.
    *
    * @param model The model to which types retrieved from the database will be added.
-   * @return The name of the HTML page for creating an asset ("create-asset").
+   * @return String the name of the HTML page for creating an asset ("create-asset").
    */
   @GetMapping("/create-asset.html")
   public String populateTypesCreateAsset(Model model) {
@@ -432,7 +439,7 @@ public class FormController {
    * drop-down menu.
    *
    * @param model The model to which types retrieved from the database will be added.
-   * @return The name of the HTML page for creating a type ("create-type").
+   * @return String the name of the HTML page for creating a type ("create-type").
    */
   @GetMapping("/create-type.html")
   public String populateTypesCreateType(Model model) {
@@ -442,11 +449,212 @@ public class FormController {
     return "create-type";
   }
 
+  /** 
+   * This method is required to load the search-asset.html page / template.
+   *
+   * @return String the "search-asset.html" HTML page.
+   */
+  @GetMapping("/search-asset.html")
+  public String getSearchAssetPage(Model model) {
+    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+        Collections.emptyMap(), String.class);
+    model.addAttribute("types", types);
+    return "search-asset";
+  }
+
   /**
-   * Intermediary method for getting attributes associated with a given type from the database.
+   * Queries the database for matching assets based on the keyword entered / filters selected 
+   * by the user.
+   *
+   * @param searchData a JSON string containing the keyword entered, followed by the values of 
+   *      each selection from the filter.
+   * @return List containing the names of the assets which match the criteria.
+   */
+  @PostMapping("/searchAssetQuery")
+  @ResponseBody
+  public List<String> searchAssetQuery(@RequestBody String searchData) {
+    try {
+
+      // Converts the JSON string to an array using Jackson.
+      ObjectMapper mapper = new ObjectMapper();
+      String[] searchDataArr = mapper.readValue(searchData, String[].class);
+
+      // Obtain the keyword relating to the asset to query.
+      String assetToQuery = searchDataArr[0];
+
+      /* Default SQL statement which obtains the name of the asset which is similar to the keyword 
+      entered. */
+      String sql = "SELECT title FROM assets WHERE title ILIKE :assetToQuery";
+
+      // The "assetToQuery" parameter stores the keyword.
+      MapSqlParameterSource params = new MapSqlParameterSource()
+          .addValue("assetToQuery", "%" + assetToQuery + "%");
+
+      // Checks whether a type was selected via the "Type" filter.
+      if (searchDataArr[1] != "") {
+        /* Then, we check whether both a start date and an end date were specified in the 
+        "Date Range" filter. */
+        if (searchDataArr[2] != "" && searchDataArr[3] != "") {
+          /* Builds upon the default SQL statement to also consider the chosen type, start date, 
+          and end date. */
+          sql = "SELECT title FROM assets JOIN type ON assets.type = type.id WHERE assets.title "
+            + "ILIKE :assetToQuery AND type.type_name = :chosenType AND assets.last_updated "
+            + "BETWEEN CAST(:dateFrom AS TIMESTAMP) AND CAST(:dateTo AS TIMESTAMP)";
+          params.addValue("chosenType", searchDataArr[1]);
+          params.addValue("dateFrom", searchDataArr[2]);
+          params.addValue("dateTo", searchDataArr[3]);
+        } else {
+          // Otherwise, we only consider the type as an additional filter.
+          sql = "SELECT title FROM assets JOIN type ON assets.type = type.id WHERE assets.title "
+            + "ILIKE :assetToQuery AND type.type_name = :chosenType";
+          params.addValue("chosenType", searchDataArr[1]);
+        }
+      /* If only the dates were specified, then only the dates are considered as an 
+      additional filter. */
+      } else {
+        if (searchDataArr[2] != "" && searchDataArr[3] != "") {
+          sql = "SELECT title FROM assets WHERE title ILIKE :assetToQuery AND assets.last_updated "
+            + "BETWEEN CAST(:dateFrom AS TIMESTAMP) AND CAST(:dateTo AS TIMESTAMP)";
+          params.addValue("dateFrom", searchDataArr[2]);
+          params.addValue("dateTo", searchDataArr[3]);
+        }
+      }
+
+      /* Checks whether the user selected a choice in the "Sort by" filter section, adding to the
+      SQL statement accordingly. */
+      switch (searchDataArr[4]) {
+        case "Alphabetical: A-Z":
+          sql = sql + " ORDER BY title ASC";
+          break;
+        case "Alphabetical: Z-A":
+          sql = sql + " ORDER BY title DESC";
+          break;
+        case "Date: Most Recent Update - Oldest Update":
+          sql = sql + " ORDER BY assets.last_updated ASC";
+          break;
+        case "Date: Oldest Update - Most Recent Update":
+          sql = sql + " ORDER BY assets.last_updated DESC";
+          break;
+        default:
+          break;
+      }
+
+      // Carry out the query and store the names of the resulting assets in a list.
+      List<String> matchingAssets = jdbcTemplate.queryForList(sql, params, String.class);
+
+      return matchingAssets;
+
+    } catch (JsonProcessingException e) {
+      System.err.println(e.getMessage());
+      return Collections.emptyList();
+    }
+  }
+
+  /**
+   * Retrieves the rest of an asset's data given its name.
+   *
+   * @param assetName the name of the asset whose metadata is to be retrieved.
+   * @return String a JSON string containing the given asset's metadata.
+   */
+  @PostMapping("/getAssetData")
+  @ResponseBody
+  public String getAssetData(@RequestBody String assetName) {
+    // Obtains data from all the other columns of an asset given its name.
+    String sql = "SELECT * FROM assets WHERE title = :assetName";
+
+    MapSqlParameterSource params = new MapSqlParameterSource()
+        .addValue("assetName", assetName);
+
+    // Map used to store the result.
+    Map<String, Object> assetData = jdbcTemplate.queryForMap(sql, params);
+
+    // Removes the entry relating to the id, as this is not required.
+    assetData.remove("id");
+    // Removes the entry containing the additional attributes of the asset.
+    // This entry is stored in additionalAttrs.
+    Object additionalAttrs = assetData.remove("additional_attrs");
+
+    /* Since the type of the asset is stored as the type's id as opposed 
+    to the name, we retrieve the name from the id itself. */
+    Object typeId = assetData.get("type");
+
+    sql = "SELECT type_name FROM type WHERE id = :typeId";
+      
+    params = new MapSqlParameterSource()
+        .addValue("typeId", typeId);
+
+    String type = jdbcTemplate.queryForObject(sql, params, String.class);
+
+    // Change the entry relating to the asset's type to contain the actual name of the type.
+    assetData.put("type", type);
+
+    try {
+
+      // Below, we create a JSON object from scratch via Jackson's ObjectNode.
+      ObjectMapper mapper = new ObjectMapper();
+      ObjectNode assetDataJson = mapper.createObjectNode();
+
+      // Adds each Map entry as a JSON entry to the JSON object.
+      assetData.forEach((key, value) -> {
+        assetDataJson.put(key, value.toString());
+      });
+      
+      // Converts the Java Object containing the additional attributes of the asset to JSON.
+      JsonNode additionalAttrsNode = mapper.valueToTree(additionalAttrs);
+      /* Extracts only the additional attributes of the asset via the field name "value", 
+      hence ignoring any other metadata. */
+      String additionalAttrsStr = additionalAttrsNode.get("value").asText();
+      // Converts the previous JSON string back into a JSON object.
+      JsonNode additionalAttrsData = mapper.readTree(additionalAttrsStr);
+
+      /* Sets up a LinkedHashMap so that the additional attributes of the asset appear 
+      in the order defined within the asset's type. */
+      Map<String, Object> additionalAttrsOrdered = new LinkedHashMap<>();
+      
+      /* Obtains 2D array in the form [["Attribute Name", "Custom Datatype"], [...]]
+      representing each attribute name and its custom datatype in their originally 
+      defined order via the fetchAttributesForTypeFromDatabase method. */
+      List<String[]> attrKeysAndValues = fetchAttributesForTypeFromDatabase(type);
+      /* Since the entries of attrKeysAndValues are in their originally defined order, 
+      we can display the asset's attributes in the order they appear when viewing the 
+      attributes of its type. */
+      for (String[] pair : attrKeysAndValues) {
+        /* Adds a new entry (key-value pair) to the LinkedHashMap in the form 
+        "Attribute": Value, where the value is obtained from the 
+        original (unordered) JSON containing the additional attributes. */
+        additionalAttrsOrdered.put(pair[0], additionalAttrsData.get(pair[0]));
+      }
+
+      // Converts the LinkedHashMap to JSON.
+      JsonNode additionalAttrsDataOrdered = mapper.convertValue(
+          additionalAttrsOrdered, JsonNode.class);
+
+      /* Then, convert to a TextNode to ensure we can accordingly place 
+      the additional attributes JSON within our overall JSON. */
+      TextNode additionalAttrsTextNode = new TextNode(
+          mapper.writeValueAsString(additionalAttrsDataOrdered));
+
+      assetDataJson.set("additional_attrs", additionalAttrsTextNode);
+
+      // Convert to JSON string.
+      String assetDataJsonStr = mapper.writerWithDefaultPrettyPrinter()
+          .writeValueAsString(assetDataJson);
+
+      // Return the asset data as a JSON string.
+      return assetDataJsonStr;
+
+    } catch (JsonProcessingException e) {
+      System.err.println(e.getMessage());
+      return e.getMessage();
+    }
+  }
+
+  /**
+   * Intermediary method for getting attributes associated with a given type, in their originally 
+   * defined order, from the database.
    *
    * @param type The given asset type.
-   * @return A ResponseEntity containing a list of attributes associated with the provided type.
+   * @return ResponseEntity containing a list of attributes associated with the provided type.
    */
   @GetMapping("/attributes/{type}")
   public ResponseEntity<List<String[]>> getAttributesForType(@PathVariable String type) {
@@ -516,10 +724,11 @@ public class FormController {
   }
 
   /**
-   * Fetches attributes for the selected type from the database.
+   * Fetches attributes for the selected type, in their originally defined order, from the database.
    *
    * @param type The selected asset type for which attributes are to be fetched.
-   * @return A list of attributes associated with the provided type.
+   * @return 2D array in the form [["Attribute Name", "Custom Datatype"], [...]] representing each 
+   *      attribute name and its custom datatype.
    */
   private List<String[]> fetchAttributesForTypeFromDatabase(String type) {
     String sql = "SELECT attr_keys, attr_backend_types FROM type WHERE type_name = :type";
@@ -543,7 +752,7 @@ public class FormController {
       String backendType = parsedTypes[i].trim();
       attributesWithTypes.add(new String[] {key, backendType});
     }
-    System.out.println(Arrays.deepToString(attributesWithTypes.toArray()));
+    // System.out.println(Arrays.deepToString(attributesWithTypes.toArray()));
     return attributesWithTypes;
   }
 
@@ -574,7 +783,7 @@ public class FormController {
       Object value = entry.getValue();
       descriptionValue.add(new String[] {key, value.toString()});
     }
-    System.out.println(Arrays.deepToString(descriptionValue.toArray()));
+    // System.out.println(Arrays.deepToString(descriptionValue.toArray()));
     return descriptionValue;
   }
 
