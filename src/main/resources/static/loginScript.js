@@ -80,9 +80,9 @@ function sleep(ms) {
 // When the page is started up, a check is carried out to confirm if the user is logged in or not
 // If the user is logged in, then their username is displayed with a welcome message
 // If the user is not logged in, then the Login/Register buttons are displayed instead
-//document.addEventListener('DOMContentLoaded', function() {
+// document.addEventListener('DOMContentLoaded', function() {
 //    fetch('/', {
-//        method: 'POST'
+//        method: 'POST',
 //    }).then(response => {
 //        if(response.ok) {
 //            return response.json();
@@ -101,4 +101,4 @@ function sleep(ms) {
 //            usernameText.innerHTML = data.username;
 //        }
 //    })
-//});
+// });

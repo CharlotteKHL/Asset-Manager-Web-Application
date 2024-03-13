@@ -1,17 +1,27 @@
 package com.team05.assetsrepo;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.boot.actuate.web.exchanges.HttpExchange.Principal;
+
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Controller class for login and register functionality.
@@ -35,12 +45,10 @@ public class AccountController {
 		return new BCryptPasswordEncoder();
 	}
 	
-	@PostMapping("/")
-	public ResponseEntity<String> checkSession() {
-	  //check if username is logged in
-	  String username = "hi2@gmail.com";
-      return ResponseEntity.ok().body("{\"username\": \"" + username + "\"}");
-	}
+	// @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.POST})
+	// public String checkSession() {
+	// 	return "";
+	// }
 
 	/**
 	 * The extractLogin method handles POST requests to the "/login" URL.
@@ -144,7 +152,7 @@ public class AccountController {
 		    
 		    // if username unique add new user to the database
 			MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", idCount + 1)
-					.addValue("username", username).addValue("password", password).addValue("role", "admin");
+					.addValue("username", username).addValue("password", password).addValue("role", "ADMIN");
 
 			jdbcTemplate.update(insert, params);
 
