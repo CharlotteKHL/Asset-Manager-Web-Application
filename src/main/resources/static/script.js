@@ -529,3 +529,34 @@ function deleteAsset(id) {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
         });
 }
+
+
+function updateAuditTrailData() {
+    fetch('fetch_audit_trail_data.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        // Add any necessary request body parameters
+        // body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        const tableBody = document.getElementById('auditTrailTable');
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            Object.values(row).forEach(value => {
+                const td = document.createElement('td');
+                td.textContent = value;
+                tr.appendChild(td);
+            });
+            tableBody.appendChild(tr);
+        });
+    })
+    .catch(error => console.error('Error fetching data:', error));
+}
+
+// Call the function when the window loads
+window.onload = function() {
+    updateAuditTrailData();
+};
