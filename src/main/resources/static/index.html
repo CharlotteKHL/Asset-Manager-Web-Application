@@ -14,20 +14,6 @@
       <div class="container-fluid">
          <a class="navbar-brand" href="index.html">Asset Metadata Repository</a>
          <div class="d-flex w-100">
-            <div class="mr-auto">
-              <button class="btn btn-outline-primary mx-3">
-                  <a class="nav-link" href="create-asset.html">Create an Asset</a>
-               </button>
-               <button class="btn btn-outline-primary mx-3">
-                  <a class="nav-link" href="search-asset.html">Search for Assets</a>
-               </button>
-              <button class="btn btn-outline-primary mx-3">
-                  <a class="nav-link" href="manage-asset.html">Manage Assets</a>
-              </button>
-               <button class="btn btn-outline-primary mx-3">
-                  <a class="nav-link" href="create-type.html">Manage Asset Types</a>
-               </button>
-            </div>
             <div class="ms-auto">
                <button class="btn btn-outline-primary mx-1">
                   <a class="nav-link" href="login.html">Log In</a>
@@ -39,5 +25,41 @@
          </div>
       </div>
    </nav>
+   
+   <!-- Main Page Body -->
+   <section class="section p-3 vh-75 text-left">
+        <h1>Welcome to the Asset Metadata Reposirtory</h1>
+		<div class="row justify-content-between">
+		    <div class="col-md-5 pd-2">
+		        <p> The Asset Metadata Repository is {Insert Text Here} </p>
+			    <p> We provide the ability to search and view assets from the database to all users.</p>
+		    </div>
+			<div class="col-md-6 border p-2 bg-light">
+		        <h3> First Time Visitor? </h3>
+			    <p> Register a new account with us here: </p>
+				<button class="btn btn-outline-primary mx-1">
+                    <a class="nav-link" href="register.html">Register</a>
+                </button>
+		    </div>
+		</div>
+		<div class="row justify-content-end">
+		    <div class="col-md-6 border p-2 bg-light">
+		        <h3>Returning User?</h3>
+				<p>Log into your account here: </p>
+			    <button class="btn btn-outline-primary mx-1">
+                    <a class="nav-link" href="login.html">Log In</a>
+                </button>
+		    </div>
+		</div>
+		<div class="row">
+		    <div class="col-md-6 border p-4 bg-light">
+			    <h2>Looking for an Asset?</h2>
+				<p>You can search through and view the assets in the database here: </p>
+				<button class="btn btn-outline-primary mx-1">
+                    <a class="nav-link" href="search-asset.html">Search Assets</a>
+                </button>
+			</div>
+		</div>
+   </section>
 </body>
 </html>
