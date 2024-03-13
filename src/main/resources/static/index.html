@@ -25,7 +25,12 @@
                     <a class="nav-link" href="manage-asset.html">Manage Assets</a>
                  </button>
               </div>
-              <div class="ms-auto">
+              <div id="welcome-user-message" style="display: none">
+                  <p>
+                     Welcome, <strong><div id="username"></div></strong>!
+                  </p>
+              </div>
+              <div class="ms-auto" id="login-register-buttons">
                  <button class="btn btn-outline-primary mx-1">
                     <a class="nav-link" href="login.html">Log In</a>
                  </button>
@@ -36,5 +41,6 @@
            </div>
         </div>
      </nav>
+     <script src="loginScript.js"></script>
 </body>
 </html>
