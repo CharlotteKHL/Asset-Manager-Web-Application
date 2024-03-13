@@ -786,6 +786,15 @@ public class FormController {
     // System.out.println(Arrays.deepToString(descriptionValue.toArray()));
     return descriptionValue;
   }
-
-
+  
+  /**
+   * Retrieves the data from the audit_log table in the database.
+   *
+   * @return String a JSON string containing the metadata.
+   */
+  @PostMapping("/getAuditLog")
+  @ResponseBody
+  public String getAuditLog() {
+    return "";
+  }
 }
