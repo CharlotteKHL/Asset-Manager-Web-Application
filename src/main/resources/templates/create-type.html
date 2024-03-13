@@ -15,14 +15,17 @@
            <a class="navbar-brand" href="index.html">Asset Metadata Repository</a>
            <div class="d-flex w-100">
               <div class="mr-auto">
-                 <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="create-type.html">Manage Asset Types</a>
-                 </button>
-                 <button class="btn btn-outline-primary mx-3">
+                <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="create-asset.html">Create an Asset</a>
                  </button>
                  <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="search-asset.html">Search for Assets</a>
+                 </button>
+                <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="manage-asset.html">Manage Assets</a>
+                </button>
+                 <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="create-type.html">Manage Asset Types</a>
                  </button>
               </div>
               <div class="ms-auto">
@@ -68,10 +71,26 @@
                         Choose the asset type from the dropdown menu.
                     </div>
                 </div>
+				
+				<!-- Checkbox to change create button to delete -->
+				<div class="mb-3 form-check" id="deleteTypeDiv">
+					<input class="form-check-input" type="checkbox" id="deleteTypeCheckbox" name="deleteTypeCheckbox">
+					<label class="form-check-label" for="deleteTypeCheckbox">
+						Delete selected type?
+					</label>
+				</div>
+				
+				<!-- Checkbox to toggle visibility of type name input -->
+				<div class="mb-3 form-check d-none" id="changeTypeNameCheckboxDiv">
+				  <input class="form-check-input" type="checkbox" id="changeTypeNameCheckbox" name = "changeTypeNameCheckbox">
+				  <label class="form-check-label" for="changeTypeNameCheckbox">
+					Change type name?
+				  </label>
+				</div>
 
                 <!-- Contains input field for entering the name of the new type. Appears when "Create Custom Type" option is selected -->
                 <div id="customTypeInputDiv" class="mb-3 d-none">
-                    <label for="customType" class="form-label">
+                    <label for="customType" class="form-label" id="customTypeLabel">
                         Custom Type
                     </label>
                     <input type="text" id="customType" class="form-control m-auto" name="customType">
@@ -137,14 +156,82 @@
             const submitBtn = document.getElementById('createButton');
             const submitBtnText = document.getElementById('btnText');
             const submitBtnIcon = document.getElementById('btnIcon');
-
+			
+			// Assigns constants related to the deletion checkbox
+			const deleteTypeDiv = document.getElementById('deleteTypeDiv');
+			const deleteTypeCheckbox = document.getElementById('deleteTypeCheckbox');
+			
+			// Assigns constants related to the changing name checkbox
+			const changeTypeNameCheckboxDiv = document.getElementById('changeTypeNameCheckboxDiv');
+			const changeTypeNameCheckbox = document.getElementById('changeTypeNameCheckbox');
+			
+	  
             // Assigns a constant to the container for entering the name of a new asset type
             const customTypeInputDiv = document.getElementById('customTypeInputDiv');
             // Assigns a constant to the container for editing attributes
             const attributesContainer = document.getElementById('attributesContainer');
+			
+			
+			// Assigns constants to edit text of the input fields
+			const customTypeLabel = document.getElementById('customTypeLabel');
+			const customTypeHelp = document.getElementById('customTypeHelp');
+			
+			// Sets the value for the deletion checkbox to be unchecked when the page is loaded
+			deleteTypeCheckbox.checked = false;
+			// Hide the delete checkbox when the page is loaded
+			deleteTypeDiv.classList.add('d-none');
+			document.querySelector('label[for="deleteTypeCheckbox"]').classList.add('d-none');
+			
+			// Sets the value for the renaming checkbox to be unchecked when the page is loaded
+			changeTypeNameCheckbox.checked = false;
+			// Hides the editing name checkbox when the page is loaded
+			changeTypeNameCheckboxDiv.classList.add('d-none');
+			document.querySelector('label[for="changeTypeNameCheckbox"]').classList.add('d-none');
+			
+			
+			
+			deleteTypeCheckbox.addEventListener('change', function() {
+				if (deleteTypeCheckbox.checked) {
+				  submitBtn.setAttribute('onclick','deleteType()');
+				  submitBtnText.innerText = "Delete" + "\u00A0";
+				  changeTypeNameCheckbox.checked = false;
+				  customTypeInputDiv.classList.add('d-none');
+				} else {
+				  submitBtn.setAttribute('onclick','updateType()');
+				  submitBtnText.innerText = "Update" + "\u00A0";
+				}
+			});
+			
+			changeTypeNameCheckbox.addEventListener('change', function() {
+				if (changeTypeNameCheckbox.checked) {
+				  submitBtn.setAttribute('onclick','renameType()');
+				  submitBtnText.innerText = "Rename and update" + "\u00A0";
+				  customTypeInputDiv.classList.remove('d-none');
+				  customTypeLabel.textContent = 'Rename Type';
+				  customTypeHelp.textContent = 'Please enter the updated name for your asset type.';
+				  deleteTypeCheckbox.checked = false;
+				} else {
+				  submitBtn.setAttribute('onclick','updateType()');
+				  submitBtnText.innerText = "Update" + "\u00A0";
+				  customTypeInputDiv.classList.add('d-none');
+				  customTypeLabel.textContent = 'Custom Type';
+				  customTypeHelp.textContent = 'Please enter the name for your new asset type.';
+				}
+			});
 
             // Checks whether the user has made a change to the selection in the initial type dropdown
             typeDropdown.addEventListener("change", function() {
+				// Resets the value for the checkbox to be unchecked when a new type is selected
+				deleteTypeCheckbox.checked = false;
+				changeTypeNameCheckbox.checked = false;
+				customTypeLabel.textContent = 'Custom Type';
+				customTypeHelp.textContent = 'Please enter the name for your new asset type.';
+				// Hide the delete checkbox by default
+				deleteTypeDiv.classList.add('d-none');
+				document.querySelector('label[for="deleteTypeCheckbox"]').classList.add('d-none');
+				// Hide the renaming checkbox by default
+				changeTypeNameCheckboxDiv.classList.add('d-none');
+				document.querySelector('label[for="changeTypeNameCheckbox"]').classList.add('d-none');
                 // Resets the container for attributes, avoiding unintended persistence of input fields
                 attributesContainer.innerHTML = '';
                 buttonsDiv.classList.add('d-none');
@@ -175,9 +262,24 @@
                     submitBtn.setAttribute('onclick','updateType()');
                     submitBtnText.innerText = "Update" + "\u00A0";
                     submitBtnIcon.className = 'bi bi-arrow-repeat';
-                    // It's an existing type, so we show the buttons
+					
+					// It's an existing type, so we show the buttons
                     submitBtn.classList.remove('d-none');
                     buttonsDiv.classList.remove('d-none');
+					deleteTypeDiv.classList.remove('d-none');
+					document.querySelector('label[for="deleteTypeCheckbox"]').classList.remove('d-none');
+					changeTypeNameCheckboxDiv.classList.remove('d-none');
+					document.querySelector('label[for="changeTypeNameCheckbox"]').classList.remove('d-none');
+					
+                    // Covers the case where the user reselects the blank option from the type dropdown
+                    // Attribute fields are automatically removed by way of the "change" event listener
+                    if (typeDropdown.value == '') {
+                        buttonsDiv.classList.add('d-none');
+						deleteTypeDiv.classList.add('d-none');
+						document.querySelector('label[for="deleteTypeCheckbox"]').classList.add('d-none');
+						changeTypeNameCheckboxDiv.classList.add('d-none');
+						document.querySelector('label[for="changeTypeNameCheckbox"]').classList.add('d-none');
+                    } 
                 }
             });
 
