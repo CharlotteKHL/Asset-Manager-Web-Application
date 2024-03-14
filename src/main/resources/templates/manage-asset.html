@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Metadata Repository | Manage existing asset(s)</title>
+    <title>Asset Metadata Repository | Manage Assets</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" type="text/css" href="custom.css">
@@ -42,10 +42,10 @@
     <!-- Main page body -->
     <section class="section p-2 text-center">
         <h1>
-            Manage existing assets
+            Manage Assets
         </h1>
         <h3 class="fst-italic">
-            Select an asset from the form below to be edited
+            Select an existing asset to edit from the dropdown below
         </h3>
         <br>
         <!-- Form for selecting an existing asset for editing begins here -->
@@ -55,38 +55,41 @@
             <form id="assetForm">
 				
                 <div class="mb-3">
-                    <label for="assetAssociations" class="form-label">
-                        Existing asset(s)
+                    <label for="existingAssets" class="form-label">
+                        Existing Asset(s)
                     </label>
-                    <select id="assetAssociations" class="form-select m-auto" name="assoc">
+                    <select id="existingAssets" class="form-select m-auto" name="assoc">
 						<option selected></option>
                         <!-- Populates dropdown list with pre-existing assets from the database using controller method with the "/manage-asset.html" mapping -->
-						<option th:each="asset : ${assets}" th:value="${asset['type_name'] + ',' + asset['id'] + ',' + asset['title']}" th:text="${asset['title'] + ' (of type: ' + asset['type_name'] + ')'}"></option>					</select>
+						<option th:each="asset : ${assets}" th:value="${asset['type_name'] + ',' + asset['id'] + ',' + asset['title']}" th:text="${asset['title'] + ' (Type: ' + asset['type_name'] + ')'}"></option>
+                    </select>
                     <div id="associationsHelp" class="form-text">
                         Select an asset to be edited.
                     </div>
                 </div>
 				
-				<!-- Checkbox to toggle visibility of the new asset name input -->
-				<div class="mb-3 form-check" id="changeAssetNameCheckboxDiv">
-				  <input class="form-check-input" type="checkbox" id="changeAssetNameCheckbox" name = "changeAssetNameCheckbox">
-				  <label class="form-check-label" for="changeAssetNameCheckbox">
-					Change asset name?
-				  </label>
-				</div>
-				
-				<!-- Checkbox to change update button to delete -->
-				<div class="mb-3 form-check" id="deleteAssetCheckboxDiv">
-					<input class="form-check-input" type="checkbox" id="deleteAssetCheckbox" name="deleteAssetCheckbox">
-					<label class="form-check-label" for="deleteAssetCheckbox">
-						Delete selected asset?
-					</label>
-				</div>
+                <div class="mt-4 mb-4">
+                    <!-- Checkbox to toggle visibility of the new asset name input -->
+                    <div class="mb-3 form-check" id="changeAssetNameCheckboxDiv">
+                    <input class="form-check-input" type="checkbox" id="changeAssetNameCheckbox" name = "changeAssetNameCheckbox">
+                    <label class="form-check-label" for="changeAssetNameCheckbox">
+                        &nbsp;Change asset name?
+                    </label>
+                    </div>
+                    
+                    <!-- Checkbox to change update button to delete -->
+                    <div class="mb-3 form-check" id="deleteAssetCheckboxDiv">
+                        <input class="form-check-input" type="checkbox" id="deleteAssetCheckbox" name="deleteAssetCheckbox">
+                        <label class="form-check-label" for="deleteAssetCheckbox">
+                            &nbsp;Delete selected asset?
+                        </label>
+                    </div>
+                </div>
 				
 				<!-- Contains input field for entering the new name of the asset. Appears when "Change asset name?" option is selected -->
-                <div id="newNameInputDiv" class="mb-3">
+                <div id="newNameInputDiv" class="mb-4">
                     <label for="newName" class="form-label" id="newNameLabel">
-                        Re-name asset
+                        Rename Asset
                     </label>
                     <input type="text" id="newName" class="form-control m-auto" name="newName">
                     <div id="newNameHelp" class="form-text">
@@ -104,7 +107,7 @@
                     <!-- Input fields for assigning attributes their data are dynamically added here via the JavaScript fetchAttributes function -->
                 </div>
 
-                <button id="updateButton" class="btn btn-outline-primary mt-3 mb-3" type="button" onclick="assetSelectError()">
+                <button id="updateButton" class="btn btn-outline-primary" type="button" onclick="assetSelectError()">
                     <span id="btnText">Update&nbsp;</span><i id="btnIcon" class="bi bi-arrow-repeat"></i> 
                 </button>
             </form>
@@ -117,7 +120,7 @@
     document.addEventListener("DOMContentLoaded", function() {
 			let deletionId;
 	
-			const assetSelect = document.getElementById('assetAssociations');
+			const assetSelect = document.getElementById('existingAssets');
 			const attributesContainer = document.getElementById('attributesContainer');
 			
 			const updateButton = document.getElementById('updateButton');
@@ -129,6 +132,7 @@
 			const deleteAssetCheckbox = document.getElementById('deleteAssetCheckbox');
 			const deleteAssetCheckboxDiv = document.getElementById('deleteAssetCheckboxDiv');
 			const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
 			
 			hideCheckboxes();
 			
@@ -152,6 +156,7 @@
 					updateAsset(deletionId);
 				};
 				btnText.innerText = "Update" + "\u00A0";
+                btnIcon.className = "bi bi-arrow-repeat";
 			}
 			
 			function tickDelete(deletionId){
@@ -160,6 +165,7 @@
 					deleteAsset(deletionId);
 				};
 				btnText.innerText = "Delete" + "\u00A0";
+                btnIcon.className = "bi bi-trash";
 			}
 			
 			function showCheckboxes(){
@@ -196,8 +202,11 @@
 				const selectedAssetType = assetSelect.options[assetSelect.selectedIndex].value;
 				const [typeName, id, title] = selectedAssetType.split(',');
 				deletionId = id;
+                btnText.innerText = "Update" + "\u00A0";
+                btnIcon.className = "bi bi-arrow-repeat";
 				// Calls fetchAttributes to receive additional form fields, given that the user has successfully selected an asset type
 				if (selectedAssetType != '') {
+                    updateButton.classList.add('mt-3', 'mb-3');
 					showCheckboxes();
 					fetchAttributes(typeName, id);
 					// Assign the updateAsset function as an event handler
@@ -205,6 +214,7 @@
 						updateAsset(id);
 					};
 				} else {
+                    updateButton.classList.remove('mt-3', 'mb-3');
 					updateButton.onclick = function() {
 						assetSelectError();
 					};
@@ -224,7 +234,6 @@
                     // Iterates over the 2D array, dealing with a single pair each iteration
 					const response2 = await fetch(`/attributesWassetData/${id}`);
 					const data2 = await response2.json();
-					console.log(data2);
                     data.forEach(attribute => {
                         // Defines a label element and an input element
                         const attributeName = document.createElement('label');
@@ -248,6 +257,10 @@
                             attributeInput.min = '0';
                             attributeInput.step = '0.01';
                         }
+                        if (attribute[1] == "Version Number") {
+                            attributeInput.type = 'text';
+                            attributeInput.classList.add('versionNumber');
+                        }
                         // Adds both the label element and the input element to a div, resulting in a container which represents an individual attribute
                         let individualAttr = document.createElement('div');
                         individualAttr.classList = 'mb-4'
@@ -259,7 +272,7 @@
                         if (attribute[1].endsWith("(List)")) {
                             switch(attribute[1]) {
                                 case "Text (List)":
-                                    attributeInput.pattern = '^[a-zA-Z0-9]+(, [a-zA-Z0-9]+)*$';
+                                    attributeInput.pattern = '^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*(?:, [a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*)*$';
                                     break;
                                 case "Number (List)":
                                     attributeInput.pattern = '^[0-9]+(, [0-9]+)*$';
