@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Metadata Repository | Search for Assets</title>
+    <title>Asset Metadata Repository | Manage existing asset(s)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" type="text/css" href="custom.css">
@@ -15,20 +15,22 @@
            <a class="navbar-brand" href="index.html">Asset Metadata Repository</a>
            <div class="d-flex w-100">
               <div class="mr-auto">
-                <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="create-asset.html">Create an Asset</a>
-                 </button>
-                 <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="search-asset.html">Search for Assets</a>
-                 </button>
-                <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="manage-asset.html">Manage Assets</a>
-                </button>
                  <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="create-type.html">Manage Asset Types</a>
                  </button>
+                 <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="create-asset.html">Create an Asset</a>
+                 </button>
+				 <button class="btn btn-outline-primary mx-3">
+                    <a class="nav-link" href="manage-asset.html">Manage Assets</a>
+                 </button>
               </div>
-              <div class="ms-auto">
+              <div id="welcome-user-message" style="display: none">
+                <p>
+                   Welcome, <strong><div id="username"></div></strong>!
+                </p>
+            </div>
+              <div class="ms-auto" id="login-register-buttons">
                  <button class="btn btn-outline-primary mx-1">
                     <a class="nav-link" href="login.html">Log In</a>
                  </button>
@@ -39,76 +41,270 @@
            </div>
         </div>
      </nav>
+     <div id="successAlertPlaceholder"></div>
     <!-- Main page body -->
-    <section id="mainContainer" class="section p-2 text-center">
+    <section class="section p-2 text-center">
         <h1>
-            Search for Assets
+            Manage existing assets
         </h1>
         <h3 class="fst-italic">
-            Looking for an asset? Type the asset's name into the text field below
+            Select an asset from the form below to be edited
         </h3>
         <br>
-        <!-- Searching for assets begins here -->
-        <div id="keywordSearch" class="container m-auto mb-5">
+        <!-- Form for selecting an existing asset for editing begins here -->
+        <div class="container">
+            <div id="successAlertPlaceholder"></div>
             <div id="errorAlertPlaceholder"></div>
-            <br>
-            <form>
-                <input type="text" id="searchField" class="form-control m-auto" style="border-radius: 1rem;" placeholder="Search" oninput="fetchAssets()">
-                <div id="searchFieldHelp" class="form-text">
-                    Start typing the name of the asset above.
+            <form id="assetForm">
+				
+                <div class="mb-3">
+                    <label for="assetAssociations" class="form-label">
+                        Existing asset(s)
+                    </label>
+                    <select id="assetAssociations" class="form-select m-auto" name="assoc">
+						<option selected></option>
+                        <!-- Populates dropdown list with pre-existing assets from the database using controller method with the "/manage-asset.html" mapping -->
+						<option th:each="asset : ${assets}" th:value="${asset['type_name'] + ',' + asset['id'] + ',' + asset['title']}" th:text="${asset['title'] + ' (of type: ' + asset['type_name'] + ')'}"></option>					</select>
+                    <div id="associationsHelp" class="form-text">
+                        Select an asset to be edited.
+                    </div>
                 </div>
+				
+				<!-- Checkbox to toggle visibility of the new asset name input -->
+				<div class="mb-3 form-check" id="changeAssetNameCheckboxDiv">
+				  <input class="form-check-input" type="checkbox" id="changeAssetNameCheckbox" name = "changeAssetNameCheckbox">
+				  <label class="form-check-label" for="changeAssetNameCheckbox">
+					Change asset name?
+				  </label>
+				</div>
+				
+				<!-- Checkbox to change update button to delete -->
+				<div class="mb-3 form-check" id="deleteAssetCheckboxDiv">
+					<input class="form-check-input" type="checkbox" id="deleteAssetCheckbox" name="deleteAssetCheckbox">
+					<label class="form-check-label" for="deleteAssetCheckbox">
+						Delete selected asset?
+					</label>
+				</div>
+				
+				<!-- Contains input field for entering the new name of the asset. Appears when "Change asset name?" option is selected -->
+                <div id="newNameInputDiv" class="mb-3">
+                    <label for="newName" class="form-label" id="newNameLabel">
+                        Re-name asset
+                    </label>
+                    <input type="text" id="newName" class="form-control m-auto" name="newName">
+                    <div id="newNameHelp" class="form-text">
+                        Please enter the updated name for your asset.
+                    </div>
+                </div>
+				
+				<!-- Container for the (additional) type-dependent attributes -->
+                <div id="attributesContainer" style="display: flex; flex-direction: column;">
+                    <!-- Attributes will be dynamically displayed here alongside their respective datatypes -->
+                </div>
+
+                <!-- Container for additional (type-dependent) attributes -->
+                <div class="mb-3">
+                    <!-- Input fields for assigning attributes their data are dynamically added here via the JavaScript fetchAttributes function -->
+                </div>
+
+                <button id="updateButton" class="btn btn-outline-primary mt-3 mb-3" type="button" onclick="assetSelectError()">
+                    <span id="btnText">Update&nbsp;</span><i id="btnIcon" class="bi bi-arrow-repeat"></i> 
+                </button>
             </form>
         </div>
-        <div id="filterAndResultsContainer">
-            <div id="filterBox" class="container">
-                <div id="typeSection" class="mb-3">
-                    <h5>Type</h5>
-                    <select id="typeFilter" class="form-select" onchange="fetchAssets()">
-                        <option selected></option>
-                        <option th:each="type : ${types}" th:text="${type}"></option>
-                    </select>
-                </div>
-                <div id="dateSection" class="mb-3">
-                    <h5>Date Range</h5>
-                    <div>
-                        <label for="from">From:&nbsp;</label>
-                        <input type="date" id="from" class="mb-3" onchange="fetchAssets()">
-                    </div>
-                    <div>
-                        <label for="to">To:&nbsp;</label>
-                        <input type="date" id="to" onchange="fetchAssets()">
-                    </div>
-                </div>
-                <div id="sortSection" class="mb-3">
-                    <h5>Sort by</h5>
-                    <select id="sortFilter" class="form-select"  onchange="fetchAssets()">
-                        <option selected>Alphabetical: A-Z</option>
-                        <option>Alphabetical: Z-A</option>
-                        <option>Date: Most Recent Update - Oldest Update</option>
-                        <option>Date: Oldest Update - Most Recent Update</option>
-                    </select>
-                </div>
-                <button id="resetBtn" class="mt-3" onclick="resetFilters()">Reset</button>
-            </div>
-            <div id="resultsGrid" class="mb-3">
-            </div>
-        </div>
     </section>
-    <!-- Off canvas window - Important section of code to view the asset -->
-    <!-- Off canvas window -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-        <div class="offcanvas-header bg-body-tertiary">
-            <h5 id="AssetHeading">Asset Result</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <!-- Off canvas variable placeholders -->
-        <div class="offcanvas-body">
-            <h1 id="assetName"></h1>
-            <p id="assetInfo"></p>
-        </div>
-    </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="script.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+			let deletionId;
+	
+			const assetSelect = document.getElementById('assetAssociations');
+			const attributesContainer = document.getElementById('attributesContainer');
+			
+			const updateButton = document.getElementById('updateButton');
+			
+			const changeAssetNameCheckbox = document.getElementById('changeAssetNameCheckbox');
+			const changeAssetNameCheckboxDiv = document.getElementById('changeAssetNameCheckboxDiv');
+			const newNameInputDiv = document.getElementById('newNameInputDiv');
+			const newName = document.getElementById('newName');
+			const deleteAssetCheckbox = document.getElementById('deleteAssetCheckbox');
+			const deleteAssetCheckboxDiv = document.getElementById('deleteAssetCheckboxDiv');
+			const btnText = document.getElementById('btnText');
+			
+			hideCheckboxes();
+			
+			function hideCheckboxes(){
+				changeAssetNameCheckbox.checked = false;
+				changeAssetNameCheckboxDiv.classList.add('d-none');
+				newNameInputDiv.classList.add('d-none');
+				newNameInputDiv.querySelector('input').value = '';
+				deleteAssetCheckbox.checked = false;
+				deleteAssetCheckboxDiv.classList.add('d-none');
+			}
+			
+			function hideNameField(){
+				newNameInputDiv.classList.add('d-none');
+				newNameInputDiv.querySelector('input').value = '';
+			}
+			
+			function untickDelete(deletionId){
+				deleteAssetCheckbox.checked = false;
+				updateButton.onclick = function() {
+					updateAsset(deletionId);
+				};
+				btnText.innerText = "Update" + "\u00A0";
+			}
+			
+			function tickDelete(deletionId){
+				changeAssetNameCheckbox.checked = false;
+				updateButton.onclick = function() {
+					deleteAsset(deletionId);
+				};
+				btnText.innerText = "Delete" + "\u00A0";
+			}
+			
+			function showCheckboxes(){
+				changeAssetNameCheckbox.checked = false;
+				changeAssetNameCheckboxDiv.classList.remove('d-none');
+				deleteAssetCheckbox.checked = false;
+				deleteAssetCheckboxDiv.classList.remove('d-none');
+				hideNameField();
+			}
+			
+			changeAssetNameCheckbox.addEventListener('change', function() {
+				if (changeAssetNameCheckbox.checked) {
+				  newNameInputDiv.classList.remove('d-none');
+				  untickDelete(deletionId);
+				} else {
+					hideNameField();
+				}
+			});
+			
+			deleteAssetCheckbox.addEventListener('change', function() {
+				if (deleteAssetCheckbox.checked) {
+				  hideNameField();
+				  tickDelete(deletionId);
+				} else {
+					hideNameField();
+					untickDelete(deletionId);
+				}
+			});
+
+			assetSelect.addEventListener('change', function() {
+				// Clears existing additional attribute input fields before populating w/ new ones
+				attributesContainer.innerHTML = '';
+				// Get the type of the selected asset
+				const selectedAssetType = assetSelect.options[assetSelect.selectedIndex].value;
+				const [typeName, id, title] = selectedAssetType.split(',');
+				deletionId = id;
+				// Calls fetchAttributes to receive additional form fields, given that the user has successfully selected an asset type
+				if (selectedAssetType != '') {
+					showCheckboxes();
+					fetchAttributes(typeName, id);
+					// Assign the updateAsset function as an event handler
+					updateButton.onclick = function() {
+						updateAsset(id);
+					};
+				} else {
+					updateButton.onclick = function() {
+						assetSelectError();
+					};
+					hideCheckboxes();
+				}
+			});
+
+            // Fetches all attribute data corresponding to the selected asset type
+            // Dynamically populates attributes container with input fields, allowing users to give each attribute an input
+            async function fetchAttributes(typeName, id) {
+                try {
+                    // Calls the server endpoint to fetch all attribute data corresponding to the selected asset type
+                    const response = await fetch(`/attributes/${typeName}`);
+                    // Returns a 2D array containing pairs in the form [attribute name, attribute datatype]
+                    // e.g. [['Description', 'Text'], ['Format', 'Text'], ...]
+                    const data = await response.json();
+                    // Iterates over the 2D array, dealing with a single pair each iteration
+					const response2 = await fetch(`/attributesWassetData/${id}`);
+					const data2 = await response2.json();
+					console.log(data2);
+                    data.forEach(attribute => {
+                        // Defines a label element and an input element
+                        const attributeName = document.createElement('label');
+                        attributeName.classList.add('form-label');
+                        attributeName.innerHTML = attribute[0];
+                        const attributeInput = document.createElement('input');
+                        // Applies Bootstrap styling for a form field
+                        attributeInput.className = 'form-control m-auto';
+						// Find the corresponding data from data2 based on the attribute name
+						const matchingData = data2.find(attributeData => attributeData[0] === attribute[0]);
+						// Determines the kind of input field to provide based on the datatype, reducing additional validation requirements
+                        if (attribute[1] == "Text") {
+							attributeInput.type = 'text';
+						}
+                        if (attribute[1] == "Number") {
+                            attributeInput.type = 'number';
+                            attribute
+                        }
+                        if (attribute[1] == "Decimal") {
+                            attributeInput.type = 'number';
+                            attributeInput.min = '0';
+                            attributeInput.step = '0.01';
+                        }
+                        // Adds both the label element and the input element to a div, resulting in a container which represents an individual attribute
+                        let individualAttr = document.createElement('div');
+                        individualAttr.classList = 'mb-4'
+                        individualAttr.appendChild(attributeName);
+                        individualAttr.appendChild(attributeInput);
+                        // Adds the individual attribute to the parent container, attributesContainer
+                        attributesContainer.appendChild(individualAttr);
+                        // If the datatype of the current attribute is any kind of list, we provide a text input and an appropriate prompt
+                        if (attribute[1].endsWith("(List)")) {
+                            switch(attribute[1]) {
+                                case "Text (List)":
+                                    attributeInput.pattern = '^[a-zA-Z0-9]+(, [a-zA-Z0-9]+)*$';
+                                    break;
+                                case "Number (List)":
+                                    attributeInput.pattern = '^[0-9]+(, [0-9]+)*$';
+                                    break;
+                                case "Decimal (List)":
+                                    attributeInput.pattern = '^\d+(\.\d+)?(?:, \d+(\.\d+)?)*$';
+                                    break;
+                                default:
+                                    attributeInput.removeAttribute('pattern');
+                                    break;
+                            }
+                            // Text input field, but custom datatypes enforced via regular expressions
+                            attributeInput.type = 'text';
+                            attributeInput.classList.add('listAttr');
+                            // The prompt is contained within a div
+                            let promptForList = document.createElement('div');
+                            promptForList.innerText = "Please separate list items by a comma.";
+                            promptForList.classList = 'form-text';
+                            // Add the div containing the prompt to the individual attribute container
+                            individualAttr.appendChild(promptForList);
+                        }
+						// Find the corresponding data from data2 based on the attribute name
+						if (matchingData) {
+							// Check if the data is a list
+							if (matchingData[1].startsWith('[') && matchingData[1].endsWith(']')) {
+								// Remove the brackets at the beginning and end
+								const listData = matchingData[1].substring(1, matchingData[1].length - 1);
+								// Set the value of the input field to the modified list data
+								attributeInput.value = listData;
+							} else {
+								// Set the value of the input field to the original data
+								attributeInput.value = matchingData[1];
+							}
+						}
+                    });
+					attributesContainer.style.display = 'block';
+                } catch (error) {
+                    console.error('Error fetching attributes:', error);
+                }
+            }
+        });
+    </script>
+    <script src="checkSession.js"></script>
 </body>
 </html>
