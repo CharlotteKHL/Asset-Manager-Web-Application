@@ -77,21 +77,20 @@ public class AccountController {
       int usernameResult = (int) jdbcTemplate.queryForObject(UNIQUE_USERNAME, 
           parameters, Integer.class);
 
-      System.out.println(usernameResult);
+      // System.out.println(usernameResult);
 
       parameters.put("password", password);
 
       int passwordResult = (int) jdbcTemplate.queryForObject(CORRECT_PASSWORD, 
           parameters, Integer.class);
 
-      System.out.println(passwordResult);
+      // System.out.println(passwordResult);
 
       if (passwordResult == 0) {
         throw new InvalidLogin("This password is not correct");
       }
     } catch (InvalidLogin e) {
-      e.printStackTrace();
-      System.out.println("Error!");
+      System.err.println(e.getMessage());
       return e.getMessage();
     }
     return "Login successful";
