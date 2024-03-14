@@ -56,7 +56,7 @@ public class UserEntity implements UserDetails {
       } else if ("viewer".equalsIgnoreCase(userRole)) {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_VIEWER"));
       } else {
-        return null;
+        return Collections.emptyList();
       }
     }
 
