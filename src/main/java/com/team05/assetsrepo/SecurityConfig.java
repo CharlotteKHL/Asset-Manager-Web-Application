@@ -54,8 +54,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.formLogin(formLogin -> formLogin.loginPage("/login.html").defaultSuccessUrl("/", true));
-        http.authorizeHttpRequests(request -> request.requestMatchers("/*").permitAll()).csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(request -> request.requestMatchers(new AntPathRequestMatcher("/")).hasRole("ADMIN"));
+        http.authorizeHttpRequests(request -> request.requestMatchers("/*").permitAll()).csrf(AbstractHttpConfigurer::disable);
         http.headers(header -> header.frameOptions(frameOptions -> frameOptions.disable().contentTypeOptions(cto -> cto.disable())));
         return http.build();
     }
