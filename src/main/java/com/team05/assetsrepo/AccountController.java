@@ -45,18 +45,12 @@ public class AccountController {
 		return new BCryptPasswordEncoder();
 	}
 	
-	// @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.POST})
-	// public String checkSession() {
-	// 	return "";
-	// }
-	
-	   @PostMapping("/check")
-	    public ResponseEntity<String> checkSession() {
-	      //check if username is logged in
-	      String username = "hi2@gmail.com";
-	      return ResponseEntity.ok().body("{\"username\": \"" + username + "\"}");
-	    }
-
+	@PostMapping("/check")
+	public ResponseEntity<String> checkSession() {
+	    //check if username is logged in
+	    String username = "hi2@gmail.com";
+	    return ResponseEntity.ok().body("{\"username\": \"" + username + "\"}");
+	}
 
 	/**
 	 * The extractLogin method handles POST requests to the "/login" URL.
