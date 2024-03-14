@@ -183,7 +183,8 @@ public class FormController {
       // Catch the specific exception for foreign key violation
       // Return a custom error message indicating the foreign key constraint violation
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-          "{\"error\": \"Unable to delete type: This type is still referenced by other records.\"}");
+          "{\"error\": \"Unable to delete asset type - please remove any assets currently " 
+          + "using this type.\"}");
     } catch (Exception e) {
       // Catch other exceptions and return a JSON response with a generic error message
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -229,7 +230,8 @@ public class FormController {
 
       // Update the row in the type table with the new type name and attributes
       String sql = "UPDATE type SET type_name = :newTypeName, attributes = CAST(:pairs AS JSON), "
-          + "attr_keys = :attrKeys, attr_backend_types = :attrValues WHERE type_name = :oldTypeName";
+          + "attr_keys = :attrKeys, attr_backend_types = :attrValues "
+          + "WHERE type_name = :oldTypeName";
 
       // Define the parameters for the SQL statement
       MapSqlParameterSource params =
@@ -361,22 +363,20 @@ public class FormController {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       JsonNode jsonNode = objectMapper.readTree(obj);
-      System.out.println(jsonNode);
       ObjectNode object = (ObjectNode) jsonNode;
 
       String title = "";
       try {
         // Extract the title from the JSON object
-        title = jsonNode.get("Re-name asset").asText();
+        title = jsonNode.get("Rename Asset").asText();
         object.remove(jsonNode.fieldNames().next());
         object.remove(jsonNode.fieldNames().next());
       } catch (Exception e) {
-        System.out.println("Title not changed");
+        System.out.println("Title not changed.");
       }
 
       // Remove the fields from the JSON object that you don't want to update
       object.remove(jsonNode.fieldNames().next());
-      System.out.println(jsonNode);
 
       // Convert the modified JSON object back to a string
       obj = objectMapper.writeValueAsString(object);
@@ -387,7 +387,8 @@ public class FormController {
       if (!(title.equals(""))) {
         // Update the title and additional_attrs in the assets table
         sql =
-            "UPDATE assets SET title = :title, additional_attrs = CAST(:obj AS JSONB) WHERE id = :id";
+            "UPDATE assets SET title = :title, additional_attrs = CAST(:obj AS JSONB) "
+            + "WHERE id = :id";
         params = new MapSqlParameterSource().addValue("title", title).addValue("obj", obj)
             .addValue("id", id);
       } else {
@@ -423,10 +424,11 @@ public class FormController {
    */
   @GetMapping("/create-asset.html")
   public String populateTypesCreateAsset(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+    List<String> types = jdbcTemplate.queryForList("SELECT type_name FROM type ORDER BY id ASC",
         Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
-    List<String> assets = jdbcTemplate.queryForList("SELECT DISTINCT title FROM assets",
+    List<String> assets = jdbcTemplate.queryForList("SELECT title FROM assets "
+        + "ORDER BY id ASC",
         Collections.emptyMap(), String.class);
     model.addAttribute("assets", assets);
     return "create-asset";
@@ -441,7 +443,8 @@ public class FormController {
    */
   @GetMapping("/create-type.html")
   public String populateTypesCreateType(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+    List<String> types = jdbcTemplate.queryForList("SELECT type_name FROM type "
+        + "ORDER BY id ASC",
         Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     return "create-type";
@@ -454,7 +457,8 @@ public class FormController {
    */
   @GetMapping("/search-asset.html")
   public String getSearchAssetPage(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type",
+    List<String> types = jdbcTemplate.queryForList("SELECT type_name FROM type "
+        + "ORDER BY id ASC",
         Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     return "search-asset";
@@ -687,12 +691,14 @@ public class FormController {
   @GetMapping("/manage-asset.html")
   public String populateTypesManageAsset(Model model) {
     List<Map<String, Object>> types =
-        jdbcTemplate.queryForList("SELECT DISTINCT type_name FROM type", Collections.emptyMap());
+        jdbcTemplate.queryForList("SELECT type_name FROM type ORDER BY id ASC", 
+        Collections.emptyMap());
     model.addAttribute("types", types);
 
     List<Map<String, Object>> assets =
         jdbcTemplate.queryForList("SELECT assets.title, assets.id, type.type_name\r\n"
-            + "FROM assets\r\n" + "JOIN type ON assets.type = type.id", Collections.emptyMap());
+            + "FROM assets\r\n" + "JOIN type ON assets.type = type.id ORDER BY id ASC", 
+            Collections.emptyMap());
     model.addAttribute("assets", assets);
 
     return "manage-asset";
@@ -728,7 +734,7 @@ public class FormController {
    * @return 2D array in the form [["Attribute Name", "Custom Datatype"], [...]] representing each 
    *      attribute name and its custom datatype.
    */
-  private List<String[]> fetchAttributesForTypeFromDatabase(String type) {
+  List<String[]> fetchAttributesForTypeFromDatabase(String type) {
     String sql = "SELECT attr_keys, attr_backend_types FROM type WHERE type_name = :type";
 
     MapSqlParameterSource params = new MapSqlParameterSource().addValue("type", type);

@@ -1,5 +1,6 @@
 package com.team05.assetsrepo;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +16,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "user2")
-public class UserEntity implements UserDetails {
+public class UserEntity implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,10 +40,6 @@ public class UserEntity implements UserDetails {
 
     public void setID(int id) {
         this.id = id;
-    }
-
-    public String getRole() {
-      return role;
     }
     
     @Override
@@ -69,9 +66,17 @@ public class UserEntity implements UserDetails {
     public String getUsername() {
         return username;
     }
+    
+    public String getRole() {
+      return role;
+    }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+    
+    public void setRole(String role) {
+      this.role = role;
     }
 
     @Override

@@ -1,26 +1,19 @@
 package com.team05.assetsrepo;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.transaction.support.TransactionTemplate;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Controller class for login and register functionality.
@@ -28,6 +21,9 @@ import org.springframework.security.core.AuthenticationException;
 @Controller
 public class AccountController {
   private final NamedParameterJdbcTemplate jdbcTemplate;
+  private TransactionTemplate transactionTemplate = new TransactionTemplate();
+  private final String INVALID_LOGIN_MSG = "This username or password is not correct";
+  private UserRepository userRepository;
 
   /**
    * Constructor for AccountController object.
@@ -40,16 +36,45 @@ public class AccountController {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  @Autowired
+  @Bean
+  public CustomUserDetailsService service() {
+    return new CustomUserDetailsService(userRepository);
+  }
+
+  @Bean
   public PasswordEncoder encoder() {
     return new BCryptPasswordEncoder();
   }
 
-  @Autowired
-  private AuthenticationManager authenticationManager;
+  @PostMapping("/check")
+  public ResponseEntity<String> checkSession(HttpSession session) {
 
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+    String find_username = "SELECT DISTINCT username FROM sessions WHERE session_id = :id";
+    String delete_old = "DELETE FROM sessions WHERE username = :username AND NOT session_id = :id";
+    String CHECK_CURR_LOGIN = "SELECT COUNT(session_id) FROM spring_session WHERE session_id = :id";
+    String count_curr_login = "SELECT COUNT(username) FROM sessions WHERE session_id = :id";
+
+    String id = session.getId();
+    System.out.println(id);
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put("id", id);
+
+    String username = "You are no longer logged in";
+
+    int currLogin = jdbcTemplate.queryForObject(CHECK_CURR_LOGIN, parameters, Integer.class);
+    int countCurrLogin = jdbcTemplate.queryForObject(count_curr_login, parameters, Integer.class);
+
+    if (currLogin != 0 && countCurrLogin != 0) {
+      username = jdbcTemplate.queryForObject(find_username, parameters, String.class);
+    }
+
+    if (username == null) {
+      username = "You are no longer logged in";
+    }
+    parameters.put("username", username);
+    jdbcTemplate.update(delete_old, parameters);
+    return ResponseEntity.ok().body("{\"username\": \"" + username + "\"}");
+  }
 
   /**
    * The extractLogin method handles POST requests to the "/login" URL. RequestParam annotations are
@@ -61,24 +86,19 @@ public class AccountController {
 
   @PostMapping("/login")
   public ResponseEntity<String> extractLogin(@RequestParam String username,
-      @RequestParam String password) throws InvalidLogin {
-    String message = validateLoginDetails(username, password);
-    try {
-      // Manually create an authentication token
-      UsernamePasswordAuthenticationToken authToken =
-          new UsernamePasswordAuthenticationToken(username, password);
-      // Authenticate the user
-      Authentication authentication = authenticationManager.authenticate(authToken);
-      // If authentication is successful, set the authentication in the security context
-      SecurityContextHolder.getContext().setAuthentication(authentication);
+      @RequestParam String password, HttpSession session) throws InvalidLogin {
 
-      // Proceed with your application flow after successful authentication
-      return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
-    } catch (AuthenticationException e) {
-      // Handle authentication failure
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body("{\"error\": \"Invalid credentials.\"}");
+    String newSession =
+        "INSERT INTO sessions (username, session_id) VALUES (:username, :session_id)";
+    String message = validateLoginDetails(username, password);
+    if (message == "Login successful") {
+      Map<String, String> parameters = new HashMap<String, String>();
+      parameters.put("username", username);
+      parameters.put("session_id", session.getId());
+      jdbcTemplate.update(newSession, parameters);
     }
+
+    return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
   }
 
   /**
@@ -93,29 +113,36 @@ public class AccountController {
    */
 
   public String validateLoginDetails(String username, String password) {
-    String GET_HASHED_PASSWORDS = "SELECT password FROM user2 WHERE username = :username";
+
+    String UNIQUE_USERNAME =
+        "SELECT DISTINCT COUNT(username) FROM user2 WHERE username = :username";
 
     try {
-      Map<String, String> parameters = new HashMap<>();
+      Map<String, String> parameters = new HashMap<String, String>();
       parameters.put("username", username);
 
-      List<String> hashedPasswords =
-          jdbcTemplate.queryForList(GET_HASHED_PASSWORDS, parameters, String.class);
+      int usernameResult =
+          (int) jdbcTemplate.queryForObject(UNIQUE_USERNAME, parameters, Integer.class);
 
-      boolean passwordMatches = false;
-      for (String hashedPassword : hashedPasswords) {
-        if (passwordEncoder.matches(password, hashedPassword)) {
-          passwordMatches = true;
-          break;
+      System.out.println(usernameResult);
+
+      // checks username exists in database
+      if (usernameResult == 1) {
+
+        String passwordResult = getPassword(username);
+
+        // checks if password in database for username matches input from user
+        if (!encoder().matches(password, passwordResult)) {
+          throw new InvalidLogin(INVALID_LOGIN_MSG);
         }
+
+      } else {
+        throw new InvalidLogin(INVALID_LOGIN_MSG);
       }
 
-      if (!passwordMatches) {
-        throw new InvalidLogin("This password is not correct");
-      }
     } catch (InvalidLogin e) {
       e.printStackTrace();
-      System.out.println("Error!");
+      System.out.println("Error! Invalid login");
       return e.getMessage();
     }
     return "Login successful";
@@ -156,9 +183,12 @@ public class AccountController {
 
     if (nameCount == 0) { // if username is unique
 
+      // hash password
+      password = encoder().encode(password);
+
       // if username unique add new user to the database
       MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", idCount + 1)
-          .addValue("username", username).addValue("password", password).addValue("role", "admin");
+          .addValue("username", username).addValue("password", password).addValue("role", "ADMIN");
 
       jdbcTemplate.update(insert, params);
 
@@ -166,9 +196,6 @@ public class AccountController {
 
       message = "Registration unsuccessful, this email may already have an account";
     }
-
-    // sets the user's password to the hashed version
-    setPassword(username, encoder().encode(getPassword(username)));
 
     return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
   }
@@ -216,17 +243,17 @@ public class AccountController {
   public String showCreateTypeForm() {
     return "create-type";
   }
-  
+
   @GetMapping("/create-asset")
   public String showCreateAssetForm() {
     return "create-asset";
   }
-  
+
   @GetMapping("/manage-asset")
   public String showManageAssetForm() {
     return "manage-asset";
   }
-  
+
   @GetMapping("/search-asset")
   public String showSearchAssetForm() {
     return "search-asset";
