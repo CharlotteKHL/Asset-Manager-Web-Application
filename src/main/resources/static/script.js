@@ -416,13 +416,10 @@ function replacePlaceholder(assetName) {
 function assetSelectError() {
     // Resets the page, removing all previously given alerts
     resetAlerts();
-
     // Create a new alert for the asset selection error
-    const alertPlaceholder = document.getElementById('errorAlertPlaceholder');
-    const alertDiv = document.createElement('div');
-    alertDiv.classList.add('alert', 'alert-danger');
-    alertDiv.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Please select an asset.';
-    alertPlaceholder.appendChild(alertDiv);
+    if (document.getElementById("invalidAssetChoiceAlert") == null) {
+        appendAlert('<i class="bi bi-exclamation-triangle"></i> Please select an asset.', 'alert-danger', 'errorAlertPlaceholder', 'invalidAssetChoiceAlert');
+    }
 }
 
 // Obtains the entries from the asset creation form, sends POST request to create a new row in the database table "assets"
@@ -453,6 +450,18 @@ function updateAsset(id) {
                 return;
             }
         }
+        // Checks whether the value of an input relating to a version number conforms to either the x.y or x.y.z format
+        if (input.classList.contains("versionNumber")) {
+            let pattern = /^(\d+)\.(\d+)(?:\.(\d+))?$/;
+            let regex = new RegExp(pattern);
+            let testValidity = regex.test(input.value);
+            if (!testValidity) {
+                if (document.getElementById("invalidVersionNumberAlert") == null) {
+                    appendAlert('<i class="bi bi-exclamation-triangle"></i> Please enter a valid version number.', 'alert-danger', 'errorAlertPlaceholder', 'invalidVersionNumberAlert');
+                }
+                isValid = false;
+            }
+        }
         // Handles associations field, where all selected options need to be collected
         if (input.tagName === 'SELECT' && input.multiple) {
             return [...input.options]
@@ -464,7 +473,7 @@ function updateAsset(id) {
     });
     // Iterates over the user's entries, checks whether they have been left blank / are over 50 characters long
     for (let i = 0; i < entries.length; i++) {
-		if(!document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Re-name asset' || !document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Change asset name?' || labelArray[i] === 'Delete selected asset?') {
+		if(!document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Rename Asset' || !document.getElementById('changeAssetNameCheckbox').checked && labelArray[i] === 'Change asset name?' || labelArray[i] === 'Delete selected asset?') {
 			continue;
 		}
         if(entries[i] == '' || entries[i].length > 50) {
