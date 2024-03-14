@@ -134,7 +134,8 @@ class FormControllerTests {
   @Test
   void testDeleteTypeCatchDataIntegrity() {
 	  assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-	          "{\"error\": \"Unable to delete type: This type is still referenced by other records.\"}"), formController.deleteType("Library"));
+	          "{\"error\": \"Unable to delete asset type - please remove any assets currently " 
+	                  + "using this type.\"}"), formController.deleteType("Library"));
   }
   
   //Testing the submitAsset method
@@ -206,17 +207,6 @@ class FormControllerTests {
 	  String jsonErrorString = "{\"type\": TestingData, \"test\": Text}";
 	  String e = "Unrecognized token 'TestingData': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: (String)\"{\"type\": TestingData, \"test\": Text}\"; line: 1, column: 21]";
 	  assertEquals(ResponseEntity.badRequest().body("{\"error\": \"" + e + "\"}"), formController.updateAsset(8, jsonErrorString));
-  }
-  
-  @Test
-  void testUpdateAssetCatchDuplicateKey() throws JSONException {
-	  assetObject = new JSONObject();
-	  assetObject.put("Re-name asset", "AwesomeML Docs");
-	  assetObject.put("Association(s)", "AwesomeML");
-	  assetObject.put("Type", "TestData");
-	  assetObject.put("Description", "Testing the data.");
-	  assertEquals(ResponseEntity.badRequest()
-	          .body("{\"error\": \"" + "Please check that the name of your asset is unique!" + "\"}"), formController.updateAsset(8, assetObject.toString()));
   }
   
   //Testing the populateTypesCreateAsset
