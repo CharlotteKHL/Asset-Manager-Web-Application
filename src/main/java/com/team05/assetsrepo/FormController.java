@@ -462,6 +462,18 @@ public class FormController {
     return "search-asset";
   }
 
+  /** 
+   * This method is required to load the search-asset.html page / template.
+   *
+   * @return String the "search-asset.html" HTML page.
+   */
+  @GetMapping("/audit-trail.html")
+  public String populateAuditTrailPage(Model model) {
+    List<Map<String, Object>> auditTrailData = jdbcTemplate.queryForList("SELECT * FROM audit_log", Collections.emptyMap());
+    model.addAttribute("auditTrailData", auditTrailData);
+    return "audit-trail";
+  }
+  
   /**
    * Queries the database for matching assets based on the keyword entered / filters selected 
    * by the user.
