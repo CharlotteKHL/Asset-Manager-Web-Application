@@ -189,7 +189,7 @@ public class FormController {
     } catch (Exception e) {
       // Catch other exceptions and return a JSON response with a generic error message
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("{\"error\": \"An error occurred while deleting type\"}");
+          .body("{\"error\": \"An error occurred whilst attempting to delete the type.\"}");
     }
   }
 
@@ -247,16 +247,15 @@ public class FormController {
       return ResponseEntity.ok().body("{\"message\": \"Asset type renamed successfully!\"}");
 
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
 
     } catch (Exception e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest()
           .body("{\"error\": \"" + "An error occurred while renaming asset type!" + "\"}");
     }
   }
-
 
   /**
    * Creates a new row in the asset table representing a new asset, given a JSON string representing
@@ -402,19 +401,18 @@ public class FormController {
       return ResponseEntity.ok().body("{\"message\": \"Asset updated successfully!\"}");
 
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
     } catch (DuplicateKeyException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest()
           .body("{\"error\": \"" + "Please check that the name of your asset is unique!" + "\"}");
     } catch (DataAccessException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest()
           .body("{\"error\": \"" + "Failed to update the asset in the database." + "\"}");
     }
   }
-
 
   /**
    * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
