@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 @Configuration
 @ComponentScan(basePackages = {"com.team05.assetsrepo"})
@@ -50,6 +52,11 @@ public class SecurityConfig {
   }
 
   @Bean
+  public SecurityContextRepository securityContextRepository() {
+      return new HttpSessionSecurityContextRepository();
+  }
+  
+  @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
         // Configure authorisation rules for specific request matchers
@@ -60,14 +67,14 @@ public class SecurityConfig {
             .hasAnyAuthority("ROLE_VIEWER", "ROLE_USER", "ROLE_ADMIN")
             // Public access to the registration, login page, and related resources
             .requestMatchers("/register.html", "/custom.css", "/loginScript.js",
-                "/registerScript.js", "/login", "/register", "/index.html")
+                "/registerScript.js", "/login", "/register", "/index.html", "/checkSession.js")
             .permitAll().anyRequest().authenticated() // All other requests require authentication
         ).formLogin(formLogin -> formLogin.loginPage("/login.html") // Specify the custom login page
             .defaultSuccessUrl("/index.html", true) // Redirect to this URL on successful login
             .permitAll() // Allow all users to view the login page
         )
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+        .securityContext((securityContext) -> securityContext
+            .requireExplicitSave(true))
         .csrf(csrf -> csrf.disable()); // Disable CSRF protection as per your setup
 
     return http.build();

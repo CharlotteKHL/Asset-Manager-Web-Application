@@ -1,18 +1,24 @@
 package com.team05.assetsrepo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.AuthenticationException;
 import jakarta.servlet.http.HttpSession;
 
 /**
@@ -21,10 +27,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class AccountController {
   private final NamedParameterJdbcTemplate jdbcTemplate;
-  private TransactionTemplate transactionTemplate = new TransactionTemplate();
   private final String INVALID_LOGIN_MSG = "This username or password is not correct";
-  private UserRepository userRepository;
-
   /**
    * Constructor for AccountController object.
    * 
@@ -36,15 +39,105 @@ public class AccountController {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  @Bean
-  public CustomUserDetailsService service() {
-    return new CustomUserDetailsService(userRepository);
-  }
-
-  @Bean
+  @Autowired
   public PasswordEncoder encoder() {
     return new BCryptPasswordEncoder();
   }
+
+  @Autowired
+  private AuthenticationManager authenticationManager;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
+  /**
+   * The extractLogin method handles POST requests to the "/login" URL. RequestParam annotations are
+   * used to extract necessary login parameters/attributes from the html page.
+   * 
+   * @return returns a HTTP "Logged in" response, indicating the user has logged in successfully.
+   * @throws InvalidLogin if the username and password pair do not match a pair in the database.
+   */
+
+  @PostMapping("/login")
+  public ResponseEntity<String> extractLogin(@RequestParam String username,
+      @RequestParam String password, HttpSession session) throws InvalidLogin {
+    String newSession =
+        "INSERT INTO sessions (username, session_id) VALUES (:username, :session_id)";
+    String message = validateLoginDetails(username, password);
+    if (message == "Login successful") {
+      Map<String, String> parameters = new HashMap<String, String>();
+      parameters.put("username", username);
+      parameters.put("session_id", session.getId());
+      jdbcTemplate.update(newSession, parameters);
+    }
+    try {
+      // Manually create an authentication token
+      UsernamePasswordAuthenticationToken authToken =
+          new UsernamePasswordAuthenticationToken(username, password);
+      // Authenticate the user
+      Authentication authentication = authenticationManager.authenticate(authToken);
+      // If authentication is successful, set the authentication in the security context
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      if (authentication != null) {
+          // Log or inspect the authentication object
+          System.out.println(authentication);
+      }
+
+      // Proceed with your application flow after successful authentication
+      return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
+    } catch (AuthenticationException e) {
+      // Handle authentication failure
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body("{\"error\": \"Invalid credentials.\"}");
+    }
+  }
+
+  /**
+   * Validates the username & password of the login, preventing duplicate usernames & incorrect
+   * passwords.
+   * 
+   * @param username is the username the user has inputed, to be checked against the database.
+   * @param password is the password the user has inputed, to be checked against the database.
+   * 
+   * @return a string indicating if the login was successful or not.
+   * 
+   */
+
+  public String validateLoginDetails(String username, String password) {
+    String GET_HASHED_PASSWORDS = "SELECT password FROM user2 WHERE username = :username";
+
+    try {
+      Map<String, String> parameters = new HashMap<>();
+      parameters.put("username", username);
+
+      List<String> hashedPasswords =
+          jdbcTemplate.queryForList(GET_HASHED_PASSWORDS, parameters, String.class);
+
+      boolean passwordMatches = false;
+      for (String hashedPassword : hashedPasswords) {
+        if (passwordEncoder.matches(password, hashedPassword)) {
+          passwordMatches = true;
+          break;
+        }
+      }
+      if (!passwordMatches) {
+        throw new InvalidLogin(INVALID_LOGIN_MSG);
+      }
+    } catch (InvalidLogin e) {
+      e.printStackTrace();
+      System.out.println("Error!");
+      return e.getMessage();
+    }
+    return "Login successful";
+  }
+
+  /**
+   * A method to allow you to get a user's password.
+   * 
+   * @param username is the username to search the database with.
+   * 
+   * @return a password, if found, from the database that corresponds to the username.
+   */
 
   @PostMapping("/check")
   public ResponseEntity<String> checkSession(HttpSession session) {
@@ -76,77 +169,6 @@ public class AccountController {
     return ResponseEntity.ok().body("{\"username\": \"" + username + "\"}");
   }
 
-  /**
-   * The extractLogin method handles POST requests to the "/login" URL. RequestParam annotations are
-   * used to extract necessary login parameters/attributes from the html page.
-   * 
-   * @return returns a HTTP "Logged in" response, indicating the user has logged in successfully.
-   * @throws InvalidLogin if the username and password pair do not match a pair in the database.
-   */
-
-  @PostMapping("/login")
-  public ResponseEntity<String> extractLogin(@RequestParam String username,
-      @RequestParam String password, HttpSession session) throws InvalidLogin {
-
-    String newSession =
-        "INSERT INTO sessions (username, session_id) VALUES (:username, :session_id)";
-    String message = validateLoginDetails(username, password);
-    if (message == "Login successful") {
-      Map<String, String> parameters = new HashMap<String, String>();
-      parameters.put("username", username);
-      parameters.put("session_id", session.getId());
-      jdbcTemplate.update(newSession, parameters);
-    }
-
-    return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
-  }
-
-  /**
-   * Validates the username & password of the login, preventing duplicate usernames & incorrect
-   * passwords.
-   * 
-   * @param username is the username the user has inputed, to be checked against the database.
-   * @param password is the password the user has inputed, to be checked against the database.
-   * 
-   * @return a string indicating if the login was successful or not.
-   * 
-   */
-
-  public String validateLoginDetails(String username, String password) {
-
-    String UNIQUE_USERNAME =
-        "SELECT DISTINCT COUNT(username) FROM user2 WHERE username = :username";
-
-    try {
-      Map<String, String> parameters = new HashMap<String, String>();
-      parameters.put("username", username);
-
-      int usernameResult =
-          (int) jdbcTemplate.queryForObject(UNIQUE_USERNAME, parameters, Integer.class);
-
-      System.out.println(usernameResult);
-
-      // checks username exists in database
-      if (usernameResult == 1) {
-
-        String passwordResult = getPassword(username);
-
-        // checks if password in database for username matches input from user
-        if (!encoder().matches(password, passwordResult)) {
-          throw new InvalidLogin(INVALID_LOGIN_MSG);
-        }
-
-      } else {
-        throw new InvalidLogin(INVALID_LOGIN_MSG);
-      }
-
-    } catch (InvalidLogin e) {
-      e.printStackTrace();
-      System.out.println("Error! Invalid login");
-      return e.getMessage();
-    }
-    return "Login successful";
-  }
 
   /**
    * The register method handles POST requests to the "/register" URL. Assigns a new user id
