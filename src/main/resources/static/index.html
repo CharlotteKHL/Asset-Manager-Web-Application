@@ -28,7 +28,12 @@
                     <a class="nav-link" href="create-type.html">Manage Asset Types</a>
                  </button>
               </div>
-              <div class="ms-auto">
+              <div id="welcome-user-message" style="display: none">
+                  <p>
+                     Welcome, <strong><div id="username"></div></strong>!
+                  </p>
+              </div>
+              <div class="ms-auto" id="login-register-buttons">
                  <button class="btn btn-outline-primary mx-1">
                     <a class="nav-link" href="login.html">Log In</a>
                  </button>
@@ -39,6 +44,8 @@
            </div>
         </div>
      </nav>
+     <div id="successAlertPlaceholder"></div>
+     <script src="checkSession.js"></script>
    
    <!-- Main Page Body -->
    <section class="section p-3 vh-75 text-left">

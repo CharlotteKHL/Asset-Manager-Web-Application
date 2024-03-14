@@ -1,8 +1,12 @@
 package com.team05.assetsrepo;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
@@ -14,7 +18,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "user2")
-public class UserEntity implements UserDetails {
+public class UserEntity implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,6 +32,9 @@ public class UserEntity implements UserDetails {
 
     @Column(name = "password")
     private String password;
+    
+    @Column(name = "role")
+    private String role;
 
     public int getID() {
         return id;
@@ -39,7 +46,9 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+        roles.add(new SimpleGrantedAuthority(role));
+        return roles;
     }
 
     @Override
@@ -51,9 +60,17 @@ public class UserEntity implements UserDetails {
     public String getUsername() {
         return username;
     }
+    
+    public String getRole() {
+      return role;
+    }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+    
+    public void setRole(String role) {
+      this.role = role;
     }
 
     @Override
