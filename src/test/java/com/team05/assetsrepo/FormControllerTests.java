@@ -63,6 +63,13 @@ class FormControllerTests {
 	  assertEquals(ResponseEntity.ok().body("{\"message\": \"New asset type created successfully!\"}"), formController.createType(typeObject.toString()));
   }
   
+  @Test 
+  void testCreateTypeCatchJSONProcessing() throws JSONException {
+	  String jsonErrorString = "{\"type\": TestingDataV3, \"test\": Text}";
+	  String e = "Unrecognized token 'TestingDataV3': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: (String)\"{\"type\": TestingDataV3, \"test\": Text}\"; line: 1, column: 23]";
+  assertEquals(ResponseEntity.badRequest().body("{\"error\": \"" + e + "\"}"), formController.createType(jsonErrorString));
+  }
+  
   @Test
   void testCreateTypeCatchDuplicateKey() {
 	  formController.createType(typeObject.toString());
@@ -78,6 +85,13 @@ class FormControllerTests {
 	  typeObject.put("test", "Text");
 	  typeObject.put("Description", "Testing the data.");
 	  assertEquals(ResponseEntity.ok().body("{\"message\": \"Asset type updated successfully!\"}"), formController.updateType(typeObject.toString()));
+  }
+  
+  @Test
+  void testUpdateTypeCatchJSONProcessing() throws JSONException {
+	  String jsonErrorString = "{\"type\": TestingData, \"test\": Text}";
+	  String e = "Unrecognized token 'TestingData': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: (String)\"{\"type\": TestingData, \"test\": Text}\"; line: 1, column: 21]";
+  assertEquals(ResponseEntity.badRequest().body("{\"error\": \"" + e + "\"}"), formController.updateType(jsonErrorString));
   }
   
   //Testing the deleteType method
@@ -99,6 +113,25 @@ class FormControllerTests {
   }
   
   @Test
+  void testRenameTypeCatchJSONProcessing() throws JSONException {
+	  String jsonErrorString = "{\"customType\": TestingDataRenamed, \"overarchingType\": TestData , \"test\": Text}";
+	  String e = "Unrecognized token 'TestingDataRenamed': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: (String)\"{\"customType\": TestingDataRenamed, \"overarchingType\": TestData , \"test\": Text}\"; line: 1, column: 34]";
+  assertEquals(ResponseEntity.badRequest().body("{\"error\": \"" + e + "\"}"), formController.renameType(jsonErrorString));
+  }
+  
+  @Test
+  void testRenameTypeCatchExpection() throws JSONException {
+	  typeObject = new JSONObject();
+	  typeObject.put("cusType", "TestDataUpdated");
+	  typeObject.put("overarchingType", "TestData");
+	  typeObject.put("type", "TestData");
+	  typeObject.put("test", "Text");
+	  typeObject.put("Description", "Testing the data.");
+	  assertEquals(ResponseEntity.badRequest()
+	          .body("{\"error\": \"" + "An error occurred while renaming asset type!" + "\"}"), formController.renameType(typeObject.toString()));
+  }
+  
+  @Test
   void testDeleteTypeCatchDataIntegrity() {
 	  assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
 	          "{\"error\": \"Unable to delete type: This type is still referenced by other records.\"}"), formController.deleteType("Library"));
@@ -117,12 +150,16 @@ class FormControllerTests {
   
   @Test
   void testSubmitAssetTryMultipleAt() throws JSONException {
-	  assetObject = new JSONObject();
-	  assetObject.put("Title", "TestAsset");
-	  assetObject.put("Association(s)", "AwesomeML");
-	  assetObject.put("Type", "TestData");
-	  assetObject.put("Description", "Testing the data.");
-	  assertEquals(ResponseEntity.ok().body("{\"message\": \"Asset created successfully!\"}"), formController.submitAsset(assetObject.toString()));
+	  String jsonObject = "{" +
+			    "\"Title\": \"TestAsset\"," +
+			    "\"Association(s)\": [\"RESTful API\"]," +
+			    "\"Type\": \"API\"," +
+			    "\"Description\": \"Test\"," +
+			    "\"Endpoint\": \"Test\"," +
+			    "\"Methods\": \"Test\"," +
+			    "\"Response\": \"Test\"" +
+			"}";
+	  assertEquals(ResponseEntity.ok().body("{\"message\": \"Asset created successfully!\"}"), formController.submitAsset(jsonObject));
   }
   
   @Test
@@ -136,6 +173,13 @@ class FormControllerTests {
 		      + "Please check that the name of your asset is unique!" + "\"}"), formController.submitAsset(assetObject.toString()));
   }
   
+  @Test
+  void testSubmitAssetCatchJSONProcessing() throws JSONException {
+	  String jsonErrorString = "{\"type\": TestingData, \"test\": Text}";
+	  String e = "Unrecognized token 'TestingData': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: (String)\"{\"type\": TestingData, \"test\": Text}\"; line: 1, column: 21]";
+	  assertEquals(ResponseEntity.badRequest().body("{\"error\": \"" + e + "\"}"), formController.submitAsset(jsonErrorString));
+  }
+  
   //Testing the updateAsset method
   @Test
   void testUpdateAssetTry() throws JSONException {
@@ -147,19 +191,33 @@ class FormControllerTests {
 	  assertEquals(ResponseEntity.ok().body("{\"message\": \"Asset updated successfully!\"}"), formController.updateAsset(8, assetObject.toString()));
   }
   
-  //Testing the updateAsset method
- 
-//  //Possibly unreachable test
-//  @Test
-//  void testUpdateAssetCatchDuplicateKey() throws JSONException {
-//	  assetObject = new JSONObject();
-//	  assetObject.put("Re-name asset", "Testing");
-//	  assetObject.put("Association(s)", "RESTful API");
-//	  assetObject.put("Type", "TestData");
-//	  assetObject.put("Description", "Testing the data.");
-//	  assertEquals(ResponseEntity.badRequest()
-//	          .body("{\"error\": \"" + "Please check that the name of your asset is unique!" + "\"}"), formController.updateAsset(8, assetObject.toString()));
-//  }
+  @Test
+  void testUpdateAssetTryEmptyName() throws JSONException {
+	  assetObject = new JSONObject();
+	  assetObject.put("Re-name asset", "");
+	  assetObject.put("Association(s)", "AwesomeML");
+	  assetObject.put("Type", "TestData");
+	  assetObject.put("Description", "Testing the data.");
+	  assertEquals(ResponseEntity.ok().body("{\"message\": \"Asset updated successfully!\"}"), formController.updateAsset(8, assetObject.toString()));
+  }
+  
+  @Test
+  void testUpdateAssetCatchJSONProcessing() {
+	  String jsonErrorString = "{\"type\": TestingData, \"test\": Text}";
+	  String e = "Unrecognized token 'TestingData': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: (String)\"{\"type\": TestingData, \"test\": Text}\"; line: 1, column: 21]";
+	  assertEquals(ResponseEntity.badRequest().body("{\"error\": \"" + e + "\"}"), formController.updateAsset(8, jsonErrorString));
+  }
+  
+  @Test
+  void testUpdateAssetCatchDuplicateKey() throws JSONException {
+	  assetObject = new JSONObject();
+	  assetObject.put("Re-name asset", "AwesomeML Docs");
+	  assetObject.put("Association(s)", "AwesomeML");
+	  assetObject.put("Type", "TestData");
+	  assetObject.put("Description", "Testing the data.");
+	  assertEquals(ResponseEntity.badRequest()
+	          .body("{\"error\": \"" + "Please check that the name of your asset is unique!" + "\"}"), formController.updateAsset(8, assetObject.toString()));
+  }
   
   //Testing the populateTypesCreateAsset
   @Test
@@ -204,8 +262,18 @@ class FormControllerTests {
   }
   
   @Test
-  void testSearchAssetQueryDates() throws JSONException {
+  void testSearchAssetQueryTryDates() throws JSONException {
 	  assertEquals("[Testing]", formController.searchAssetQuery("[\"t\", \"\", \"2024-03-12\", \"2024-03-14\", \"Alphabetical: A-Z\"]").toString());
+  }
+  
+  @Test
+  void testSearchAssetQueryTryDatesAndType() throws JSONException {
+	  assertEquals("[Testing]", formController.searchAssetQuery("[\"t\", \"TestData\", \"2024-03-12\", \"2024-03-14\", \"Alphabetical: A-Z\"]").toString());
+  }
+  
+  @Test
+  void testSearchAssetQueryCatchJSONProcessing() {
+	  assertEquals(Collections.emptyList(), formController.searchAssetQuery("DoesNotExsitTest"));
   }
   
   @Test
