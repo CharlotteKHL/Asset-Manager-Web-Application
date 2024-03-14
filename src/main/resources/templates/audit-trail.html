@@ -18,7 +18,7 @@
         }
 </style>
 </head>
-<body>
+<body onload="updateAuditTrailData()">
 <!-- Navigation bar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
       <div class="container-fluid">
@@ -62,13 +62,25 @@
         </h3>
         <br>
         <table id="auditTrailTable">
-            <tr>
-                <th>Asset Name</th>
-                <th>User ID</th>
-                <th>Modification</th>
-                <th>Timestamp</th>
-            </tr>
-        </table>
+          <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Asset/Type</th>
+                  <th>E-Mail</th>
+                  <th>Modification</th>
+                  <th>Timestamp</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr th:each="data : ${auditTrailData}">
+                  <td th:text="${data['title']}"></td>
+                  <td th:text="${data['asset/type']}"></td>
+                  <td th:text="${data['username']}"></td>
+                  <td th:text="${data['modifications']}"></td>
+                  <td th:text="${data['last_updated']}"></td>
+              </tr>
+          </tbody>
+      </table>
     </section>
 </body>
 </html>

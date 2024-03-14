@@ -464,9 +464,9 @@ public class FormController {
   }
 
   /** 
-   * This method is required to load the search-asset.html page / template.
+   * This method is required to load the audit-trail.html page.
    *
-   * @return String the "search-asset.html" HTML page.
+   * @return String the "audit-trail.html" HTML page.
    */
   @GetMapping("/audit-trail.html")
   public String populateAuditTrailPage(Model model) {
