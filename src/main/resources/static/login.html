@@ -50,17 +50,20 @@
             <form>
                 <div class="mb-4">
                     <label for="exampleInputEmail" class="form-label">Username</label>
-                    <input type="email" class="form-control m-auto" id="exampleInputEmail" placeholder="Email">
+                    <input type="email" class="form-control m-auto" id="exampleInputEmail" placeholder="Email" name="exampleInputEmail">
                     <div id="emailHelp" class="form-text">Enter your username above.</div>
                 </div>
                 <div class="mb-4">
                   <label for="exampleInputPassword" class="form-label">Password</label>
-                  <input type="password" class="form-control m-auto" id="exampleInputPassword" placeholder="Password">
+                  <input type="password" class="form-control m-auto" id="exampleInputPassword" placeholder="Password" name="exampleInputPpassword">
                   <div id="passwordHelp" class="form-text">Do not share your password with anyone else.</div>
               </div>
               <button class="btn btn-outline-primary" type="button" id ="loginButton" onclick= "checkLogin()">
                         Login
               </button>
+              <input type="hidden"
+    				name="${_csrf.parameterName}"
+    				value="${_csrf.token}"/>
             </form>
         </div>
     </section>

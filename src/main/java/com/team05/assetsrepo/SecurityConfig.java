@@ -10,13 +10,20 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.Session;
+import org.springframework.session.security.SpringSessionBackedSessionRegistry;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 
 @Configuration
 @ComponentScan(basePackages = { "com.team05.assetsrepo" })
@@ -53,13 +60,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.formLogin(formLogin -> formLogin.loginPage("/login.html").defaultSuccessUrl("/", true));
+        http.formLogin(formLogin -> formLogin.loginPage("/login.html").defaultSuccessUrl("/", true)
+            .usernameParameter("exampleInputEmail").passwordParameter("exampleInputPassword"));
         http.authorizeHttpRequests(request -> request.requestMatchers(new AntPathRequestMatcher("/")).hasRole("ADMIN"));
         http.authorizeHttpRequests(request -> request.requestMatchers("/*").permitAll()).csrf(AbstractHttpConfigurer::disable);
         http.headers(header -> header.frameOptions(frameOptions -> frameOptions.disable().contentTypeOptions(cto -> cto.disable())));
         return http.build();
     }
-    
+
     @Autowired
     @Bean
     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
@@ -69,4 +77,5 @@ public class SecurityConfig {
           .build();
       return new InMemoryUserDetailsManager(user);
     }
+    
 }
