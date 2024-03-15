@@ -538,31 +538,3 @@ function deleteAsset(id) {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
         });
 }
-
-
-
-function updateAuditTrailData() {
-    fetch("/audit-trail.html")
-        .then(response => response.json())
-        .then(data => {
-            populateAuditTrailTable(data);
-        })
-        .catch(error => console.error("Error fetching audit trail data: ", error));
-}
-
-function populateAuditTrailTable(data) {
-    const tableBody = document.getElementById("auditTrailTableBody");
-    tableBody.innerHTML = "";
-
-    data.forEach(entry => {
-        const row = document.createElement("tr");
-        const cells = ["name", "assetType", "userId", "modification", "timestamp"];
-
-        cells.forEach(key => {
-            const cell = document.createElement("td");
-            cell.textContent = entry[key];
-            row.appendChild(cell);
-        });
-        tableBody.appendChild(row);
-    });
-}
