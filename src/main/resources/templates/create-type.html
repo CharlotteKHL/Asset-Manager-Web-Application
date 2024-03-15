@@ -28,7 +28,12 @@
                     <a class="nav-link" href="create-type.html">Manage Asset Types</a>
                  </button>
               </div>
-              <div class="ms-auto">
+              <div id="welcome-user-message" style="display: none">
+                <p>
+                   Welcome, <strong><div id="username"></div></strong>!
+                </p>
+            </div>
+              <div class="ms-auto" id="login-register-buttons">
                  <button class="btn btn-outline-primary mx-1">
                     <a class="nav-link" href="login.html">Log In</a>
                  </button>
@@ -39,6 +44,7 @@
            </div>
         </div>
      </nav>
+    <div id="successAlertPlaceholder"></div>
     <!-- Main page body -->
     <section class="section p-2 text-center">
         <h1>
@@ -72,21 +78,23 @@
                     </div>
                 </div>
 				
-				<!-- Checkbox to change create button to delete -->
-				<div class="mb-3 form-check" id="deleteTypeDiv">
-					<input class="form-check-input" type="checkbox" id="deleteTypeCheckbox" name="deleteTypeCheckbox">
-					<label class="form-check-label" for="deleteTypeCheckbox">
-						Delete selected type?
-					</label>
-				</div>
-				
-				<!-- Checkbox to toggle visibility of type name input -->
-				<div class="mb-3 form-check d-none" id="changeTypeNameCheckboxDiv">
-				  <input class="form-check-input" type="checkbox" id="changeTypeNameCheckbox" name = "changeTypeNameCheckbox">
-				  <label class="form-check-label" for="changeTypeNameCheckbox">
-					Change type name?
-				  </label>
-				</div>
+                <div class="mt-4 mb-4">
+                    <!-- Checkbox to change create button to delete -->
+                    <div class="mb-3 form-check" id="deleteTypeDiv">
+                        <input class="form-check-input" type="checkbox" id="deleteTypeCheckbox" name="deleteTypeCheckbox">
+                        <label class="form-check-label" for="deleteTypeCheckbox">
+                            &nbsp;Delete selected type?
+                        </label>
+                    </div>
+                    
+                    <!-- Checkbox to toggle visibility of type name input -->
+                    <div class="mb-3 form-check d-none" id="changeTypeNameCheckboxDiv">
+                    <input class="form-check-input" type="checkbox" id="changeTypeNameCheckbox" name = "changeTypeNameCheckbox">
+                    <label class="form-check-label" for="changeTypeNameCheckbox">
+                        &nbsp;Change type name?
+                    </label>
+                    </div>
+                </div>
 
                 <!-- Contains input field for entering the name of the new type. Appears when "Create Custom Type" option is selected -->
                 <div id="customTypeInputDiv" class="mb-3 d-none">
@@ -113,7 +121,7 @@
 
                     <!-- Button to remove the bottom attribute -->
                     <button id="removeAttributeButton" class="btn btn-outline-primary mt-3 mb-3" type="button">
-                        Remove attribute <i class="bi bi-trash"></i>  
+                        Remove attribute <i class="bi bi-x"></i>  
                     </button>
 
                     <!-- Dynamic submission button: toggles between "Update" and "Create" based on whether we are dealing with a pre-existing or new asset type -->
@@ -194,18 +202,21 @@
 				if (deleteTypeCheckbox.checked) {
 				  submitBtn.setAttribute('onclick','deleteType()');
 				  submitBtnText.innerText = "Delete" + "\u00A0";
+                  submitBtnIcon.className = 'bi bi-trash';
 				  changeTypeNameCheckbox.checked = false;
 				  customTypeInputDiv.classList.add('d-none');
 				} else {
 				  submitBtn.setAttribute('onclick','updateType()');
 				  submitBtnText.innerText = "Update" + "\u00A0";
+                  submitBtnIcon.className = 'bi bi-arrow-repeat';
 				}
 			});
 			
 			changeTypeNameCheckbox.addEventListener('change', function() {
 				if (changeTypeNameCheckbox.checked) {
 				  submitBtn.setAttribute('onclick','renameType()');
-				  submitBtnText.innerText = "Rename and update" + "\u00A0";
+				  submitBtnText.innerText = "Rename & Update" + "\u00A0";
+                  submitBtnIcon.className = 'bi bi-arrow-repeat';
 				  customTypeInputDiv.classList.remove('d-none');
 				  customTypeLabel.textContent = 'Rename Type';
 				  customTypeHelp.textContent = 'Please enter the updated name for your asset type.';
@@ -305,7 +316,7 @@
                 currentSpan.appendChild(attributeInput);
                 currentSpan.appendChild(currentBackendTypeField);
 
-                attributesContainer.classList.add('mt-5', 'mb-3');
+                attributesContainer.classList.add('mt-4', 'mb-2');
                 attributesContainer.appendChild(currentSpan);
             });
 
@@ -352,7 +363,7 @@
                         currentSpan.appendChild(attributeInput);
                         currentSpan.appendChild(currentBackendTypeField);
                         // Display the dynamically generated span container, containing the two input fields side-by-side
-                        attributesContainer.classList.add('mt-5', 'mb-3');
+                        attributesContainer.classList.add('mt-4', 'mb-2');
                         attributesContainer.appendChild(currentSpan);
                     });
                 } catch (error) {
@@ -361,5 +372,6 @@
             }
         });
     </script>
+    <script src="checkSession.js"></script>
 </body>
 </html>

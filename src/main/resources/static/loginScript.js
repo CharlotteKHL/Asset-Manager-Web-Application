@@ -40,7 +40,7 @@ function checkLogin() {
 
     // Portion that check if the server side validation has worked.
     if(valid){
-        
+	        
         fetch('/login', {
             method: 'POST',
             body: formData,
@@ -54,7 +54,7 @@ function checkLogin() {
             }
         })
         .then(async data => {
-            if(data.message == "This password is not correct") {
+            if(data.message == "This username or password is not correct" || data.message == "You are no longer logged in") {
                 appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + data.message, 'danger', 'successAlertPlaceholder');
             } else {
                 appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'success', 'successAlertPlaceholder');
@@ -65,6 +65,8 @@ function checkLogin() {
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'danger', 'successAlertPlaceholder');
         });
+       
+        
     }
 }
 
@@ -76,3 +78,21 @@ function sleep(ms) {
     clearInterval(sleepInterval);
     return new Promise(resolve => sleepInterval = setTimeout(resolve, ms));
 }
+
+document.addEventListener('DOMContentLoaded', function(){
+	  fetch('/check', {
+        method: 'POST',
+    }).then(response => {
+        if(response.ok) {
+            return response.json();
+        } else {
+            return response.json().then(errorMessage => {
+                throw new Error(errorMessage.error);
+            })
+        }
+    }).then(async data => {
+        if(data.username != "You are no longer logged in") {
+            window.location.replace('index.html');
+        }
+    })
+});
