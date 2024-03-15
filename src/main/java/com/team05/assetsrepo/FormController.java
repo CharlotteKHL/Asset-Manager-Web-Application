@@ -100,6 +100,11 @@ public class FormController {
 
       jdbcTemplate.update(sql, params);
 
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:typeName, 'Created', '[...]', 'Type')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("typeName", typeName);
+      jdbcTemplate.update(logSql, logParams);
+
       return ResponseEntity.ok().body("{\"message\": \"New asset type created successfully!\"}");
 
     } catch (JsonProcessingException e) {
@@ -155,6 +160,11 @@ public class FormController {
 
       jdbcTemplate.update(sql, params);
 
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:typeName, 'Updated', '[...]', 'Type')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("typeName", typeName);
+      jdbcTemplate.update(logSql, logParams);
+
       return ResponseEntity.ok().body("{\"message\": \"Asset type updated successfully!\"}");
 
     } catch (JsonProcessingException e) {
@@ -178,8 +188,15 @@ public class FormController {
           new MapSqlParameterSource().addValue("typeParam", selectedType);
       jdbcTemplate.update(statement, params);
 
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:typeName, 'Deleted', '[...]', 'Type')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource()
+          .addValue("typeName", selectedType);
+      jdbcTemplate.update(logSql, logParams);
+
       // Return a JSON response with the success message
       return ResponseEntity.ok().body("{\"message\": \"Asset type deleted successfully!\"}");
+
     } catch (DataIntegrityViolationException e) {
       // Catch the specific exception for foreign key violation
       // Return a custom error message indicating the foreign key constraint violation
@@ -242,6 +259,12 @@ public class FormController {
 
       // Execute the update query
       jdbcTemplate.update(sql, params);
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:typeName, 'Updated', '[...]', 'Type')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource()
+          .addValue("typeName", oldTypeName);
+      jdbcTemplate.update(logSql, logParams);
 
       // Return success message
       return ResponseEntity.ok().body("{\"message\": \"Asset type renamed successfully!\"}");
@@ -335,6 +358,11 @@ public class FormController {
 
       jdbcTemplate.update(sql, params);
 
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:assetName, 'Created', '[...]', 'Asset')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("assetName", title);
+      jdbcTemplate.update(logSql, logParams);
+
       return ResponseEntity.ok().body("{\"message\": \"Asset created successfully!\"}");
 
     } catch (JsonProcessingException e) {
@@ -372,6 +400,7 @@ public class FormController {
         object.remove(jsonNode.fieldNames().next());
         object.remove(jsonNode.fieldNames().next());
       } catch (Exception e) {
+        System.out.println(e.getMessage());
         System.out.println("Title not changed.");
       }
 
@@ -397,6 +426,11 @@ public class FormController {
       }
 
       jdbcTemplate.update(sql, params);
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:assetName, 'Updated', '[...]', 'Asset')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("assetName", title);
+      jdbcTemplate.update(logSql, logParams);
 
       return ResponseEntity.ok().body("{\"message\": \"Asset updated successfully!\"}");
 
@@ -470,7 +504,8 @@ public class FormController {
    */
   @GetMapping("/audit-trail.html")
   public String populateAuditTrailPage(Model model) {
-    List<Map<String, Object>> auditTrailData = jdbcTemplate.queryForList("SELECT * FROM audit_log", Collections.emptyMap());
+    List<Map<String, Object>> auditTrailData = jdbcTemplate
+        .queryForList("SELECT * FROM audit_log ORDER BY last_updated", Collections.emptyMap());
     model.addAttribute("auditTrailData", auditTrailData);
     return "audit-trail";
   }
@@ -723,18 +758,28 @@ public class FormController {
    *         deleted successfully, or an error message if an exception occurs.
    */
   @PostMapping("/deleteAsset/{id}")
-  public ResponseEntity<?> deleteType(@PathVariable("id") int id) {
+  public ResponseEntity<?> deleteAsset(@PathVariable("id") int id) {
     try {
-      String statement = "DELETE FROM assets WHERE id = :assetid";
+      String assetNameSql = "SELECT title FROM assets WHERE id = :assetid";
       MapSqlParameterSource params = new MapSqlParameterSource().addValue("assetid", id);
+      String logAssetName = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
+
+      String statement = "DELETE FROM assets WHERE id = :assetid";
       jdbcTemplate.update(statement, params);
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:assetName, 'Deleted', '[...]', 'Asset')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource()
+          .addValue("assetName", logAssetName);
+      jdbcTemplate.update(logSql, logParams);
 
       // Return a JSON response with the success message
       return ResponseEntity.ok().body("{\"message\": \"Asset deleted successfully!\"}");
     } catch (Exception e) {
       // Catch other exceptions and return a JSON response with a generic error message
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("{\"error\": \"An error occurred while deleting the asset\"}");
+          .body("{\"error\": \"An error occurred whilst deleting the asset: "
+          + e.getMessage() + "\"}");
     }
   }
 
@@ -802,14 +847,4 @@ public class FormController {
     return descriptionValue;
   }
   
-  /**
-   * Retrieves the data from the audit_log table in the database.
-   *
-   * @return String a JSON string containing the metadata.
-   */
-  @PostMapping("/getAuditLog")
-  @ResponseBody
-  public String getAuditLog() {
-    return "";
-  }
 }
