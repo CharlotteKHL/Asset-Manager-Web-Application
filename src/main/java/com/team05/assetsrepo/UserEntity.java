@@ -1,6 +1,5 @@
 package com.team05.assetsrepo;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +17,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "user2")
-public class UserEntity implements UserDetails, Serializable {
+public class UserEntity implements UserDetails {
 
     private static final long serialVersionUID = 1L;
 
