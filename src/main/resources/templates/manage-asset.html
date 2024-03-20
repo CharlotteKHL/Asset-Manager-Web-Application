@@ -31,6 +31,9 @@
                     <a class="nav-link" href="audit-trail.html">Audit Trail</a>
                  </button>
             </div>
+            <div id="welcome-user-message" style="display: none;">
+                <p>Welcome, <strong><div id="username"></div></strong>!</p>
+            </div>
             <div class="ms-auto">
                <button class="btn btn-outline-primary mx-1">
                   <a class="nav-link" href="login.html">Log In</a>
@@ -42,6 +45,7 @@
          </div>
       </div>
    </nav>
+     <div id="successAlertPlaceholder"></div>
     <!-- Main page body -->
     <section class="section p-2 text-center">
         <h1>
@@ -318,5 +322,6 @@
             }
         });
     </script>
+    <script src="checkSession.js"></script>
 </body>
 </html>

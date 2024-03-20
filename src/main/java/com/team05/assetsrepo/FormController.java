@@ -790,7 +790,7 @@ public class FormController {
    * @return 2D array in the form [["Attribute Name", "Custom Datatype"], [...]] representing each 
    *      attribute name and its custom datatype.
    */
-  private List<String[]> fetchAttributesForTypeFromDatabase(String type) {
+  List<String[]> fetchAttributesForTypeFromDatabase(String type) {
     String sql = "SELECT attr_keys, attr_backend_types FROM type WHERE type_name = :type";
 
     MapSqlParameterSource params = new MapSqlParameterSource().addValue("type", type);
