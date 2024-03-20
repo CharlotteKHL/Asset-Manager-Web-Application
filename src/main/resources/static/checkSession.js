@@ -70,3 +70,10 @@ function sleep(ms) {
     clearInterval(sleepInterval);
     return new Promise(resolve => sleepInterval = setTimeout(resolve, ms));
 }
+
+// Function allowing users to log out
+function logout() {
+    fetch('/logout', {
+        method: 'POST'
+    });
+}

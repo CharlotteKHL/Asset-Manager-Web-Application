@@ -44,6 +44,22 @@ public class AccountController {
     return new BCryptPasswordEncoder();
   }
 
+  /**
+   * Logs out the user.
+   *
+   * @param session the user's session
+   */
+  @PostMapping("/logout")
+  public String logout(HttpSession session) {
+    String remove_session = "DELETE FROM sessions WHERE session_id = :id";
+    String id = session.getId();
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put("id", id);
+    jdbcTemplate.update(remove_session, parameters);
+
+    return "Logout success";
+  }
+
   @PostMapping("/check")
   public ResponseEntity<String> checkSession(HttpSession session) {
 
@@ -97,13 +113,19 @@ public class AccountController {
 
   @PostMapping("/adminCheck")
   public ResponseEntity<String> adminCheck(HttpSession session) {
-      String find_role = "SELECT DISTINCT role FROM sessions where session_id = :id";
+      String count_role = "SELECT COUNT(role) FROM sessions WHERE session_id = :id";
       String id = session.getId();
       Map<String, String> parameters = new HashMap<String, String>();
       parameters.put("id", id);
-      String roleResult = jdbcTemplate.queryForObject(find_role, parameters, String.class);
+      int countRoleResult = jdbcTemplate.queryForObject(count_role, parameters, Integer.class);
 
-      return ResponseEntity.ok().body("{\"adminCheckResult\": \"" + roleResult + "\"}");
+      if(countRoleResult != 0) {
+        String find_role = "SELECT DISTINCT role FROM sessions WHERE session_id = :id";
+        String roleResult = jdbcTemplate.queryForObject(find_role, parameters, String.class);
+        return ResponseEntity.ok().body("{\"adminCheckResult\": \"" + roleResult + "\"}");
+      } else {
+        return ResponseEntity.ok().body("{\"adminCheckResult\": \"" + "" + "\"}");
+      }
   }
 
   /**
