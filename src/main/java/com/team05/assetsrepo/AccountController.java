@@ -9,9 +9,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import jakarta.servlet.http.HttpSession;
 
 /**
@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class AccountController {
   private final NamedParameterJdbcTemplate jdbcTemplate;
-  private TransactionTemplate transactionTemplate = new TransactionTemplate();
   private final String INVALID_LOGIN_MSG = "This username or password is not correct";
   private UserRepository userRepository;
 
@@ -45,6 +44,22 @@ public class AccountController {
     return new BCryptPasswordEncoder();
   }
 
+  /**
+   * Logs out the user.
+   *
+   * @param session the user's session
+   */
+  @PostMapping("/logout")
+  public String logout(HttpSession session) {
+    String remove_session = "DELETE FROM sessions WHERE session_id = :id";
+    String id = session.getId();
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put("id", id);
+    jdbcTemplate.update(remove_session, parameters);
+
+    return "Logout success";
+  }
+
   @PostMapping("/check")
   public ResponseEntity<String> checkSession(HttpSession session) {
 
@@ -54,7 +69,7 @@ public class AccountController {
     String count_curr_login = "SELECT COUNT(username) FROM sessions WHERE session_id = :id";
 
     String id = session.getId();
-    System.out.println(id);
+    System.out.println("Webpage being accessed by session ID: " + id);
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put("id", id);
 
@@ -72,7 +87,45 @@ public class AccountController {
     }
     parameters.put("username", username);
     jdbcTemplate.update(delete_old, parameters);
+
+    if(username != "You are no longer logged in") {
+      String[] usernameSplit = username.split("@");
+      String finalUsername = usernameSplit[0];
+      username = finalUsername;
+    }
     return ResponseEntity.ok().body("{\"username\": \"" + username + "\"}");
+  }
+
+  /**
+   * Allows you to get the role of a given user.
+   *
+   * @param username the username of the user you'd like to find the role for
+   * @return the role of a given user.
+   */
+  public String getRole(String username) {
+      Map<String, String> parameters = new HashMap<String, String>();
+      String find_role = "SELECT DISTINCT role FROM user2 WHERE username = :username";
+      parameters.put("username", username);
+      String roleResult = jdbcTemplate.queryForObject(find_role, parameters, String.class);
+
+      return roleResult;
+  }
+
+  @PostMapping("/adminCheck")
+  public ResponseEntity<String> adminCheck(HttpSession session) {
+      String count_role = "SELECT COUNT(role) FROM sessions WHERE session_id = :id";
+      String id = session.getId();
+      Map<String, String> parameters = new HashMap<String, String>();
+      parameters.put("id", id);
+      int countRoleResult = jdbcTemplate.queryForObject(count_role, parameters, Integer.class);
+
+      if(countRoleResult != 0) {
+        String find_role = "SELECT DISTINCT role FROM sessions WHERE session_id = :id";
+        String roleResult = jdbcTemplate.queryForObject(find_role, parameters, String.class);
+        return ResponseEntity.ok().body("{\"adminCheckResult\": \"" + roleResult + "\"}");
+      } else {
+        return ResponseEntity.ok().body("{\"adminCheckResult\": \"" + "" + "\"}");
+      }
   }
 
   /**
@@ -87,13 +140,15 @@ public class AccountController {
   public ResponseEntity<String> extractLogin(@RequestParam String username,
       @RequestParam String password, HttpSession session) throws InvalidLogin {
 
+    String role = getRole(username);
     String newSession =
-        "INSERT INTO sessions (username, session_id) VALUES (:username, :session_id)";
+        "INSERT INTO sessions (username, session_id, role) VALUES (:username, :session_id, :role)";
     String message = validateLoginDetails(username, password);
     if (message == "Login successful") {
       Map<String, String> parameters = new HashMap<String, String>();
       parameters.put("username", username);
       parameters.put("session_id", session.getId());
+      parameters.put("role", role);
       jdbcTemplate.update(newSession, parameters);
     }
 
@@ -123,7 +178,7 @@ public class AccountController {
       int usernameResult =
           (int) jdbcTemplate.queryForObject(UNIQUE_USERNAME, parameters, Integer.class);
 
-      // System.out.println(usernameResult);
+      System.out.println(usernameResult);
 
       // checks username exists in database
       if (usernameResult == 1) {
@@ -140,7 +195,8 @@ public class AccountController {
       }
 
     } catch (InvalidLogin e) {
-      System.err.println(e.getMessage());
+      e.printStackTrace();
+      System.out.println("Error! Invalid login");
       return e.getMessage();
     }
     return "Login successful";
@@ -186,7 +242,7 @@ public class AccountController {
 
       // if username unique add new user to the database
       MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", idCount + 1)
-          .addValue("username", username).addValue("password", password).addValue("role", "ADMIN");
+          .addValue("username", username).addValue("password", password).addValue("role", "USER");
 
       jdbcTemplate.update(insert, params);
 
