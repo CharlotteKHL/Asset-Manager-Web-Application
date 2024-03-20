@@ -1,6 +1,8 @@
 // When the page is started up, a check is carried out to confirm if the user is logged in or not
 // If the user is logged in, then their username is displayed with a welcome message
 // If the user is not logged in, then the Login/Register buttons are displayed instead
+
+// Following this, if the user is not an admin then the "Manage Asset Types" button on the navigation bar does not appear 
 document.addEventListener('DOMContentLoaded', function() {
 	    const appendAlert = (message, type, placeholder, alertId) => {
         const placeholderElement = document.getElementById(`${placeholder}`);
@@ -24,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             return response.json().then(errorMessage => {
                 throw new Error(errorMessage.error);
-            })
+            });
         }
     }).then(async data => {
         if(data.username != "You are no longer logged in") {
@@ -33,13 +35,30 @@ document.addEventListener('DOMContentLoaded', function() {
             var welcomeUserMessage = document.getElementById('welcome-user-message');
             welcomeUserMessage.style.display = 'block';
             var usernameText = document.getElementById('username');
-            usernameText.innerHTML = data.username;
+            usernameText.innerHTML = "Logged in as: " + data.username;
         } else {
          appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.username, 'danger', 'successAlertPlaceholder');
          	await sleep(2000);
          	window.location.replace('login.html');
         }
-    })
+    });
+
+    fetch('/adminCheck', {
+        method: 'POST'
+    }).then(response => {
+        if(response.ok) {
+            return response.json();
+        } else {
+            return response.json().then(errorMessage => {
+                throw new Error(errorMessage.error);
+            });
+        }
+    }).then(data => {
+        if(data.adminCheckResult == "ADMIN") {
+            var manageAssetTypesButton = document.getElementById('manage-asset-types-button');
+            manageAssetTypesButton.style.display = 'inline-block';
+        }
+    });
  });
  
  

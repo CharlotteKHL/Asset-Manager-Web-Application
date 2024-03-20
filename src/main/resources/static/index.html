@@ -15,7 +15,7 @@
            <a class="navbar-brand" href="index.html">Asset Metadata Repository</a>
            <div class="d-flex w-100">
               <div class="mr-auto">
-                 <button class="btn btn-outline-primary mx-3">
+                 <button class="btn btn-outline-primary mx-3" id="manage-asset-types-button" style="display: none">
                     <a class="nav-link" href="create-type.html">Manage Asset Types</a>
                  </button>
                  <button class="btn btn-outline-primary mx-3">
@@ -25,9 +25,9 @@
                     <a class="nav-link" href="manage-asset.html">Manage Assets</a>
                  </button>
               </div>
-              <div id="welcome-user-message" style="display: none">
+              <div class="ms-auto" id="welcome-user-message" style="display: none">
                   <p>
-                     Welcome, <strong><div id="username"></div></strong>!
+                     <div class="fst-italic" id="username"></div>
                   </p>
               </div>
               <div class="ms-auto" id="login-register-buttons">
