@@ -66,36 +66,45 @@
             <div id="errorAlertPlaceholder"></div>
             <form>
                 <div class="mb-3">
-                    <label for="type" class="form-label">
-                        Type
+                    <label for="user" class="form-label">
+                        Users
                     </label>
                     <select id="user" class="form-select m-auto" name="user[]" multiple>
 						<option selected disabled>Choose users...</option>
 						<!-- Populates dropdown list with pre-existing users from database -->
-						<option th:each="user : ${users}" th:text="${user}" th:value="${user}"></option>
+						<option th:each="user : ${users}" th:value="${user['user_id'] + ',' + user['username'] + ',' + user['role']}" th:text="${user['username'] + ' (Role: ' + user['role'] + ')'}"></option>
 					</select>
 
                     <div id="userHelp" class="form-text">
                         Choose the user from the dropdown menu.
                     </div>
                 </div>     
-
-                <!-- Contains input field for entering the name of the new type. Appears when "Create Custom Type" option is selected -->
-                <div id="customUserInputDiv" class="mb-3 d-none">
-                    <label for="customUser" class="form-label" id="customUserLabel">
-                        Username (email)
+				
+				<div id="roleDropdown" class="mb-3 d-none">
+                    <label for="role" class="form-label">
+                        Role selection
                     </label>
-                    <input type="text" id="customUser" class="form-control m-auto" name="customUser">
-                    <div id="customUserHelp" class="form-text">
-                        Please enter the name (email) for your user.
+                    <select id="role" class="form-select m-auto" name="role">
+                        <option selected></option>
+                        <option disabled>Roles:</option>
+                        <option disabled>──────────</option>
+						<option>Admin</option>
+						<option>User</option>
+                        <option disabled>──────────</option>
+                    </select>
+                    <div id="roleHelp" class="form-text">
+                        Choose the role for the selected user.
                     </div>
                 </div>
 
                 <!-- Container for buttons e.g. "Add attribute", "Remove attribute", "Update" etc. -->
                 <div id="buttons" class="d-none">
                     <!-- Dynamic submission button: toggles between "Update" and "Create" based on whether we are dealing with a pre-existing or new asset type -->
-                    <button id="createButton" class="btn btn-outline-primary mt-3 mb-3" type="button">
+                    <button id="updateButton" class="btn btn-outline-primary mt-3 mb-3" type="button">
                         <span id="btnText">Update&nbsp;</span><i id="btnIcon" class="bi bi-arrow-repeat"></i> 
+                    </button>
+					<button id="deleteButton" class="btn btn-outline-primary mt-3 mb-3" type="button">
+                        <span id="btnText">Delete&nbsp;</span><i id="btnIcon" class="bi bi-arrow-repeat"></i> 
                     </button>
                     <br>
                 </div>
@@ -107,35 +116,76 @@
     <script src="script.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+		
+			let userId;
+			let manyId = [];
+			let count;
 			const userDropdown = document.getElementById('user');
-			const submitBtn = document.getElementById('createButton');
+			const roleDropdown = document.getElementById('roleDropdown');
+			const roleChoice = document.getElementById('role');
+			const updateBtn = document.getElementById('updateButton');
+			const deleteBtn = document.getElementById('deleteButton');
 			const submitBtnText = document.getElementById('btnText');
 			const submitBtnIcon = document.getElementById('btnIcon');
 			const buttonsDiv = document.getElementById('buttons');
 
 			buttonsDiv.classList.remove('d-none');
-
-
-			// Function to update button text and action based on selection
-			function updateButtonBasedOnSelection() {
+			
+			function update(userId){
+				updateBtn.onclick = function() {
+					updateUser(userId);
+				};
+			}
+			
+			function singleDelete(userId){
+				deleteBtn.onclick = function() {
+					deleteUser(userId);
+				};
+			}
+			
+			function multiDelete(manyId, count){
+				deleteBtn.onclick = function() {
+					deleteUser(manyId, count);
+				};
+			}
+			
+			userDropdown.addEventListener('change', function() {
 				const selectedOptions = userDropdown.selectedOptions;
 				const multipleUsersSelected = selectedOptions.length > 1;
-
+				// Get the data of the selected user(s)
+				const selectedUser = userDropdown.options[userDropdown.selectedIndex].value;
+				const [user_id, username, role] = selectedUser.split(',');
+				userId = user_id;
+				
 				if (multipleUsersSelected) {
-					// Change to "Delete" for multiple selections
-					submitBtnText.innerText = "Delete";
-					submitBtnIcon.className = "bi bi-trash";
-					submitBtn.onclick = function() { deleteUser(); };
-				} else {
+					count = 0;
+					manyId = [];
+					for (const option of selectedOptions){
+						const selectedUser = option.value;
+						const [user_id, username, role] = selectedUser.split(',');
+						// Append user_id to the array
+						manyId.push(user_id);
+						count += 1;
+					}
+					roleDropdown.classList.add('d-none');
+					updateBtn.classList.add('d-none');
+					deleteBtn.classList.remove('d-none');
+					multiDelete(manyId);
+				} else if (selectedOptions.length === 1){
 					// Revert to "Update" for a single selection
-					submitBtnText.innerText = "Update";
-					submitBtnIcon.className = "bi bi-arrow-repeat";
-					submitBtn.onclick = function() { updateUser(); };
+					roleDropdown.classList.remove('d-none');
+					updateBtn.classList.remove('d-none');
+					deleteBtn.classList.remove('d-none');
+					update(userId);
+					singleDelete(userId);
+				} else {
+					roleDropdown.classList.add('d-none');
+					updateBtn.classList.add('d-none');
+					deleteBtn.classList.add('d-none');
 				}
-			}
-
-			// Listen for changes in the dropdown to update button accordingly
-			userDropdown.addEventListener('change', updateButtonBasedOnSelection);
+				
+			});
+			
 		});
     </script>
     <script src="checkSession.js"></script>
