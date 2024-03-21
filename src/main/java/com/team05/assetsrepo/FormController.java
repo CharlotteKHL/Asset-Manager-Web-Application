@@ -877,5 +877,60 @@ public class FormController {
     model.addAttribute("users", users);
     return "manage-users";
   }
+  
+  @PostMapping("/updateUser/{user_id}/{roleChoice}")
+  public ResponseEntity<?> updateUser(@PathVariable("user_id") int id, @PathVariable("roleChoice") String role) {
+      try {
+          role = role.toLowerCase();
+          String sql = "UPDATE user2 SET role = :role WHERE user_id = :id"; // Added space before "WHERE"
+          SqlParameterSource params = new MapSqlParameterSource().addValue("role", role).addValue("id", id);
+
+          jdbcTemplate.update(sql, params);
+
+          String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+                  + "VALUES (:assetName, 'Updated', '[...]', 'User')";
+          MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("assetName", role);
+          jdbcTemplate.update(logSql, logParams);
+
+          return ResponseEntity.ok().body("{\"message\": \"User updated successfully!\"}");
+
+      } catch (DataAccessException e) {
+          System.err.println(e.getMessage());
+          return ResponseEntity.badRequest()
+                  .body("{\"error\": \"" + "Failed to update the user in the database." + "\"}");
+      }
+  }
+
+  /**
+   * Deletes the user with the specified ID from the database.
+   *
+   * @param id The ID of the user to be deleted.
+   * @return A ResponseEntity containing a JSON response with a success message if the user is
+   *         deleted successfully, or an error message if an exception occurs.
+   */
+  @PostMapping("/deleteUser/{user_id}")
+  public ResponseEntity<?> deleteUser(@PathVariable("user_id") int id) {
+    try {
+      String assetNameSql = "SELECT username FROM user2 WHERE user_id = :id";
+      MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+      String logAssetName = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
+
+      String statement = "DELETE FROM user2 WHERE user_id = :id";
+      jdbcTemplate.update(statement, params);
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:assetName, 'Deleted', '[...]', 'User')";
+      MapSqlParameterSource logParams =
+          new MapSqlParameterSource().addValue("assetName", logAssetName);
+      jdbcTemplate.update(logSql, logParams);
+
+      // Return a JSON response with the success message
+      return ResponseEntity.ok().body("{\"message\": \"User deleted successfully!\"}");
+    } catch (Exception e) {
+      // Catch other exceptions and return a JSON response with a generic error message
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+          "{\"error\": \"An error occurred whilst deleting the user: " + e.getMessage() + "\"}");
+    }
+  }
 
 }
