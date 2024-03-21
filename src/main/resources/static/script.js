@@ -586,3 +586,29 @@ function deleteUser(userId) {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
         });
 }
+
+function deleteManyUser(manyId) {
+    resetAlerts();
+    
+    manyId.forEach(manyId => {
+        fetch(`/deleteUser/${manyId}`, {
+                method: 'POST',
+                body: {},
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(errorMessage => {
+                        throw new Error(errorMessage.error);
+                    });
+                }
+            })
+            .then(data => {
+                appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+            })
+            .catch(error => {
+                appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+            });
+    });
+}
