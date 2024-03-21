@@ -119,7 +119,6 @@
 		
 			let userId;
 			let manyId = [];
-			let count;
 			const userDropdown = document.getElementById('user');
 			const roleDropdown = document.getElementById('roleDropdown');
 			const updateBtn = document.getElementById('updateButton');
@@ -145,7 +144,7 @@
 			
 			function multiDelete(manyId, count){
 				deleteBtn.onclick = function() {
-					deleteUser(manyId, count);
+					deleteManyUser(manyId);
 				};
 			}
 			
@@ -158,14 +157,12 @@
 				userId = user_id;
 				
 				if (multipleUsersSelected) {
-					count = 0;
 					manyId = [];
 					for (const option of selectedOptions){
 						const selectedUser = option.value;
 						const [user_id, username, role] = selectedUser.split(',');
 						// Append user_id to the array
 						manyId.push(user_id);
-						count += 1;
 					}
 					roleDropdown.classList.add('d-none');
 					updateBtn.classList.add('d-none');
