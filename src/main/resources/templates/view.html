@@ -19,24 +19,18 @@
 	        </button>
 	        <div class="collapse navbar-collapse" id="navbarContent">
 	            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-	                <button class="btn btn-outline-primary mx-3">
-                  <a class="nav-link" href="create-asset.html">Create an Asset</a>
-               </button>
-               <button class="btn btn-outline-primary mx-3">
-                  <a class="nav-link" href="search-asset.html">Search for Assets</a>
-               </button>
-              <button class="btn btn-outline-primary mx-3">
-                  <a class="nav-link" href="manage-asset.html">Manage Assets</a>
-              </button>
-               <button class="btn btn-outline-primary mx-3">
-                  <a class="nav-link" href="create-type.html">Manage Asset Types</a>
-               </button>
-                 <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="manage-users.html">Manage Users</a>
-                </button>
-                <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="audit-trail.html">Audit Trail</a>
-                 </button>
+	                <button class="btn btn-outline-primary mx-3" id="manage-asset-types-button" style="display: none" onclick="window.location.href='/create-type.html'">
+	                    Manage Asset Types
+	                </button>
+	                 <button class="nav-link" class="btn btn-outline-primary mx-3" href="create-asset.html">
+	                    Create Assets
+	                </button>
+	                 <button class="btn btn-outline-primary mx-3" ref="manage-asset.html">
+	                    Manage Assets
+	                </button>
+	                 <button class="nav-link" class="btn btn-outline-primary mx-3">
+	                    Search for Assets
+	                </button>
                     <div id="welcome-user-message" style="display: none">
                         <p>
                             <div class="fst-italic" id="username"></div>
