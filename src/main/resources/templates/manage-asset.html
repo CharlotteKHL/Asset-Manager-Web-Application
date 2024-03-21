@@ -21,6 +21,12 @@
                  <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="create-asset.html">Create an Asset</a>
                  </button>
+                 <button class="btn btn-outline-primary mx-3">
+                  <a class="nav-link" href="search-asset.html">Search for Assets</a>
+                </button>
+                 <button class="btn btn-outline-primary mx-3">
+                 		 <a class="nav-link" href="audit-trail.html">Audit Trail</a>
+                </button>	
               </div>
               <div class="ms-auto" id="welcome-user-message" style="display: none">
                 <p>
@@ -116,8 +122,7 @@
     </section>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-    <script src="checkSession.js" defer></script>
-	<script src="script.js" defer></script>
+    <script src="script.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
 			let deletionId;
@@ -229,18 +234,14 @@
             async function fetchAttributes(typeName, id) {
                 try {
                     // Calls the server endpoint to fetch all attribute data corresponding to the selected asset type
-					console.log("hello");
-                    const response1 = await fetch(`/attributes/${typeName}`);
-					console.log(response1);
+                    const response = await fetch(`/attributes/${typeName}`);
                     // Returns a 2D array containing pairs in the form [attribute name, attribute datatype]
                     // e.g. [['Description', 'Text'], ['Format', 'Text'], ...]
-                    const data1 = await response1.json();
-					console.log(data1);
+                    const data = await response.json();
                     // Iterates over the 2D array, dealing with a single pair each iteration
 					const response2 = await fetch(`/attributesWassetData/${id}`);
-					console.log(response2);
 					const data2 = await response2.json();
-                    data1.forEach(attribute => {
+                    data.forEach(attribute => {
                         // Defines a label element and an input element
                         const attributeName = document.createElement('label');
                         attributeName.classList.add('form-label');
@@ -321,5 +322,6 @@
             }
         });
     </script>
+    <script src="checkSession.js"></script>
 </body>
 </html>
