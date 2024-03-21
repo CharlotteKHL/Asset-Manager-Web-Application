@@ -122,7 +122,6 @@
 			let count;
 			const userDropdown = document.getElementById('user');
 			const roleDropdown = document.getElementById('roleDropdown');
-			const roleChoice = document.getElementById('role');
 			const updateBtn = document.getElementById('updateButton');
 			const deleteBtn = document.getElementById('deleteButton');
 			const submitBtnText = document.getElementById('btnText');
@@ -133,7 +132,8 @@
 			
 			function update(userId){
 				updateBtn.onclick = function() {
-					updateUser(userId);
+					const roleChoice = document.getElementById('role').value;
+					updateUser(userId, roleChoice);
 				};
 			}
 			
