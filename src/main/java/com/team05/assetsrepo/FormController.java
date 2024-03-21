@@ -882,14 +882,18 @@ public class FormController {
   public ResponseEntity<?> updateUser(@PathVariable("user_id") int id, @PathVariable("roleChoice") String role) {
       try {
           role = role.toLowerCase();
-          String sql = "UPDATE user2 SET role = :role WHERE user_id = :id"; // Added space before "WHERE"
+          String assetNameSql = "SELECT username FROM user2 WHERE user_id = :id";
+          
+          String statement = "UPDATE user2 SET role = :role WHERE user_id = :id"; // Added space before "WHERE"
           SqlParameterSource params = new MapSqlParameterSource().addValue("role", role).addValue("id", id);
+          String logAssetName = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
 
-          jdbcTemplate.update(sql, params);
+          jdbcTemplate.update(statement, params);
 
           String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
-                  + "VALUES (:assetName, 'Updated', '[...]', 'User')";
-          MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("assetName", role);
+              + "VALUES (:assetName, 'Updated role', '[...]', :role)";
+          MapSqlParameterSource logParams =
+              new MapSqlParameterSource().addValue("assetName", logAssetName).addValue("role", role);
           jdbcTemplate.update(logSql, logParams);
 
           return ResponseEntity.ok().body("{\"message\": \"User updated successfully!\"}");
