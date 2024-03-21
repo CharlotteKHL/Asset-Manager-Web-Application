@@ -38,7 +38,7 @@ fetch('/check', {
         usernameText.innerHTML = "Logged in as: " + data.username;
     } else {
      appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.username, 'danger', 'successAlertPlaceholder');
-         await sleep(2000);
+         await sleep(1000);
          window.location.replace('login.html');
     }
 });

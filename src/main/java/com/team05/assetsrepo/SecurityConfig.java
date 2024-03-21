@@ -56,7 +56,7 @@ public class SecurityConfig {
         http.formLogin(formLogin -> formLogin.loginPage("/login.html").defaultSuccessUrl("/", true)
             .usernameParameter("exampleInputEmail").passwordParameter("exampleInputPassword"));
         http.authorizeHttpRequests(request -> request.requestMatchers(new AntPathRequestMatcher("/")).hasRole("ADMIN"));
-        http.authorizeHttpRequests(request -> request.requestMatchers("/*").permitAll()).csrf(AbstractHttpConfigurer::disable);
+        http.authorizeHttpRequests(request -> request.requestMatchers("/**").permitAll()).csrf(AbstractHttpConfigurer::disable);
         http.logout(logout -> logout.logoutSuccessUrl("/logout").deleteCookies("SESSION").permitAll());
         http.headers(header -> header.frameOptions(frameOptions -> frameOptions.disable().contentTypeOptions(cto -> cto.disable())));
         return http.build();
