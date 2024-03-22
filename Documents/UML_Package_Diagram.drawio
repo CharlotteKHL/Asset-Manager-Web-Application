@@ -1,0 +1,73 @@
+<mxfile host="Electron" modified="2024-03-22T12:45:27.165Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="CFrIj9HDDowjUzDJ-S1g" version="23.1.5" type="device">
+  <diagram name="Page-1" id="bBArENPze_WZkHC25wu2">
+    <mxGraphModel dx="2713" dy="844" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-1" value="Back End" style="swimlane;whiteSpace=wrap;html=1;startSize=40;" vertex="1" parent="1">
+          <mxGeometry x="-90" y="40" width="670" height="610" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-4" value="AccountController.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry x="460" y="370" width="200" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-14" value="AccountController()&lt;br&gt;service()&lt;br&gt;encoder()&lt;br&gt;logout()&lt;br&gt;checkSession()&lt;br&gt;getRole()&lt;div&gt;adminCheck()&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div&gt;extractLogin()&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div&gt;validateLoginDetails()&lt;/div&gt;&lt;div&gt;register()&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div&gt;getPassword()&lt;/div&gt;&lt;div&gt;setPassword()&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-4">
+          <mxGeometry y="30" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-5" value="CustomUserDetailsService.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry x="250" y="50" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-15" value="CustomerUserDetailsService()&lt;br&gt;loadUserByUsername()" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-5">
+          <mxGeometry y="30" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-6" value="DatabaseConfig.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry x="250" y="170" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-16" value="DatabaseConfig()&lt;br&gt;namedParameterJdbcTemplate()" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-6">
+          <mxGeometry y="30" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-8" value="InvalidLogin.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry x="460" y="50" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-17" value="InvalidLogin()" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-8">
+          <mxGeometry y="30" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-9" value="Main.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry x="460" y="130" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-19" value="main()" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-9">
+          <mxGeometry y="30" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-10" value="SecurityConfig.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry x="460" y="210" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-20" value="CustomUserDetailsService()&lt;div&gt;encoder()&lt;/div&gt;&lt;div&gt;authProvider()&lt;/div&gt;&lt;div&gt;authManager()&lt;/div&gt;&lt;div&gt;filterChain()&lt;/div&gt;&lt;div&gt;userDetailsService()&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-10">
+          <mxGeometry y="30" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-12" value="UserReposotory.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry x="250" y="290" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-24" value="---" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-12">
+          <mxGeometry y="30" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-11" value="UserEntity.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry x="250" y="370" width="200" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-25" value="getID()&lt;br&gt;setID()&lt;br&gt;getAuthorities()&lt;br&gt;getPassword()&lt;br&gt;getUsername()&lt;br&gt;getRole()&lt;br&gt;setUsername()&lt;br&gt;setRole()&lt;br&gt;isAccountNonExpired()&lt;div&gt;isAccountNonLocked()&lt;br&gt;&lt;/div&gt;&lt;div&gt;isCredentialsNonExpired()&lt;br&gt;&lt;/div&gt;&lt;div&gt;isEnabled()&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-11">
+          <mxGeometry y="30" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-7" value="FormController.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry x="10" y="50" width="230" height="430" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-26" value="FormController()&lt;br&gt;createType()&lt;br&gt;updateType()&lt;br&gt;deleteType()&lt;br&gt;renameType()&lt;br&gt;submitAsset()&lt;br&gt;updateAsset()&lt;br&gt;populateTypesCreateAsset()&lt;br&gt;populateTypesCreateType()&lt;br&gt;getSearchAssetPage()&lt;br&gt;populateAuditTrailPage()&lt;br&gt;searchAssetQuery()&lt;br&gt;getAssetData()&lt;br&gt;getAttributesForType()&lt;br&gt;getAttributesForAsset()&lt;br&gt;populateTypeManageAsset()&lt;br&gt;deleteAsset()&lt;br&gt;fetchAttributesForTypeFromDatabase()&lt;br&gt;fetchAttributesForAssetFromDatabase()&lt;br&gt;populateUsers()&lt;br&gt;updateUser()&lt;br&gt;deleteUser()&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-7">
+          <mxGeometry y="30" width="230" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-2" value="Front End" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="40" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-3" value="Database" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="280" width="200" height="200" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
