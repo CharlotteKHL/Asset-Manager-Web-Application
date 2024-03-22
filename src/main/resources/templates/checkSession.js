@@ -54,10 +54,11 @@ fetch('/adminCheck', {
         });
     }
 }).then(data => {
+    let manageAssetTypesButton = document.getElementById("manage-asset-types-button");
+    let auditButton = document.getElementById("audit-log-button");
+
     if(data.adminCheckResult == "ADMIN") {
-        let manageAssetTypesButton = document.getElementById("manage-asset-types-button");
-        let auditButton = document.getElementById("audit-log-button");
-        
+
         if(manageAssetTypesButton != null){
             manageAssetTypesButton.style.display = 'inline-block';
         }
@@ -65,6 +66,12 @@ fetch('/adminCheck', {
         if(auditButton != null){
             auditButton.style.display = 'inline-block';
         }
+    } else {
+    //check if user on page they are not allowed on
+    let pathname = window.location.pathname;
+    if((pathname == "/create-type.html") || (pathname == "/audit-trail.html")){
+        window.location.replace("index.html");
+    }
     }
 });
 });

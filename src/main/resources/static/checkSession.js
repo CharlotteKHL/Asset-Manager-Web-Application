@@ -57,13 +57,19 @@ fetch('/adminCheck', {
     if(data.adminCheckResult == "ADMIN") {
         var manageAssetTypesButton = document.getElementById('manage-asset-types-button');
         var auditButton = document.getElementById('audit-log-button');
-        
+
         if(manageAssetTypesButton != null){
             manageAssetTypesButton.style.display = 'inline-block';
         }
         
         if(auditButton != null){
             auditButton.style.display = 'inline-block';
+        }
+    } else {
+        //check if user on page they are not allowed on
+        let pathname = window.location.pathname;
+        if((pathname == "/create-type.html") || (pathname == "/audit-trail.html")){
+            window.location.replace("index.html");
         }
     }
 });
