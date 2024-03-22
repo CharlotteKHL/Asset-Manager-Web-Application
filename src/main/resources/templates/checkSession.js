@@ -55,8 +55,16 @@ fetch('/adminCheck', {
     }
 }).then(data => {
     if(data.adminCheckResult == "ADMIN") {
-        var manageAssetTypesButton = document.getElementById('manage-asset-types-button');
-        manageAssetTypesButton.style.display = 'inline-block';
+        let manageAssetTypesButton = document.getElementById("manage-asset-types-button");
+        let auditButton = document.getElementById("audit-log-button");
+        
+        if(manageAssetTypesButton != null){
+            manageAssetTypesButton.style.display = 'inline-block';
+        }
+        
+        if(auditButton != null){
+            auditButton.style.display = 'inline-block';
+        }
     }
 });
 });
