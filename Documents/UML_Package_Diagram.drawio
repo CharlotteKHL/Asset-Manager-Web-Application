@@ -1,166 +1,182 @@
-<mxfile host="Electron" modified="2024-03-22T13:33:47.059Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="6j_vJgU5EY9FCDBVbsYy" version="23.1.5" type="device">
+<mxfile host="Electron" modified="2024-03-25T12:11:38.048Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="3T-IEmxkjKiQoVJk8Rpb" version="23.1.5" type="device">
   <diagram name="Page-1" id="bBArENPze_WZkHC25wu2">
-    <mxGraphModel dx="2286" dy="844" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2849" dy="1206" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-1" value="Back End" style="swimlane;whiteSpace=wrap;html=1;startSize=40;" vertex="1" parent="1">
-          <mxGeometry x="130" y="40" width="670" height="610" as="geometry" />
+        <mxCell id="CHE35gOvTx21NH-NGSV6-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;dashed=1;strokeWidth=4;" edge="1" parent="1" source="CBkBvnG_m12OV5zRL0R5-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="870" y="345.42857142857156" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-4" value="AccountController.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-1" value="Back End" style="swimlane;whiteSpace=wrap;html=1;startSize=40;" parent="1" vertex="1">
+          <mxGeometry x="120" y="40" width="670" height="610" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-4" value="AccountController.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-1" vertex="1">
           <mxGeometry x="460" y="370" width="200" height="230" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-14" value="AccountController()&lt;br&gt;service()&lt;br&gt;encoder()&lt;br&gt;logout()&lt;br&gt;checkSession()&lt;br&gt;getRole()&lt;div&gt;adminCheck()&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div&gt;extractLogin()&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div&gt;validateLoginDetails()&lt;/div&gt;&lt;div&gt;register()&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div&gt;getPassword()&lt;/div&gt;&lt;div&gt;setPassword()&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-4">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-14" value="AccountController()&lt;br&gt;service()&lt;br&gt;encoder()&lt;br&gt;logout()&lt;br&gt;checkSession()&lt;br&gt;getRole()&lt;div&gt;adminCheck()&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div&gt;extractLogin()&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div&gt;validateLoginDetails()&lt;/div&gt;&lt;div&gt;register()&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div&gt;getPassword()&lt;/div&gt;&lt;div&gt;setPassword()&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-4" vertex="1">
           <mxGeometry y="30" width="200" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-5" value="CustomUserDetailsService.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-5" value="CustomUserDetailsService.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-1" vertex="1">
           <mxGeometry x="250" y="50" width="200" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-15" value="CustomerUserDetailsService()&lt;br&gt;loadUserByUsername()" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-5">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-15" value="CustomerUserDetailsService()&lt;br&gt;loadUserByUsername()" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-5" vertex="1">
           <mxGeometry y="30" width="200" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-6" value="DatabaseConfig.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-6" value="DatabaseConfig.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-1" vertex="1">
           <mxGeometry x="250" y="170" width="200" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-16" value="DatabaseConfig()&lt;br&gt;namedParameterJdbcTemplate()" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-6">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-16" value="DatabaseConfig()&lt;br&gt;namedParameterJdbcTemplate()" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-6" vertex="1">
           <mxGeometry y="30" width="200" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-8" value="InvalidLogin.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-8" value="InvalidLogin.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-1" vertex="1">
           <mxGeometry x="460" y="50" width="200" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-17" value="InvalidLogin()" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-8">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-17" value="InvalidLogin()" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-8" vertex="1">
           <mxGeometry y="30" width="200" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-9" value="Main.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-9" value="Main.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-1" vertex="1">
           <mxGeometry x="460" y="130" width="200" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-19" value="main()" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-9">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-19" value="main()" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-9" vertex="1">
           <mxGeometry y="30" width="200" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-10" value="SecurityConfig.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-10" value="SecurityConfig.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-1" vertex="1">
           <mxGeometry x="460" y="210" width="200" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-20" value="CustomUserDetailsService()&lt;div&gt;encoder()&lt;/div&gt;&lt;div&gt;authProvider()&lt;/div&gt;&lt;div&gt;authManager()&lt;/div&gt;&lt;div&gt;filterChain()&lt;/div&gt;&lt;div&gt;userDetailsService()&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-10">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-20" value="CustomUserDetailsService()&lt;div&gt;encoder()&lt;/div&gt;&lt;div&gt;authProvider()&lt;/div&gt;&lt;div&gt;authManager()&lt;/div&gt;&lt;div&gt;filterChain()&lt;/div&gt;&lt;div&gt;userDetailsService()&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-10" vertex="1">
           <mxGeometry y="30" width="200" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-12" value="UserReposotory.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-12" value="UserReposotory.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-1" vertex="1">
           <mxGeometry x="250" y="290" width="200" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-24" value="---" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-12">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-24" value="---" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-12" vertex="1">
           <mxGeometry y="30" width="200" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-11" value="UserEntity.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-11" value="UserEntity.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-1" vertex="1">
           <mxGeometry x="250" y="370" width="200" height="230" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-25" value="getID()&lt;br&gt;setID()&lt;br&gt;getAuthorities()&lt;br&gt;getPassword()&lt;br&gt;getUsername()&lt;br&gt;getRole()&lt;br&gt;setUsername()&lt;br&gt;setRole()&lt;br&gt;isAccountNonExpired()&lt;div&gt;isAccountNonLocked()&lt;br&gt;&lt;/div&gt;&lt;div&gt;isCredentialsNonExpired()&lt;br&gt;&lt;/div&gt;&lt;div&gt;isEnabled()&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-11">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-25" value="getID()&lt;br&gt;setID()&lt;br&gt;getAuthorities()&lt;br&gt;getPassword()&lt;br&gt;getUsername()&lt;br&gt;getRole()&lt;br&gt;setUsername()&lt;br&gt;setRole()&lt;br&gt;isAccountNonExpired()&lt;div&gt;isAccountNonLocked()&lt;br&gt;&lt;/div&gt;&lt;div&gt;isCredentialsNonExpired()&lt;br&gt;&lt;/div&gt;&lt;div&gt;isEnabled()&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-11" vertex="1">
           <mxGeometry y="30" width="200" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-7" value="FormController.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-1">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-7" value="FormController.java" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-1" vertex="1">
           <mxGeometry x="10" y="50" width="230" height="430" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-26" value="FormController()&lt;br&gt;createType()&lt;br&gt;updateType()&lt;br&gt;deleteType()&lt;br&gt;renameType()&lt;br&gt;submitAsset()&lt;br&gt;updateAsset()&lt;br&gt;populateTypesCreateAsset()&lt;br&gt;populateTypesCreateType()&lt;br&gt;getSearchAssetPage()&lt;br&gt;populateAuditTrailPage()&lt;br&gt;searchAssetQuery()&lt;br&gt;getAssetData()&lt;br&gt;getAttributesForType()&lt;br&gt;getAttributesForAsset()&lt;br&gt;populateTypeManageAsset()&lt;br&gt;deleteAsset()&lt;br&gt;fetchAttributesForTypeFromDatabase()&lt;br&gt;fetchAttributesForAssetFromDatabase()&lt;br&gt;populateUsers()&lt;br&gt;updateUser()&lt;br&gt;deleteUser()&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-7">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-26" value="FormController()&lt;br&gt;createType()&lt;br&gt;updateType()&lt;br&gt;deleteType()&lt;br&gt;renameType()&lt;br&gt;submitAsset()&lt;br&gt;updateAsset()&lt;br&gt;populateTypesCreateAsset()&lt;br&gt;populateTypesCreateType()&lt;br&gt;getSearchAssetPage()&lt;br&gt;populateAuditTrailPage()&lt;br&gt;searchAssetQuery()&lt;br&gt;getAssetData()&lt;br&gt;getAttributesForType()&lt;br&gt;getAttributesForAsset()&lt;br&gt;populateTypeManageAsset()&lt;br&gt;deleteAsset()&lt;br&gt;fetchAttributesForTypeFromDatabase()&lt;br&gt;fetchAttributesForAssetFromDatabase()&lt;br&gt;populateUsers()&lt;br&gt;updateUser()&lt;br&gt;deleteUser()" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-7" vertex="1">
           <mxGeometry y="30" width="230" height="400" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-2" value="Front End" style="swimlane;whiteSpace=wrap;html=1;startSize=40;" vertex="1" parent="1">
-          <mxGeometry x="-350" y="40" width="470" height="970" as="geometry" />
+        <mxCell id="CHE35gOvTx21NH-NGSV6-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;dashed=1;strokeWidth=4;" edge="1" parent="1" source="CBkBvnG_m12OV5zRL0R5-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120" y="419.7142857142858" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-27" value="index.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
-          <mxGeometry x="240" y="390" width="220" height="270" as="geometry" />
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-2" value="Front End" style="swimlane;whiteSpace=wrap;html=1;startSize=40;" parent="1" vertex="1">
+          <mxGeometry x="-640" y="40" width="680" height="760" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-28" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;&amp;lt;Navigation Bar&amp;gt;&lt;br&gt;asset metadata repository : text button&lt;/span&gt;&lt;div&gt;create an asset : button&lt;/div&gt;&lt;div&gt;manage assets : button&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;search for assets : button&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;create type : button&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;manage type : button&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;manage user : button&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;audit trail : button&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;lt;Main Page&amp;gt;&lt;/div&gt;&lt;div&gt;create an asset : button&lt;/div&gt;&lt;div&gt;manage assets : button&lt;/div&gt;&lt;div&gt;search assets : button&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-27">
-          <mxGeometry y="30" width="220" height="240" as="geometry" />
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-27" value="index.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-2" vertex="1">
+          <mxGeometry x="240" y="390" width="220" height="140" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-29" value="login.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
-          <mxGeometry x="240" y="50" width="220" height="150" as="geometry" />
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-28" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;&amp;lt;Navigation Bar&amp;gt;&lt;br&gt;&lt;/span&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;lt;Main Page&amp;gt;&lt;/div&gt;&lt;div&gt;create an asset : button&lt;/div&gt;&lt;div&gt;manage assets : button&lt;/div&gt;&lt;div&gt;search assets : button&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-27" vertex="1">
+          <mxGeometry y="30" width="220" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-30" value="&amp;lt;Navigation Bar&amp;gt;&lt;br&gt;asset metadata repository : text button&lt;br&gt;register : button&lt;br&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;username : textbox&lt;br&gt;password : textbox&lt;br&gt;login : button&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-29">
-          <mxGeometry y="30" width="220" height="120" as="geometry" />
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-29" value="login.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-2" vertex="1">
+          <mxGeometry x="240" y="50" width="220" height="160" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-33" value="register.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
-          <mxGeometry x="240" y="210" width="220" height="170" as="geometry" />
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-30" value="&amp;lt;Navigation Bar&amp;gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;audit trail : button&lt;/div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;log out : button&lt;/span&gt;register : button&lt;br&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;username : textbox&lt;br&gt;password : textbox&lt;br&gt;login : button" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-29" vertex="1">
+          <mxGeometry y="30" width="220" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-34" value="&amp;lt;Navigation Bar&amp;gt;&lt;br&gt;asset metadata repository : text button&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;login: button&lt;br&gt;&amp;lt;Main Page&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;username : textbox&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;password : textbox&lt;br&gt;re-enter password : textbox&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;register: button&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-33">
-          <mxGeometry y="30" width="220" height="140" as="geometry" />
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-33" value="register.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-2" vertex="1">
+          <mxGeometry x="240" y="220" width="220" height="160" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-35" value="audit-trail.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-34" value="&amp;lt;Navigation Bar&amp;gt;&lt;br&gt;&lt;br&gt;log out : buttonlogin: button&lt;br&gt;&amp;lt;Main Page&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;username : textbox&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;password : textbox&lt;br&gt;re-enter password : textbox&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;register: button" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-33" vertex="1">
+          <mxGeometry y="30" width="220" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-35" value="audit-trail.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-2" vertex="1">
           <mxGeometry x="10" y="50" width="220" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-36" value="&amp;lt;Navigation Bar&amp;gt;&lt;br&gt;&lt;br&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;audit trail : table" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-35">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-36" value="&amp;lt;Navigation Bar&amp;gt;&lt;br&gt;&lt;br&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;audit trail : table" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-35" vertex="1">
           <mxGeometry y="30" width="220" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-37" value="create-asset.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
-          <mxGeometry x="10" y="170" width="220" height="170" as="geometry" />
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-37" value="create-asset.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-2" vertex="1">
+          <mxGeometry x="10" y="170" width="220" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-38" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;title : textbox&lt;br&gt;association(s) : scroll box&lt;br&gt;type : drop down&lt;br&gt;create : button&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-37">
-          <mxGeometry y="30" width="220" height="140" as="geometry" />
-        </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-39" value="create-type.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
-          <mxGeometry x="10" y="350" width="220" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-40" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-39">
-          <mxGeometry y="30" width="220" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-41" value="manage-asset.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
-          <mxGeometry x="10" y="470" width="220" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-42" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;existing asset(s) : drop down&lt;br&gt;change asset name : checkbox&lt;br&gt;delete selected asset : checkbox&lt;div&gt;asset attributes : textboxes[]&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-41">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-38" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;title : textbox&lt;br&gt;association(s) : scroll box&lt;br&gt;type : drop down&lt;br&gt;create : button" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-37" vertex="1">
           <mxGeometry y="30" width="220" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-43" value="manage-user.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-39" value="create-type.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-2" vertex="1">
+          <mxGeometry x="10" y="350" width="220" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-40" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-39" vertex="1">
+          <mxGeometry y="30" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-41" value="manage-asset.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-2" vertex="1">
+          <mxGeometry x="10" y="470" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-42" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;existing asset(s) : drop down&lt;br&gt;change asset name : checkbox&lt;br&gt;delete selected asset : checkbox&lt;div&gt;asset attributes : textboxes[]&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-41" vertex="1">
+          <mxGeometry y="30" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-43" value="manage-user.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-2" vertex="1">
           <mxGeometry x="10" y="630" width="220" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-44" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-43">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-44" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-43" vertex="1">
           <mxGeometry y="30" width="220" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-47" value="search-asset.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
-          <mxGeometry x="10" y="750" width="220" height="210" as="geometry" />
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-47" value="search-asset.html" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-2" vertex="1">
+          <mxGeometry x="240" y="540" width="220" height="210" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-48" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;search : textbox&lt;div&gt;type : drop down&lt;/div&gt;&lt;div&gt;date from : date select&lt;/div&gt;&lt;div&gt;date to : date select&lt;/div&gt;&lt;div&gt;sort by : drop down&lt;/div&gt;&lt;div&gt;reset : button&lt;/div&gt;&lt;div&gt;assets : buttons[]&lt;/div&gt;&lt;div&gt;asset details : off canvas&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-47">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-48" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;lt;Main Page&amp;gt;&lt;br&gt;search : textbox&lt;div&gt;type : drop down&lt;/div&gt;&lt;div&gt;date from : date select&lt;/div&gt;&lt;div&gt;date to : date select&lt;/div&gt;&lt;div&gt;sort by : drop down&lt;/div&gt;&lt;div&gt;reset : button&lt;/div&gt;&lt;div&gt;assets : buttons[]&lt;/div&gt;&lt;div&gt;asset details : off canvas&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-47" vertex="1">
           <mxGeometry y="30" width="220" height="180" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-3" value="Database" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="810" y="40" width="430" height="510" as="geometry" />
+        <mxCell id="CHE35gOvTx21NH-NGSV6-1" value="&amp;lt;Navigation Bar&amp;gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-2">
+          <mxGeometry x="470" y="50" width="200" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-51" value="assets" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-3">
+        <mxCell id="CHE35gOvTx21NH-NGSV6-2" value="&amp;lt;Navigation Bar&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;asset metadata repository : text button&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;create an asset : button&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;manage assets : button&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;&lt;span style=&quot;border-color: var(--border-color); background-color: initial;&quot;&gt;search for assets : button&lt;/span&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;&lt;span style=&quot;border-color: var(--border-color); background-color: initial;&quot;&gt;create type : button&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;&lt;span style=&quot;border-color: var(--border-color); background-color: initial;&quot;&gt;manage type : button&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;&lt;span style=&quot;border-color: var(--border-color); background-color: initial;&quot;&gt;manage user : button&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;&lt;span style=&quot;border-color: var(--border-color); background-color: initial;&quot;&gt;audit trail : button&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color);&quot;&gt;&lt;span style=&quot;border-color: var(--border-color); background-color: initial;&quot;&gt;log out : button&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="CHE35gOvTx21NH-NGSV6-1">
+          <mxGeometry y="30" width="200" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-3" value="Database" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="870" y="40" width="430" height="510" as="geometry" />
+        </mxCell>
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-51" value="assets" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-3" vertex="1">
           <mxGeometry x="10" y="30" width="200" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-52" value="id : int8&lt;br&gt;title : text&lt;br&gt;type : int8&lt;br&gt;associtations : int8[]&lt;br&gt;additional_attrs : jsonb&lt;br&gt;last_updates : timestamptz" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-51">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-52" value="id : int8&lt;br&gt;title : text&lt;br&gt;type : int8&lt;br&gt;associtations : int8[]&lt;br&gt;additional_attrs : jsonb&lt;br&gt;last_updates : timestamptz" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-51" vertex="1">
           <mxGeometry y="30" width="200" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-53" value="audit_log" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-3">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-53" value="audit_log" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-3" vertex="1">
           <mxGeometry x="220" y="30" width="200" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-54" value="title : text&lt;br&gt;id : int8&lt;br&gt;last_updated : timestamptz&lt;br&gt;username : text&lt;br&gt;action : text&lt;br&gt;asset_or_type : text" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-53">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-54" value="title : text&lt;br&gt;id : int8&lt;br&gt;last_updated : timestamptz&lt;br&gt;username : text&lt;br&gt;action : text&lt;br&gt;asset_or_type : text" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-53" vertex="1">
           <mxGeometry y="30" width="200" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-55" value="sessions" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-3">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-55" value="sessions" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-3" vertex="1">
           <mxGeometry x="220" y="290" width="200" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-56" value="id : int8&lt;br&gt;username : varchar&lt;br&gt;session_id : varchar&lt;br&gt;role : text" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-55">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-56" value="id : int8&lt;br&gt;username : varchar&lt;br&gt;session_id : varchar&lt;br&gt;role : text" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-55" vertex="1">
           <mxGeometry y="30" width="200" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-57" value="spring_session" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-3">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-57" value="spring_session" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-3" vertex="1">
           <mxGeometry x="10" y="170" width="200" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-58" value="primary_id : varchar&lt;br&gt;session_id : varchar&lt;br&gt;creation_time : int8&lt;br&gt;last_access_time : int8&lt;br&gt;max_inactive_interval : int4&lt;br&gt;expiry_time : int8&lt;br&gt;principal_name : varchar" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-57">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-58" value="primary_id : varchar&lt;br&gt;session_id : varchar&lt;br&gt;creation_time : int8&lt;br&gt;last_access_time : int8&lt;br&gt;max_inactive_interval : int4&lt;br&gt;expiry_time : int8&lt;br&gt;principal_name : varchar" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-57" vertex="1">
           <mxGeometry y="30" width="200" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-59" value="spring_session_attributes" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-3">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-59" value="spring_session_attributes" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-3" vertex="1">
           <mxGeometry x="220" y="170" width="200" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-60" value="session_primary_id : varchar&lt;br&gt;attribute_name : varchar&lt;br&gt;attribute_bytes : bytea" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-59">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-60" value="session_primary_id : varchar&lt;br&gt;attribute_name : varchar&lt;br&gt;attribute_bytes : bytea" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-59" vertex="1">
           <mxGeometry y="30" width="200" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-61" value="type" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-3">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-61" value="type" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-3" vertex="1">
           <mxGeometry x="10" y="330" width="200" height="140" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-62" value="id : int8&lt;br&gt;type_name : text&lt;br&gt;attributes : json&lt;br&gt;last_updated : timestamptz&lt;br&gt;attr_keys : text[]&lt;br&gt;attr_backend_types : text[]" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-61">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-62" value="id : int8&lt;br&gt;type_name : text&lt;br&gt;attributes : json&lt;br&gt;last_updated : timestamptz&lt;br&gt;attr_keys : text[]&lt;br&gt;attr_backend_types : text[]" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-61" vertex="1">
           <mxGeometry y="30" width="200" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-49" value="user2" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-3">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-49" value="user2" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" parent="CBkBvnG_m12OV5zRL0R5-3" vertex="1">
           <mxGeometry x="220" y="400" width="200" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="CBkBvnG_m12OV5zRL0R5-50" value="user_id : int4&lt;br&gt;username : text&lt;br&gt;password : text&lt;br&gt;role: text" style="whiteSpace=wrap;html=1;" vertex="1" parent="CBkBvnG_m12OV5zRL0R5-49">
+        <mxCell id="CBkBvnG_m12OV5zRL0R5-50" value="user_id : int4&lt;br&gt;username : text&lt;br&gt;password : text&lt;br&gt;role: text" style="whiteSpace=wrap;html=1;" parent="CBkBvnG_m12OV5zRL0R5-49" vertex="1">
           <mxGeometry y="30" width="200" height="70" as="geometry" />
         </mxCell>
       </root>
