@@ -889,6 +889,81 @@ public class FormController {
     return descriptionValue;
   }
   
+  /**
+   * Retrieves the HTML page for managing users and fetches users from the database to populate a
+   * drop-down menu.
+   *
+   * @param model The model to which types retrieved from the database will be added.
+   * @return String the name of the HTML page for creating a type ("create-type").
+   */
+  @GetMapping("/manage-users.html")
+  public String populateUsers(Model model) {
+    List<Map<String, Object>> users =
+        jdbcTemplate.queryForList("SELECT user_id, username, role FROM user2 " + "ORDER BY user_id ASC",
+            Collections.emptyMap());
+    model.addAttribute("users", users);
+    return "manage-users";
+  }
+  
+  @PostMapping("/updateUser/{user_id}/{roleChoice}")
+  public ResponseEntity<?> updateUser(@PathVariable("user_id") int id, @PathVariable("roleChoice") String role) {
+      try {
+          role = role.toLowerCase();
+          String assetNameSql = "SELECT username FROM user2 WHERE user_id = :id";
+          
+          String statement = "UPDATE user2 SET role = :role WHERE user_id = :id"; // Added space before "WHERE"
+          SqlParameterSource params = new MapSqlParameterSource().addValue("role", role).addValue("id", id);
+          String logAssetName = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
+
+          jdbcTemplate.update(statement, params);
+
+          String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+              + "VALUES (:assetName, 'Updated role', '[...]', :role)";
+          MapSqlParameterSource logParams =
+              new MapSqlParameterSource().addValue("assetName", logAssetName).addValue("role", role);
+          jdbcTemplate.update(logSql, logParams);
+
+          return ResponseEntity.ok().body("{\"message\": \"User updated successfully!\"}");
+
+      } catch (DataAccessException e) {
+          System.err.println(e.getMessage());
+          return ResponseEntity.badRequest()
+                  .body("{\"error\": \"" + "Failed to update the user in the database." + "\"}");
+      }
+  }
+
+  /**
+   * Deletes the user with the specified ID from the database.
+   *
+   * @param id The ID of the user to be deleted.
+   * @return A ResponseEntity containing a JSON response with a success message if the user is
+   *         deleted successfully, or an error message if an exception occurs.
+   */
+  @PostMapping("/deleteUser/{user_id}")
+  public ResponseEntity<?> deleteUser(@PathVariable("user_id") int id) {
+    try {
+      String assetNameSql = "SELECT username FROM user2 WHERE user_id = :id";
+      MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+      String logAssetName = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
+
+      String statement = "DELETE FROM user2 WHERE user_id = :id";
+      jdbcTemplate.update(statement, params);
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:assetName, 'Deleted', '[...]', 'User')";
+      MapSqlParameterSource logParams =
+          new MapSqlParameterSource().addValue("assetName", logAssetName);
+      jdbcTemplate.update(logSql, logParams);
+
+      // Return a JSON response with the success message
+      return ResponseEntity.ok().body("{\"message\": \"User deleted successfully!\"}");
+    } catch (Exception e) {
+      // Catch other exceptions and return a JSON response with a generic error message
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+          "{\"error\": \"An error occurred whilst deleting the user: " + e.getMessage() + "\"}");
+    }
+  }
+  
   public String retrieveUser(String id) {
     // Update asset log
     String getUser = "SELECT username FROM sessions WHERE session_id = :id";
