@@ -916,7 +916,7 @@ public class FormController {
    * @return ResponseEntity containing the status of the update operation.
    */
   @PostMapping("/updateUser/{user_id}/{roleChoice}")
-  public ResponseEntity<?> updateUser(@PathVariable("user_id") int id, @PathVariable("roleChoice") String role) {
+  public ResponseEntity<?> updateUser(@PathVariable("user_id") int id, @PathVariable("roleChoice") String role, HttpSession session) {
       try {
           role = role.toLowerCase();
           String assetNameSql = "SELECT username FROM user2 WHERE user_id = :id";
@@ -928,9 +928,11 @@ public class FormController {
           jdbcTemplate.update(statement, params);
 
           String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
-              + "VALUES (:assetName, 'Updated role', '[...]', :role)";
+              + "VALUES (:assetName, 'Updated role', :username, :role)";
+          String user = retrieveUser(session.getId());
           MapSqlParameterSource logParams =
-              new MapSqlParameterSource().addValue("assetName", logAssetName).addValue("role", role);
+              new MapSqlParameterSource().addValue("assetName", logAssetName).addValue("role", role)
+              .addValue("username", user);
           jdbcTemplate.update(logSql, logParams);
 
           return ResponseEntity.ok().body("{\"message\": \"User updated successfully!\"}");
@@ -950,7 +952,7 @@ public class FormController {
    *         deleted successfully, or an error message if an exception occurs.
    */
   @PostMapping("/deleteUser/{user_id}")
-  public ResponseEntity<?> deleteUser(@PathVariable("user_id") int id) {
+  public ResponseEntity<?> deleteUser(@PathVariable("user_id") int id, HttpSession session) {
     try {
       String assetNameSql = "SELECT username FROM user2 WHERE user_id = :id";
       MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
@@ -960,9 +962,10 @@ public class FormController {
       jdbcTemplate.update(statement, params);
 
       String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
-          + "VALUES (:assetName, 'Deleted', '[...]', 'User')";
+          + "VALUES (:assetName, 'Deleted', :username, 'User')";
+      String user = retrieveUser(session.getId());
       MapSqlParameterSource logParams =
-          new MapSqlParameterSource().addValue("assetName", logAssetName);
+          new MapSqlParameterSource().addValue("assetName", logAssetName).addValue("username", user);
       jdbcTemplate.update(logSql, logParams);
 
       // Return a JSON response with the success message
