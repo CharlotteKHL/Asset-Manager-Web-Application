@@ -440,8 +440,11 @@ public class FormController {
             .addValue("id", id);
       } else {
         sql = "UPDATE assets SET additional_attrs = CAST(:obj AS JSONB) WHERE id = :id";
+        String assetNameSql = "SELECT title FROM assets WHERE id = :id";
+        params = new MapSqlParameterSource().addValue("id",id);
+        title = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
         params = new MapSqlParameterSource().addValue("obj", obj).addValue("id", id);
-      }
+      };
    
       jdbcTemplate.update(sql, params);
       
