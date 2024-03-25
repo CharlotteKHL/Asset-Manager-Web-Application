@@ -12,8 +12,19 @@
 
 /* create-asset.html */
 
-#assetTitle, #assetAssociations, #type {
+#assetTitle, #assetAssociations{
 	width: 30%;
+}
+
+/* manage-users.html */
+
+#type, #user{
+	width: 30%;
+}
+
+#roleDropdown, #role{
+	width: 50%;
+  display: inline;
 }
 
 /* create-type.html */
