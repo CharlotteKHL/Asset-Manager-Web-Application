@@ -5,19 +5,19 @@
 // Following this, if the user is not an admin then the "Manage Asset Types" button on the navigation bar does not appear 
 document.addEventListener('DOMContentLoaded', function() {
     const appendAlert = (message, type, placeholder, alertId) => {
-    const placeholderElement = document.getElementById(`${placeholder}`);
-    const wrapper = document.createElement('div');
-    wrapper.id = alertId;
-    wrapper.classList.add("alertMsg");
-    wrapper.innerHTML = [
-        `<div class="alert alert-${type} alert-dismissible" role="alert">
-            <div>${message}</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
-        </div>`
-    ].join('');
-
-    placeholderElement.append(wrapper);
-}
+        const placeholderDiv = document.getElementById(`${placeholder}`);
+        const wrapper = document.createElement('div');
+        // Setting an id allows us to identify whether a specific alert already exists, thus preventing alerts from stacking
+        wrapper.id = alertId;
+        wrapper.classList.add("alertMsg");
+        wrapper.innerHTML = [
+            `<div class="alert ${type} alert-dismissible" role="alert">
+                <div>${message}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`
+        ].join('');
+        placeholderDiv.append(wrapper);
+    }
 fetch('/check', {
     method: 'POST',
 }).then(response => {
@@ -37,7 +37,7 @@ fetch('/check', {
         var usernameText = document.getElementById('username');
         usernameText.innerHTML = "Logged in as: " + data.username;
     } else {
-     appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.username, 'danger', 'successAlertPlaceholder');
+     appendAlert('<i class="bi bi-exclamation-triangle"></i> ' + data.username + '.', 'alert-danger', 'successAlertPlaceholder');
          await sleep(1000);
          window.location.replace('login.html');
     }
