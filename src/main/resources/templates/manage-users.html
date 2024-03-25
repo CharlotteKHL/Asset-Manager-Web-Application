@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
+    <!-- Document Metadata -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Metadata Repository | Manage Types</title>
+
+    <!-- External Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" type="text/css" href="custom.css">
@@ -13,8 +16,9 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
         <div class="container-fluid">
            <a class="navbar-brand" href="index.html">Asset Metadata Repository</a>
-           <div class="d-flex w-100">
+           <div class="links d-flex w-100">
               <div class="mr-auto">
+                <!-- Navigation Buttons -->
                 <button class="btn btn-outline-primary mx-3">
                   <a class="nav-link" href="create-asset.html">Create an Asset</a>
                </button>
@@ -34,10 +38,11 @@
                     <a class="nav-link" href="audit-trail.html">Audit Trail</a>
                  </button>
               </div>
+              <!-- User Authentication -->
               <div class="ms-auto" id="welcome-user-message" style="display: none">
                 <p>
                    <div class="fst-italic" id="username"></div>
-                   <a href="login.html" class="mx-1" onclick="logout()">Logout</a>
+                   <i class="bi bi-box-arrow-right">&nbsp;</i><a href="login.html" onclick="logout()">Log out</a>
                 </p>
               </div>
               <div class="ms-auto" id="login-register-buttons">
@@ -60,7 +65,7 @@
             Choose the user you wish to update or user(s) you wish to delete
         </h3>
         <br>
-        <!-- Form for managing asset types begins here -->
+        <!-- Form for managing users begins here -->
         <div class="container">
             <div id="successAlertPlaceholder"></div>
             <div id="errorAlertPlaceholder"></div>
@@ -69,6 +74,7 @@
                     <label for="user" class="form-label">
                         Users
                     </label>
+                    <!-- User Dropdown -->
                     <select id="user" class="form-select m-auto" name="user[]" multiple>
 						<option selected disabled>Choose users...</option>
 						<!-- Populates dropdown list with pre-existing users from database -->
@@ -84,6 +90,7 @@
                     <label for="role" class="form-label">
                         Role selection
                     </label>
+                    <!-- Role Dropdown -->
                     <select id="role" class="form-select m-auto" name="role">
                         <option selected></option>
                         <option disabled>Roles:</option>
@@ -96,10 +103,9 @@
                         Choose the role for the selected user.
                     </div>
                 </div>
-
-                <!-- Container for buttons e.g. "Add attribute", "Remove attribute", "Update" etc. -->
+				
                 <div id="buttons" class="d-none">
-                    <!-- Dynamic submission button: toggles between "Update" and "Create" based on whether we are dealing with a pre-existing or new asset type -->
+                    <!-- Action Buttons -->
                     <button id="updateButton" class="btn btn-outline-primary mt-3 mb-3" type="button">
                         <span id="btnText">Update&nbsp;</span><i id="btnIcon" class="bi bi-arrow-repeat"></i> 
                     </button>
@@ -111,80 +117,99 @@
             </form>
         </div>
     </section>
+    <!-- External Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="script.js"></script>
+    <!-- JavaScript -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-		
-			let userId;
-			let manyId = [];
-			const userDropdown = document.getElementById('user');
-			const roleDropdown = document.getElementById('roleDropdown');
-			const updateBtn = document.getElementById('updateButton');
-			const deleteBtn = document.getElementById('deleteButton');
-			const submitBtnText = document.getElementById('btnText');
-			const submitBtnIcon = document.getElementById('btnIcon');
-			const buttonsDiv = document.getElementById('buttons');
-
-			buttonsDiv.classList.remove('d-none');
+		// Wait for the DOM content to be fully loaded
+		document.addEventListener("DOMContentLoaded", function() {
 			
-			function update(userId){
+			// Variable declarations
+			let userId; // Holds the ID of the selected user
+			let manyId = []; // Holds an array of IDs for multiple selected users
+			const userDropdown = document.getElementById('user'); // Reference to the user dropdown element
+			const roleDropdown = document.getElementById('roleDropdown'); // Reference to the role dropdown element
+			const updateBtn = document.getElementById('updateButton'); // Reference to the update button element
+			const deleteBtn = document.getElementById('deleteButton'); // Reference to the delete button element
+			const buttonsDiv = document.getElementById('buttons'); // Reference to the container div for buttons
+
+			// Show buttons container
+			buttonsDiv.classList.remove('d-none');
+				
+			// Function to handle update operation for a single user
+			function update(userId) {
 				updateBtn.onclick = function() {
+					// Get the selected role choice
 					const roleChoice = document.getElementById('role').value;
+					// Call the updateUser function with the selected user ID and role
 					updateUser(userId, roleChoice);
 				};
 			}
-			
-			function singleDelete(userId){
+				
+			// Function to handle delete operation for a single user
+			function singleDelete(userId) {
 				deleteBtn.onclick = function() {
+					// Call the deleteUser function with the selected user ID
 					deleteUser(userId);
 				};
 			}
-			
-			function multiDelete(manyId, count){
+				
+			// Function to handle delete operation for multiple users
+			function multiDelete(manyId, count) {
 				deleteBtn.onclick = function() {
+					// Call the deleteManyUser function with the array of user IDs
 					deleteManyUser(manyId);
 				};
 			}
-			
+				
+			// Event listener for the change event on the user dropdown
 			userDropdown.addEventListener('change', function() {
+				// Get the selected options
 				const selectedOptions = userDropdown.selectedOptions;
+				// Check if multiple users are selected
 				const multipleUsersSelected = selectedOptions.length > 1;
 				// Get the data of the selected user(s)
 				const selectedUser = userDropdown.options[userDropdown.selectedIndex].value;
 				const [user_id, username, role] = selectedUser.split(',');
-				userId = user_id;
-				
+				userId = user_id; // Store the ID of the selected user
+					
+				// Check if multiple users are selected
 				if (multipleUsersSelected) {
+					// Reset manyId array
 					manyId = [];
-					for (const option of selectedOptions){
+					// Loop through selected options to get user IDs
+					for (const option of selectedOptions) {
 						const selectedUser = option.value;
 						const [user_id, username, role] = selectedUser.split(',');
-						// Append user_id to the array
+						// Append user_id to the manyId array
 						manyId.push(user_id);
 					}
+					// Hide role dropdown, show delete button and attach event listener for multi-delete
 					roleDropdown.classList.add('d-none');
 					updateBtn.classList.add('d-none');
 					deleteBtn.classList.remove('d-none');
 					multiDelete(manyId);
-				} else if (selectedOptions.length === 1){
-					// Revert to "Update" for a single selection
+				} else if (selectedOptions.length === 1) {
+					// Revert to "Update" mode for a single user selection
 					roleDropdown.classList.remove('d-none');
 					updateBtn.classList.remove('d-none');
 					deleteBtn.classList.remove('d-none');
+					// Attach event listeners for update and delete operations
 					update(userId);
 					singleDelete(userId);
 				} else {
+					// Hide role dropdown and both buttons if no user is selected
 					roleDropdown.classList.add('d-none');
 					updateBtn.classList.add('d-none');
 					deleteBtn.classList.add('d-none');
 				}
-				
+					
 			});
-			
+				
 		});
-    </script>
+	</script>
     <script src="checkSession.js"></script>
 </body>
 </html>
