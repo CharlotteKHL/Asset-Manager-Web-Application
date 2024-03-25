@@ -38,7 +38,7 @@ fetch('/check', {
         usernameText.innerHTML = "Logged in as: " + data.username;
     } else {
      appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.username, 'danger', 'successAlertPlaceholder');
-         await sleep(1000);
+         await sleep(2000);
          window.location.replace('login.html');
     }
 });
@@ -54,9 +54,10 @@ fetch('/adminCheck', {
         });
     }
 }).then(data => {
+    let manageAssetTypesButton = document.getElementById("manage-asset-types-button");
+    let auditButton = document.getElementById("audit-log-button");
+
     if(data.adminCheckResult == "ADMIN") {
-        var manageAssetTypesButton = document.getElementById('manage-asset-types-button');
-        var auditButton = document.getElementById('audit-log-button');
 
         if(manageAssetTypesButton != null){
             manageAssetTypesButton.style.display = 'inline-block';
@@ -66,11 +67,11 @@ fetch('/adminCheck', {
             auditButton.style.display = 'inline-block';
         }
     } else {
-        //check if user on page they are not allowed on
-        let pathname = window.location.pathname;
-        if((pathname == "/create-type.html") || (pathname == "/audit-trail.html")){
-            window.location.replace("index.html");
-        }
+    //check if user on page they are not allowed on
+    let pathname = window.location.pathname;
+    if((pathname == "/create-type.html") || (pathname == "/audit-trail.html")){
+        window.location.replace("index.html");
+    }
     }
 });
 });
