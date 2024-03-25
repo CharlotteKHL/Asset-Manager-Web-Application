@@ -878,6 +878,13 @@ public class FormController {
     return "manage-users";
   }
   
+  /**
+   * Updates the role of a user with the specified user ID.
+   * 
+   * @param id The ID of the user to update.
+   * @param role The new role for the user.
+   * @return ResponseEntity containing the status of the update operation.
+   */
   @PostMapping("/updateUser/{user_id}/{roleChoice}")
   public ResponseEntity<?> updateUser(@PathVariable("user_id") int id, @PathVariable("roleChoice") String role) {
       try {
