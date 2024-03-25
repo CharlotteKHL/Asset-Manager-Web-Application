@@ -64,7 +64,7 @@ function checkLogin() {
             }
         })
         .catch(error => {
-            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message + '.', 'alert-danger', 'successAlertPlaceholder');
         });
        
         
