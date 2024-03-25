@@ -515,99 +515,124 @@ function updateAsset(id) {
     }
 }
 
+// Function to delete an asset with the specified ID
 function deleteAsset(id) {
-    resetAlerts();
-    
+    resetAlerts(); // Reset any existing alerts
+
+    // Fetch API call to delete the asset
     fetch(`/deleteAsset/${id}`, {
             method: 'POST',
             body: {},
         })
         .then(response => {
+            // Check if the response is successful
             if (response.ok) {
-                return response.json();
+                return response.json(); // Parse response body as JSON
             } else {
+                // If response is not okay, throw an error with error message from response
                 return response.json().then(errorMessage => {
                     throw new Error(errorMessage.error);
                 });
             }
         })
         .then(data => {
+            // If successful, append success alert with message from response data
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
         })
         .catch(error => {
+            // If error occurs, append error alert with error message
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
         });
 }
 
+// Function to update the role of a user with the specified user ID
 function updateUser(userId, roleChoice) {
-    resetAlerts();
-    
+    resetAlerts(); // Reset any existing alerts
+
+    // Fetch API call to update user role
     fetch(`/updateUser/${userId}/${roleChoice}`, {
             method: 'POST',
             body: {},
         })
         .then(response => {
+            // Check if the response is successful
             if (response.ok) {
-                return response.json();
+                return response.json(); // Parse response body as JSON
             } else {
+                // If response is not okay, throw an error with error message from response
                 return response.json().then(errorMessage => {
                     throw new Error(errorMessage.error);
                 });
             }
         })
         .then(data => {
+            // If successful, append success alert with message from response data
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
         })
         .catch(error => {
+            // If error occurs, append error alert with error message
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
         });
 }
 
+// Function to delete a user with the specified user ID
 function deleteUser(userId) {
-    resetAlerts();
-    console.log(userId);
+    resetAlerts(); // Reset any existing alerts
+
+    // Fetch API call to delete the user
     fetch(`/deleteUser/${userId}`, {
             method: 'POST',
             body: {},
         })
         .then(response => {
+            // Check if the response is successful
             if (response.ok) {
-                return response.json();
+                return response.json(); // Parse response body as JSON
             } else {
+                // If response is not okay, throw an error with error message from response
                 return response.json().then(errorMessage => {
                     throw new Error(errorMessage.error);
                 });
             }
         })
         .then(data => {
+            // If successful, append success alert with message from response data
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
         })
         .catch(error => {
+            // If error occurs, append error alert with error message
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
         });
 }
 
+// Function to delete multiple users with the specified user IDs
 function deleteManyUser(manyId) {
-    resetAlerts();
-    
+    resetAlerts(); // Reset any existing alerts
+
+    // Iterate through each user ID in the array
     manyId.forEach(manyId => {
+        // Fetch API call to delete the user
         fetch(`/deleteUser/${manyId}`, {
                 method: 'POST',
                 body: {},
             })
             .then(response => {
+                // Check if the response is successful
                 if (response.ok) {
-                    return response.json();
+                    return response.json(); // Parse response body as JSON
                 } else {
+                    // If response is not okay, throw an error with error message from response
                     return response.json().then(errorMessage => {
                         throw new Error(errorMessage.error);
                     });
                 }
             })
             .then(data => {
+                // If successful, append success alert with message from response data
                 appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
             })
             .catch(error => {
+                // If error occurs, append error alert with error message
                 appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
             });
     });
