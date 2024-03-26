@@ -86,6 +86,12 @@ class AccountControllerTests {
 	  
   }
   
+  @Test
+  void validateLoginDetailsTryUsernameDoesNotExist() {
+	  assertEquals("This username or password is not correct",accountController.validateLoginDetails("testEmailDoesNotExists@gmail.com", "test"));
+	  
+  }
+  
   //Testing the getPassword method.
   @Test
   void testGetPassword() {
