@@ -2,6 +2,7 @@ package com.team05.assetsrepo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,11 @@ class AccountControllerTests {
       assertNotNull(accountController);
   }
   
+  @Test
+  void testLogout() {
+	  assertEquals("Logout success", accountController.logout(mockHttpSession));
+  }
+  
   //Testing the extractLogin method (with static variables)
   @Test
   void testExtractLoginTry() throws InvalidLogin {
@@ -42,12 +48,6 @@ class AccountControllerTests {
 	  assertEquals(accountController.validateLoginDetails("test@gmail.com", "test"), "Login successful");
 	  
   }
-  
-////Testing for the invalid Login catch block from the validateLoginDetails method.
-//@Test
-//void testValidateLoginDetailsCatch(){
-//	  assertThrows(InvalidLogin.class, () -> accountController.extractLogin("wrongUsername@Gmail.com", "wrongPassword"));
-//}
   
   //Testing the getPassword method.
   @Test
