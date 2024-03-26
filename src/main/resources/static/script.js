@@ -74,6 +74,9 @@ function createType() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -100,6 +103,9 @@ function deleteType() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -143,6 +149,9 @@ function updateType() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -202,6 +211,9 @@ function renameType() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -291,6 +303,8 @@ function validateEntries() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -508,6 +522,9 @@ function updateAsset(id) {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -538,6 +555,9 @@ function deleteAsset(id) {
         .then(data => {
             // If successful, append success alert with message from response data
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             // If error occurs, append error alert with error message
@@ -568,6 +588,9 @@ function updateUser(userId, roleChoice) {
         .then(data => {
             // If successful, append success alert with message from response data
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             // If error occurs, append error alert with error message
@@ -598,6 +621,9 @@ function deleteUser(userId) {
         .then(data => {
             // If successful, append success alert with message from response data
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             // If error occurs, append error alert with error message
