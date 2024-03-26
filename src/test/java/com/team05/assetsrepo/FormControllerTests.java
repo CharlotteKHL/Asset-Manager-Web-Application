@@ -241,6 +241,12 @@ static
 	  assertEquals("manage-asset", formController.populateTypesManageAsset(model));
   }
   
+  //Testing the auditTrail get request
+  @Test
+  void testGetAuditTrailPage() {
+	  assertEquals("audit-trail", formController.populateAuditTrailPage(model));
+  }
+  
   //Testing the searchAssetPage get request
   @Test
   void testGetSearchAssetPage() {
