@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,9 @@ class AccountControllerTests {
   
   @Autowired
   private AccountController accountController;
+  
+  @InjectMocks
+  MockHttpSession mockHttpSession;
 
   //checks to see if the FormController Exists
   @Test
@@ -28,13 +33,13 @@ class AccountControllerTests {
   //Testing the extractLogin method (with static variables)
   @Test
   void testExtractLoginTry() throws InvalidLogin {
-	  assertEquals((ResponseEntity.ok().body("{\"message\": \"Login successful\"}")), accountController.extractLogin("hi@gmail.com", "hi"));
+	  assertEquals((ResponseEntity.ok().body("{\"message\": \"Login successful\"}")), accountController.extractLogin("test@gmail.com", "test", mockHttpSession));
   }
   
   //Testing the try block of the validateLoginDetails method.
   @Test
   void validateLoginDetailsTry() {
-	  assertEquals(accountController.validateLoginDetails("hi@gmail.com", "hi"), "Login successful");
+	  assertEquals(accountController.validateLoginDetails("test@gmail.com", "test"), "Login successful");
 	  
   }
   
@@ -47,7 +52,7 @@ class AccountControllerTests {
   //Testing the getPassword method.
   @Test
   void testGetPassword() {
-	  assertEquals("hi", accountController.getPassword("hi@gmail.com"));
+	  assertEquals("test", accountController.getPassword("Test@gmail.com"));
   }
   
   //Testing the getPassword method.
@@ -59,7 +64,7 @@ class AccountControllerTests {
   //Testing the getPassword method.
   @Test
   void testRegisterNotUniqueUsername() {
-	  assertEquals((ResponseEntity.ok().body("{\"message\": \"Registration unsuccessful, this email may already have an account\"}")), accountController.register("hi@gmail.com", "testedData"));
+	  assertEquals((ResponseEntity.ok().body("{\"message\": \"Registration unsuccessful, this email may already have an account\"}")), accountController.register("test@gmail.com", "testedData"));
   }
 
 }

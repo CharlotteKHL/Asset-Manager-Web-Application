@@ -214,6 +214,7 @@ public class AccountController {
         }
 
       } else {
+    	System.out.println("no username");
         throw new InvalidLogin(INVALID_LOGIN_MSG);
       }
 
