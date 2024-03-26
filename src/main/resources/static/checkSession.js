@@ -119,7 +119,22 @@ return new Promise(resolve => sleepInterval = setTimeout(resolve, ms));
 
 // Function allowing users to log out
 function logout() {
-fetch('/logout', {
-    method: 'POST'
-});
+    fetch('/logout', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json(); // Assuming the server responds with JSON
+        }
+        // If the server response was not OK, throw an error to be caught in the catch block
+        throw new Error('Failed to logout');
+    })
+    .then(data => {
+        console.log(data); // Logs the response from the server, e.g., "Logout success"
+        // Perform actions after successful logout, like redirecting to the login page
+        window.location.href = '/login.html'; // Adjust the path as needed
+    })
+    .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+    });
 }
