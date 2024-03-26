@@ -30,7 +30,7 @@ class UserEntityAndUserRepositoryTests {
 	
 	@Test
 	void testGetID() {
-		assertEquals(2, user.getID());
+		assertEquals(25, user.getID());
 	}
 	
 	@Test
@@ -41,17 +41,17 @@ class UserEntityAndUserRepositoryTests {
 	
 	@Test
 	void testGetAuthorities() {
-		assertEquals(user.getAuthorities(), "[ADMIN]");
+		assertEquals(user.getAuthorities().toString(), "[admin]");
 	}
 	
 	@Test
 	void testGetPassword() {
-		assertEquals("test", user.getPassword());
+		assertEquals("$2a$10$G1qPCx8lNfo3VE.5de6/puaUjNQERycd.W.3f95MVxaDTGf5YLW12", user.getPassword());
 	}
 	
 	@Test
 	void testGetUsername() {
-		assertEquals("Test@gmail.com", user.getUsername());
+		assertEquals("test@gmail.com", user.getUsername());
 	}
 	
 	@Test
