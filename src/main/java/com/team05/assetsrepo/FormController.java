@@ -918,7 +918,7 @@ public class FormController {
   @PostMapping("/updateUser/{user_id}/{roleChoice}")
   public ResponseEntity<?> updateUser(@PathVariable("user_id") int id, @PathVariable("roleChoice") String role, HttpSession session) {
       try {
-          role = role.toLowerCase();
+          role = role.toUpperCase();
           String assetNameSql = "SELECT username FROM user2 WHERE user_id = :id";
           
           String statement = "UPDATE user2 SET role = :role WHERE user_id = :id"; // Added space before "WHERE"
