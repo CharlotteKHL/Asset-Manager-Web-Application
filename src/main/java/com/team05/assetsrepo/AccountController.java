@@ -217,7 +217,7 @@ public class AccountController {
   public ResponseEntity<String> register(@RequestParam String username,
       @RequestParam String password) {
     // prepared sql statements
-    String count = "SELECT COUNT(user_id) FROM user2";
+    String count = "SELECT MAX(user_id) FROM user2";
     String insert = "INSERT INTO user2 (user_id, username, password, role) "
         + "VALUES (:user_id, :username, :password, :role)";
     String uniqueName = "SELECT COUNT(user_id) FROM user2 WHERE username = :username";
