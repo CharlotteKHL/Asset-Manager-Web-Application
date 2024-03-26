@@ -39,7 +39,6 @@ fetch('/check', {
     } else {
      appendAlert('<i class="bi bi-exclamation-triangle"></i> ' + data.username + '.', 'alert-danger', 'successAlertPlaceholder');
          await sleep(100);
-         window.location.replace('login.html');
     }
 });
 
@@ -54,10 +53,13 @@ fetch('/adminCheck', {
         });
     }
 }).then(data => {
-    if(data.adminCheckResult == "ADMIN") {
-        var manageAssetTypesButton = document.getElementById('manage-asset-types-button');
+	var manageAssetTypesButton = document.getElementById('manage-asset-types-button');
         var auditButton = document.getElementById('audit-log-button');
         var manageUserButton = document.getElementById('manage-users-button');
+		var searchButton = document.getElementById('search-asset');
+		var manageAssetButton = document.getElementById('manage-asset');
+		var createAssetButton = document.getElementById('create-asset');
+    if(data.adminCheckResult == "ADMIN") {
 
         if(manageAssetTypesButton != null){
             manageAssetTypesButton.style.display = 'inline-block';
@@ -70,13 +72,38 @@ fetch('/adminCheck', {
         if(manageUserButton != null){
 			manageUserButton.style.display = 'inline-block';
 		}
-    } else {
+		
+		if(manageAssetButton != null){
+			manageAssetButton.style.display = 'inline-block';
+		}
+		
+		if(createAssetButton != null){
+			createAssetButton.style.display = 'inline-block';
+		}
+		
+		if(searchButton != null){
+			searchButton.style.display = 'inline-block';
+		}
+		
+    } else if(data.adminCheckResult == "USER") {
         //check if user on page they are not allowed on
         let pathname = window.location.pathname;
         if((pathname == "/create-type.html") || (pathname == "/audit-trail.html") || (pathname == "/manage-users.html")){
             window.location.replace("index.html");
         }
-    }
+    } else {
+		//check if user on page they are not allowed on
+        let pathname = window.location.pathname;
+        if((pathname == "/create-type.html") || (pathname == "/audit-trail.html") || (pathname == "/manage-users.html") || (pathname == "/manage-asset.html") || (pathname == "/create-asset.html")){
+            window.location.replace("index.html");
+        }
+		manageAssetTypesButton.style.display = 'none';
+		auditButton.style.display = 'none';
+		manageUserButton.style.display = 'none';
+		manageAssetButton.style.display = 'none';
+		createAssetButton.style.display = 'none';
+	}
+	searchButton.style.display = 'inline-block';
 });
 });
 
