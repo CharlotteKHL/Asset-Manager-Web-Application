@@ -25,7 +25,7 @@ class UserEntityAndUserRepositoryTests {
 
 	@BeforeEach
 	void SetUp() {
-		user = userRepository.findByUsername("Test@gmail.com");
+		user = userRepository.findByUsername("test@gmail.com");
 	}
 	
 	@Test
@@ -41,7 +41,7 @@ class UserEntityAndUserRepositoryTests {
 	
 	@Test
 	void testGetAuthorities() {
-		assertNull(user.getAuthorities());
+		assertEquals(user.getAuthorities(), "[ADMIN]");
 	}
 	
 	@Test
