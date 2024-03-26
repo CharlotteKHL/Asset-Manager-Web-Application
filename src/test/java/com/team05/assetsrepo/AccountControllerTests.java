@@ -50,6 +50,23 @@ class AccountControllerTests {
 	  
   }
   
+  @Test
+  void testGetRole() {
+	  assertEquals("admin", accountController.getRole("testSessions@gmail.com"));
+  }
+  
+//  @Test
+//  void testAdminCheck() {
+//	  mockHttpSession.setAttribute("id", 1);
+//	  assertEquals(ResponseEntity.ok().body("{\"adminCheckResult\": \"" + "ADMIN" + "\"}"), accountController.adminCheck(mockHttpSession));
+//  }
+  
+  @Test
+  void testNonAdminCheck() {
+	  mockHttpSession = new MockHttpSession();
+	  assertEquals(ResponseEntity.ok().body("{\"adminCheckResult\": \"" + "" + "\"}"), accountController.adminCheck(mockHttpSession));
+  }
+  
   //Testing the extractLogin method (with static variables)
   @Test
   void testExtractLoginTry() throws InvalidLogin {
@@ -60,6 +77,12 @@ class AccountControllerTests {
   @Test
   void validateLoginDetailsTry() {
 	  assertEquals(accountController.validateLoginDetails("test@gmail.com", "test"), "Login successful");
+	  
+  }
+  
+  @Test
+  void validateLoginDetailsTryWrongPassword() {
+	  assertEquals("This username or password is not correct",accountController.validateLoginDetails("test@gmail.com", "wrongPassword"));
 	  
   }
   
