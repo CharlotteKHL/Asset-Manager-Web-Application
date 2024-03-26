@@ -74,6 +74,9 @@ function createType() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -100,6 +103,9 @@ function deleteType() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -143,6 +149,9 @@ function updateType() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -202,6 +211,9 @@ function renameType() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -291,6 +303,8 @@ function validateEntries() {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -508,6 +522,9 @@ function updateAsset(id) {
         })
         .then(data => {
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
@@ -538,6 +555,9 @@ function deleteAsset(id) {
         .then(data => {
             // If successful, append success alert with message from response data
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             // If error occurs, append error alert with error message
@@ -568,6 +588,9 @@ function updateUser(userId, roleChoice) {
         .then(data => {
             // If successful, append success alert with message from response data
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             // If error occurs, append error alert with error message
@@ -598,6 +621,9 @@ function deleteUser(userId) {
         .then(data => {
             // If successful, append success alert with message from response data
             appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+			
+			// Reload the page to reflect changes
+            window.location.reload();
         })
         .catch(error => {
             // If error occurs, append error alert with error message
@@ -609,31 +635,40 @@ function deleteUser(userId) {
 function deleteManyUser(manyId) {
     resetAlerts(); // Reset any existing alerts
 
-    // Iterate through each user ID in the array
-    manyId.forEach(manyId => {
-        // Fetch API call to delete the user
-        fetch(`/deleteUser/${manyId}`, {
-                method: 'POST',
-                body: {},
-            })
-            .then(response => {
-                // Check if the response is successful
-                if (response.ok) {
-                    return response.json(); // Parse response body as JSON
-                } else {
-                    // If response is not okay, throw an error with error message from response
-                    return response.json().then(errorMessage => {
-                        throw new Error(errorMessage.error);
-                    });
-                }
-            })
-            .then(data => {
-                // If successful, append success alert with message from response data
-                appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
-            })
-            .catch(error => {
-                // If error occurs, append error alert with error message
-                appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
-            });
+    // Create an array of promises from fetch calls
+    let deletePromises = manyId.map(id => {
+        return fetch(`/deleteUser/${id}`, {
+            method: 'POST',
+            body: {},
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json(); // Parse response body as JSON
+            } else {
+                // If response is not okay, throw an error with error message from response
+                return response.json().then(errorMessage => {
+                    throw new Error(errorMessage.error);
+                });
+            }
+        })
+        .then(data => {
+            // If successful, append success alert with message from response data
+            appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message, 'alert-success', 'successAlertPlaceholder');
+        })
+        .catch(error => {
+            // If error occurs, append error alert with error message
+            appendAlert('<i class="bi bi-exclamation-triangle"></i> Error: ' + error.message, 'alert-danger', 'successAlertPlaceholder');
+        });
     });
+
+    // Use Promise.all to wait for all fetch calls to complete
+    Promise.all(deletePromises)
+        .then(() => {
+            // Once all delete operations are complete, reload the page
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('A deletion did not complete successfully:', error);
+            // Handle any additional logic or user feedback for errors here
+        });
 }
