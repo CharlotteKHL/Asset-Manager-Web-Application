@@ -98,6 +98,12 @@ class AccountControllerTests {
 	  assertEquals("$2a$10$G1qPCx8lNfo3VE.5de6/puaUjNQERycd.W.3f95MVxaDTGf5YLW12", accountController.getPassword("test@gmail.com"));
   }
   
+  @Test
+  void testSetPassword() {
+	  accountController.setPassword("test@gmail.com", "newPassword");
+	  assertEquals("newPassword", accountController.getPassword("test@gmail.com"));
+  }
+  
   //Testing the getPassword method.
   @Test
   void testRegisterUniqueUsername() {

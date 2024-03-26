@@ -192,7 +192,7 @@ static
   @Test
   void testUpdateAssetTry() throws JSONException {
 	  assetObject = new JSONObject();
-	  assetObject.put("Re-name asset", "UpdatedTesting");
+	  assetObject.put("Rename Asset", "UpdatedTesting");
 	  assetObject.put("Association(s)", "AwesomeML");
 	  assetObject.put("Type", "TestData");
 	  assetObject.put("Description", "Testing the data.");
@@ -202,7 +202,16 @@ static
   @Test
   void testUpdateAssetTryEmptyName() throws JSONException {
 	  assetObject = new JSONObject();
-	  assetObject.put("Re-name asset", "");
+	  assetObject.put("Rename Asset", "");
+	  assetObject.put("Association(s)", "AwesomeML");
+	  assetObject.put("Type", "TestData");
+	  assetObject.put("Description", "Testing the data.");
+	  assertEquals(ResponseEntity.ok().body("{\"message\": \"Asset updated successfully!\"}"), formController.updateAsset(8, assetObject.toString(), mockHttpSession));
+  }
+  
+  @Test
+  void testUpdateAssetTryNoRenameAtrribute() throws JSONException {
+	  assetObject = new JSONObject();
 	  assetObject.put("Association(s)", "AwesomeML");
 	  assetObject.put("Type", "TestData");
 	  assetObject.put("Description", "Testing the data.");
