@@ -60,7 +60,8 @@ function checkLogin() {
             } else {
                 appendAlert('<i class="bi bi-check-circle-fill"></i> ' + data.message + '! Redirecting...', 'alert-success', 'successAlertPlaceholder');
                 await sleep(2000);
-                window.location.replace('index.html');
+					window.location.replace("index.html");
+				
             }
         })
         .catch(error => {
@@ -99,7 +100,10 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     }).then(async data => {
         if(data.username != "You are no longer logged in") {
-            window.location.replace('index.html');
+            let pathname = window.location.pathname;
+				if((pathname == "/login.html") || (pathname == "/register.html")){
+					window.location.replace("index.html");
+				}
         }
     })
 });
