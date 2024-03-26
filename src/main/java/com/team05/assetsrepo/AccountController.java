@@ -29,7 +29,6 @@ public class AccountController {
    * @param jdbcTemplate is the template object that allows the use of named parameters in JDBC
    *        queries.
    */
-
   public AccountController(NamedParameterJdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
   }
@@ -47,7 +46,7 @@ public class AccountController {
   /**
    * Logs out the user.
    *
-   * @param session the user's session
+   * @param session the user's session.
    */
   @PostMapping("/logout")
   public String logout(HttpSession session) {
@@ -60,24 +59,36 @@ public class AccountController {
     return "Logout success";
   }
 
+  /**
+   * Checks if the users current session is logged in or not. If logged in the web page will change
+   * to welcome the user.
+   * 
+   * @param session is the user's current session.
+   * @return username of the user if logged in, if logged out indicate to the front end to only
+   *         allow the user to access login and register pages.
+   */
   @PostMapping("/check")
   public ResponseEntity<String> checkSession(HttpSession session) {
 
     String find_username = "SELECT DISTINCT username FROM sessions WHERE session_id = :id";
     String delete_old = "DELETE FROM sessions WHERE username = :username AND NOT session_id = :id";
-    String CHECK_CURR_LOGIN = "SELECT COUNT(session_id) FROM spring_session WHERE session_id = :id";
+    String check_curr_login = "SELECT COUNT(session_id) FROM spring_session WHERE session_id = :id";
     String count_curr_login = "SELECT COUNT(username) FROM sessions WHERE session_id = :id";
 
+    // Retrieve session ID of current user
     String id = session.getId();
     System.out.println("Webpage being accessed by session ID: " + id);
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put("id", id);
-
+    
+    // By default user is not logged in
     String username = "You are no longer logged in";
-
-    int currLogin = jdbcTemplate.queryForObject(CHECK_CURR_LOGIN, parameters, Integer.class);
+    
+    
+    int currLogin = jdbcTemplate.queryForObject(check_curr_login, parameters, Integer.class);
     int countCurrLogin = jdbcTemplate.queryForObject(count_curr_login, parameters, Integer.class);
-
+    
+    // checks user is logged in
     if (currLogin != 0 && countCurrLogin != 0) {
       username = jdbcTemplate.queryForObject(find_username, parameters, String.class);
     }
@@ -88,7 +99,8 @@ public class AccountController {
     parameters.put("username", username);
     jdbcTemplate.update(delete_old, parameters);
 
-    if(username != "You are no longer logged in") {
+    // Creates a username to welcome user from email
+    if (username != "You are no longer logged in") {
       String[] usernameSplit = username.split("@");
       String finalUsername = usernameSplit[0];
       username = finalUsername;
@@ -99,33 +111,42 @@ public class AccountController {
   /**
    * Allows you to get the role of a given user.
    *
-   * @param username the username of the user you'd like to find the role for
+   * @param username the username of the user you'd like to find the role for.
    * @return the role of a given user.
    */
   public String getRole(String username) {
-      Map<String, String> parameters = new HashMap<String, String>();
-      String find_role = "SELECT DISTINCT role FROM user2 WHERE username = :username";
-      parameters.put("username", username);
-      String roleResult = jdbcTemplate.queryForObject(find_role, parameters, String.class);
+    Map<String, String> parameters = new HashMap<String, String>();
+    String find_role = "SELECT DISTINCT role FROM user2 WHERE username = :username";
+    parameters.put("username", username);
+    String roleResult = jdbcTemplate.queryForObject(find_role, parameters, String.class);
 
-      return roleResult;
+    return roleResult;
   }
 
+  /**
+   * Checks if currently logged in user is an Admin user or regular user.
+   * 
+   * @param session is the current session of the user.
+   * @return the role of the user with the current session.
+   */
   @PostMapping("/adminCheck")
   public ResponseEntity<String> adminCheck(HttpSession session) {
-      String count_role = "SELECT COUNT(role) FROM sessions WHERE session_id = :id";
-      String id = session.getId();
-      Map<String, String> parameters = new HashMap<String, String>();
-      parameters.put("id", id);
-      int countRoleResult = jdbcTemplate.queryForObject(count_role, parameters, Integer.class);
+    String count_role = "SELECT COUNT(role) FROM sessions WHERE session_id = :id";
+    String id = session.getId();
+    
+    // check user is logged in by checking if session logged in session table
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put("id", id);
+    int countRoleResult = jdbcTemplate.queryForObject(count_role, parameters, Integer.class);
 
-      if(countRoleResult != 0) {
-        String find_role = "SELECT DISTINCT role FROM sessions WHERE session_id = :id";
-        String roleResult = jdbcTemplate.queryForObject(find_role, parameters, String.class);
-        return ResponseEntity.ok().body("{\"adminCheckResult\": \"" + roleResult + "\"}");
-      } else {
-        return ResponseEntity.ok().body("{\"adminCheckResult\": \"" + "" + "\"}");
-      }
+    if (countRoleResult != 0) {
+      // return role of user
+      String find_role = "SELECT DISTINCT role FROM sessions WHERE session_id = :id";
+      String roleResult = jdbcTemplate.queryForObject(find_role, parameters, String.class);
+      return ResponseEntity.ok().body("{\"adminCheckResult\": \"" + roleResult + "\"}");
+    } else {
+      return ResponseEntity.ok().body("{\"adminCheckResult\": \"" + "" + "\"}");
+    }
   }
 
   /**
@@ -135,7 +156,6 @@ public class AccountController {
    * @return returns a HTTP "Logged in" response, indicating the user has logged in successfully.
    * @throws InvalidLogin if the username and password pair do not match a pair in the database.
    */
-
   @PostMapping("/login")
   public ResponseEntity<String> extractLogin(@RequestParam String username,
       @RequestParam String password, HttpSession session) throws InvalidLogin {
@@ -143,8 +163,12 @@ public class AccountController {
     String role = getRole(username);
     String newSession =
         "INSERT INTO sessions (username, session_id, role) VALUES (:username, :session_id, :role)";
+    
+    // check user input is a valid login
     String message = validateLoginDetails(username, password);
     if (message == "Login successful") {
+      
+      // logs user into sessions table
       Map<String, String> parameters = new HashMap<String, String>();
       parameters.put("username", username);
       parameters.put("session_id", session.getId());
@@ -165,7 +189,6 @@ public class AccountController {
    * @return a string indicating if the login was successful or not.
    * 
    */
-
   public String validateLoginDetails(String username, String password) {
 
     String UNIQUE_USERNAME =
@@ -212,12 +235,11 @@ public class AccountController {
    * @return a response entity including a string to indicate if registration was successful or not
    *         in the form of a JSON message.
    */
-
   @PostMapping("/register")
   public ResponseEntity<String> register(@RequestParam String username,
       @RequestParam String password) {
     // prepared sql statements
-    String count = "SELECT COUNT(user_id) FROM user2";
+    String count = "SELECT MAX(user_id) FROM user2";
     String insert = "INSERT INTO user2 (user_id, username, password, role) "
         + "VALUES (:user_id, :username, :password, :role)";
     String uniqueName = "SELECT COUNT(user_id) FROM user2 WHERE username = :username";
@@ -261,7 +283,6 @@ public class AccountController {
    * 
    * @return a password, if found, from the database that corresponds to the username.
    */
-
   public String getPassword(@RequestParam String username) {
     String password = "SELECT DISTINCT password FROM user2 WHERE username = :username";
 
@@ -280,7 +301,6 @@ public class AccountController {
    * @param username is the username of the user that would like to change their password.
    * @param password is the new password the user would like to change to.
    */
-
   public void setPassword(@RequestParam String username, @RequestParam String password) {
     String setPassword = "UPDATE user2 SET password = :password WHERE username = :username";
 
