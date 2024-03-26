@@ -55,6 +55,11 @@ class UserEntityAndUserRepositoryTests {
 	}
 	
 	@Test
+	void testGetRole() {
+		assertEquals("admin", user.getRole());
+	}
+	
+	@Test
 	void testSetUsername() {
 		user.setUsername("TestedData@gmail.com");
 		assertEquals("TestedData@gmail.com", user.getUsername());

@@ -27,7 +27,7 @@ class CustomUserDetailsServiceTests {
 	
 	@Test
 	void testLoadUserByUsernameCatch() {
-		assertThrows(BadCredentialsException.class, () -> customUserDetailsService.loadUserByUsername("TestData@gmail.com"));
+		assertThrows(BadCredentialsException.class, () -> customUserDetailsService.loadUserByUsername("TestDoesNotExist@gmail.com"));
 	}
 
 }
