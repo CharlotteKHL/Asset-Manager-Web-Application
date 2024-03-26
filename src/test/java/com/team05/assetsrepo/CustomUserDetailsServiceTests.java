@@ -22,7 +22,7 @@ class CustomUserDetailsServiceTests {
 	
 	@Test
 	void testLoadUserByUsernameNotNull() {
-		assertNotNull(customUserDetailsService.loadUserByUsername("Test@gmail.com"));
+		assertNotNull(customUserDetailsService.loadUserByUsername("test@gmail.com"));
 	}
 	
 	@Test

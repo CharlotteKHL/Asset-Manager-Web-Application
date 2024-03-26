@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +24,13 @@ class AccountControllerTests {
   private AccountController accountController;
   
   @InjectMocks
-  MockHttpSession mockHttpSession;
+  static MockHttpSession mockHttpSession;
+  
+  @BeforeAll
+  static void setUp() {
+	  mockHttpSession = new MockHttpSession();
+	  mockHttpSession.setAttribute("id", 1);
+  }
 
   //checks to see if the FormController Exists
   @Test
@@ -31,9 +38,16 @@ class AccountControllerTests {
       assertNotNull(accountController);
   }
   
+//  @Test
+//  void testCheckSessionValid() {
+//	  assertEquals(ResponseEntity.ok().body("{\"username\": \"" + "testSessions" + "\"}"), accountController.checkSession(mockHttpSession));
+//  }
+  
   @Test
-  void testLogout() {
-	  assertEquals("Logout success", accountController.logout(mockHttpSession));
+  void testCheckSessionInvalid() {
+	  MockHttpSession mockHttpSessionInvalid = new MockHttpSession();
+	  assertEquals(ResponseEntity.ok().body("{\"username\": \"" + "You are no longer logged in" + "\"}"), accountController.checkSession(mockHttpSessionInvalid));
+	  
   }
   
   //Testing the extractLogin method (with static variables)
@@ -52,7 +66,7 @@ class AccountControllerTests {
   //Testing the getPassword method.
   @Test
   void testGetPassword() {
-	  assertEquals("test", accountController.getPassword("Test@gmail.com"));
+	  assertEquals("$2a$10$G1qPCx8lNfo3VE.5de6/puaUjNQERycd.W.3f95MVxaDTGf5YLW12", accountController.getPassword("test@gmail.com"));
   }
   
   //Testing the getPassword method.
@@ -65,6 +79,11 @@ class AccountControllerTests {
   @Test
   void testRegisterNotUniqueUsername() {
 	  assertEquals((ResponseEntity.ok().body("{\"message\": \"Registration unsuccessful, this email may already have an account\"}")), accountController.register("test@gmail.com", "testedData"));
+  }
+  
+  @Test
+  void testLogout() {
+	  assertEquals("Logout success", accountController.logout(mockHttpSession));
   }
 
 }
