@@ -365,7 +365,22 @@ static
 	  assertEquals(ResponseEntity.ok().body("{\"message\": \"User updated successfully!\"}"), formController.updateUser(25, "USER", mockHttpSession));
   }
   
+  @Test
+  void testUpdateUserCatch() {
+	  assertEquals(ResponseEntity.badRequest()
+              .body("{\"error\": \"" + "Failed to update the user in the database." + "\"}"), formController.updateUser(0, "ADMIN", mockHttpSession));
+  }
   
+  @Test
+  void testDeleteUserTry() {
+	  assertEquals(ResponseEntity.ok().body("{\"message\": \"User deleted successfully!\"}"), formController.deleteUser(25, mockHttpSession));
+  }
+  
+  @Test
+  void testDeleteUserCatch() {
+	  assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+	          "{\"error\": \"An error occurred whilst deleting the user: " + "Incorrect result size: expected 1, actual 0" + "\"}"), formController.deleteUser(0, mockHttpSession));
+  }
   
 
 }
