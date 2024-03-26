@@ -55,11 +55,11 @@ class AccountControllerTests {
 	  assertEquals("admin", accountController.getRole("testSessions@gmail.com"));
   }
   
-//  @Test
-//  void testAdminCheck() {
-//	  mockHttpSession.setAttribute("id", 1);
-//	  assertEquals(ResponseEntity.ok().body("{\"adminCheckResult\": \"" + "ADMIN" + "\"}"), accountController.adminCheck(mockHttpSession));
-//  }
+  @Test
+  void testAdminCheck() {
+	  mockHttpSession = new MockHttpSession(null, "1");
+	  assertEquals(ResponseEntity.ok().body("{\"adminCheckResult\": \"" + "ADMIN" + "\"}"), accountController.adminCheck(mockHttpSession));
+  }
   
   @Test
   void testNonAdminCheck() {
@@ -118,7 +118,7 @@ class AccountControllerTests {
   
   @Test
   void testLogout() {
-	  assertEquals("Logout success", accountController.logout(mockHttpSession));
+	  assertEquals(ResponseEntity.ok().body("{\"message\": \"" + "Logged out" + "\"}"), accountController.logout(mockHttpSession));
   }
 
 }
