@@ -73,7 +73,7 @@ fetch('/adminCheck', {
     } else {
         //check if user on page they are not allowed on
         let pathname = window.location.pathname;
-        if((pathname == "/create-type.html") || (pathname == "/audit-trail.html" || (pathname == "/manage-users.html"))){
+        if((pathname == "/create-type.html") || (pathname == "/audit-trail.html") || (pathname == "/manage-users.html")){
             window.location.replace("index.html");
         }
     }
