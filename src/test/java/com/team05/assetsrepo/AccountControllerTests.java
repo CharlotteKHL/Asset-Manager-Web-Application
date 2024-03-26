@@ -38,10 +38,8 @@ class AccountControllerTests {
       assertNotNull(accountController);
   }
   
-//  @Test
-//  void testCheckSessionValid() {
-//	  assertEquals(ResponseEntity.ok().body("{\"username\": \"" + "testSessions" + "\"}"), accountController.checkSession(mockHttpSession));
-//  }
+  //CheckSession works closely with spring Session, therefore unable to create a unit test that will pass correctly
+  //As session keys are randomly generated, and unable to create a static object
   
   @Test
   void testCheckSessionInvalid() {
@@ -63,7 +61,7 @@ class AccountControllerTests {
   
   @Test
   void testNonAdminCheck() {
-	  mockHttpSession = new MockHttpSession();
+	  mockHttpSession = new MockHttpSession(null, "0");
 	  assertEquals(ResponseEntity.ok().body("{\"adminCheckResult\": \"" + "" + "\"}"), accountController.adminCheck(mockHttpSession));
   }
   
