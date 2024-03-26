@@ -39,7 +39,6 @@ fetch('/check', {
     } else {
      appendAlert('<i class="bi bi-exclamation-triangle"></i> ' + data.username + '.', 'alert-danger', 'successAlertPlaceholder');
          await sleep(100);
-         window.location.replace('login.html');
     }
 });
 
@@ -54,10 +53,13 @@ fetch('/adminCheck', {
         });
     }
 }).then(data => {
-    if(data.adminCheckResult == "ADMIN") {
-        var manageAssetTypesButton = document.getElementById('manage-asset-types-button');
+	var manageAssetTypesButton = document.getElementById('manage-asset-types-button');
         var auditButton = document.getElementById('audit-log-button');
         var manageUserButton = document.getElementById('manage-users-button');
+		var searchButton = document.getElementById('search-asset');
+		var manageAssetButton = document.getElementById('manage-asset');
+		var createAssetButton = document.getElementById('create-asset');
+    if(data.adminCheckResult == "ADMIN") {
 
         if(manageAssetTypesButton != null){
             manageAssetTypesButton.style.display = 'inline-block';
@@ -70,13 +72,38 @@ fetch('/adminCheck', {
         if(manageUserButton != null){
 			manageUserButton.style.display = 'inline-block';
 		}
-    } else {
+		
+		if(manageAssetButton != null){
+			manageAssetButton.style.display = 'inline-block';
+		}
+		
+		if(createAssetButton != null){
+			createAssetButton.style.display = 'inline-block';
+		}
+		
+		if(searchButton != null){
+			searchButton.style.display = 'inline-block';
+		}
+		
+    } else if(data.adminCheckResult == "USER") {
         //check if user on page they are not allowed on
         let pathname = window.location.pathname;
         if((pathname == "/create-type.html") || (pathname == "/audit-trail.html") || (pathname == "/manage-users.html")){
             window.location.replace("index.html");
         }
-    }
+    } else {
+		//check if user on page they are not allowed on
+        let pathname = window.location.pathname;
+        if((pathname == "/create-type.html") || (pathname == "/audit-trail.html") || (pathname == "/manage-users.html") || (pathname == "/manage-asset.html") || (pathname == "/create-asset.html")){
+            window.location.replace("index.html");
+        }
+		manageAssetTypesButton.style.display = 'none';
+		auditButton.style.display = 'none';
+		manageUserButton.style.display = 'none';
+		manageAssetButton.style.display = 'none';
+		createAssetButton.style.display = 'none';
+	}
+	searchButton.style.display = 'inline-block';
 });
 });
 
@@ -92,7 +119,22 @@ return new Promise(resolve => sleepInterval = setTimeout(resolve, ms));
 
 // Function allowing users to log out
 function logout() {
-fetch('/logout', {
-    method: 'POST'
-});
+    fetch('/logout', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json(); // Assuming the server responds with JSON
+        }
+        // If the server response was not OK, throw an error to be caught in the catch block
+        throw new Error('Failed to logout');
+    })
+    .then(data => {
+        console.log(data); // Logs the response from the server, e.g., "Logout success"
+        // Perform actions after successful logout, like redirecting to the login page
+        window.location.href = '/login.html'; // Adjust the path as needed
+    })
+    .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+    });
 }
