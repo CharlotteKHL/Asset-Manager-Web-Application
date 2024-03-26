@@ -977,8 +977,13 @@ public class FormController {
     }
   }
   
+  /**
+   * Retrieves username of user in the current session.
+   * 
+   * @param id is the Session ID of the current session.
+   * @return username of the user in the sessions table corresponding to the session ID.
+   */
   public String retrieveUser(String id) {
-    // Update asset log
     String getUser = "SELECT username FROM sessions WHERE session_id = :id";
     MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
     String userEmail = jdbcTemplate.queryForObject(getUser, params, String.class);
