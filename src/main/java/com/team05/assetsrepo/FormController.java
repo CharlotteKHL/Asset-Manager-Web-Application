@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 // import java.util.Arrays;
 import java.util.Collections;
@@ -50,11 +51,11 @@ public class FormController {
    * representing its attributes.
    *
    * @param pairs the JSON string from the POST request body.
-   * @return ResponseEntity containing a message indicating whether the creation of a new asset 
-   *      type was successful.
+   * @return ResponseEntity containing a message indicating whether the creation of a new asset type
+   *         was successful.
    */
   @PostMapping("/createType")
-  public ResponseEntity<?> createType(@RequestBody String pairs) {
+  public ResponseEntity<?> createType(@RequestBody String pairs, HttpSession session) {
     try {
 
       /*
@@ -100,6 +101,15 @@ public class FormController {
 
       jdbcTemplate.update(sql, params);
 
+      // Update audit log
+      String username = retrieveUser(session.getId());
+      
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:typeName, 'Created', :username, 'Type')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("typeName", typeName)
+          .addValue("username", username);
+      jdbcTemplate.update(logSql, logParams);
+
       return ResponseEntity.ok().body("{\"message\": \"New asset type created successfully!\"}");
 
     } catch (JsonProcessingException e) {
@@ -110,9 +120,9 @@ public class FormController {
     } catch (DuplicateKeyException e) {
 
       System.err.println(e.getMessage());
-      return ResponseEntity.badRequest().body("{\"error\": \"" 
-      + "Please check that the name of your asset type is unique!" + "\"}");
-      
+      return ResponseEntity.badRequest().body(
+          "{\"error\": \"" + "Please check that the name of your asset type is unique!" + "\"}");
+
     }
   }
 
@@ -121,11 +131,11 @@ public class FormController {
    * attributes.
    *
    * @param pairs the JSON string from the POST request body.
-   * @return ResponseEntity containing a message indicating whether updating the asset type was 
-   *      successful.
+   * @return ResponseEntity containing a message indicating whether updating the asset type was
+   *         successful.
    */
   @PostMapping("/updateType")
-  public ResponseEntity<?> updateType(@RequestBody String pairs) {
+  public ResponseEntity<?> updateType(@RequestBody String pairs, HttpSession session) {
     try {
 
       ObjectMapper objectMapper = new ObjectMapper();
@@ -154,6 +164,14 @@ public class FormController {
               .addValue("attrKeys", attrKeys).addValue("attrValues", attrValues);
 
       jdbcTemplate.update(sql, params);
+      
+      // Update audit log
+      String user = retrieveUser(session.getId());
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:typeName, 'Updated', :username, 'Type')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("typeName", typeName).addValue("username", user);
+      jdbcTemplate.update(logSql, logParams);
 
       return ResponseEntity.ok().body("{\"message\": \"Asset type updated successfully!\"}");
 
@@ -171,25 +189,36 @@ public class FormController {
    *         operation.
    */
   @PostMapping("/deleteType")
-  public ResponseEntity<?> deleteType(@RequestBody String selectedType) {
+  public ResponseEntity<?> deleteType(@RequestBody String selectedType, HttpSession session) {
     try {
       String statement = "DELETE FROM type WHERE type_name = :typeParam";
       MapSqlParameterSource params =
           new MapSqlParameterSource().addValue("typeParam", selectedType);
       jdbcTemplate.update(statement, params);
+      
+      // Update audit log
+      String username = retrieveUser(session.getId());
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:typeName, 'Deleted', :username, 'Type')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource()
+          .addValue("typeName", selectedType)
+          .addValue("username", username);
+      jdbcTemplate.update(logSql, logParams);
 
       // Return a JSON response with the success message
       return ResponseEntity.ok().body("{\"message\": \"Asset type deleted successfully!\"}");
+
     } catch (DataIntegrityViolationException e) {
       // Catch the specific exception for foreign key violation
       // Return a custom error message indicating the foreign key constraint violation
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-          "{\"error\": \"Unable to delete asset type - please remove any assets currently " 
-          + "using this type.\"}");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body("{\"error\": \"Unable to delete asset type - please remove any assets currently "
+              + "using this type.\"}");
     } catch (Exception e) {
       // Catch other exceptions and return a JSON response with a generic error message
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("{\"error\": \"An error occurred while deleting type\"}");
+          .body("{\"error\": \"An error occurred whilst attempting to delete the type.\"}");
     }
   }
 
@@ -201,7 +230,7 @@ public class FormController {
    *         operation.
    */
   @PostMapping("/renameType")
-  public ResponseEntity<?> renameType(@RequestBody String pairs) {
+  public ResponseEntity<?> renameType(@RequestBody String pairs, HttpSession session) {
     try {
       // Use Jackson library to parse the JSON string from the request body
       ObjectMapper objectMapper = new ObjectMapper();
@@ -242,32 +271,41 @@ public class FormController {
 
       // Execute the update query
       jdbcTemplate.update(sql, params);
+      
+      //Update audit log
+      String username = retrieveUser(session.getId());
+      
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:typeName, 'Updated', :username, 'Type')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource()
+          .addValue("typeName", oldTypeName)
+          .addValue("username", username);
+      jdbcTemplate.update(logSql, logParams);
 
       // Return success message
       return ResponseEntity.ok().body("{\"message\": \"Asset type renamed successfully!\"}");
 
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
 
     } catch (Exception e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest()
           .body("{\"error\": \"" + "An error occurred while renaming asset type!" + "\"}");
     }
   }
-
 
   /**
    * Creates a new row in the asset table representing a new asset, given a JSON string representing
    * its attributes.
    *
    * @param obj the JSON string from the POST request body.
-   * @return ResponseEntity containing a message indicating whether the creation of a new asset was 
-   *      successful.
+   * @return ResponseEntity containing a message indicating whether the creation of a new asset was
+   *         successful.
    */
   @PostMapping("/submitAsset")
-  public ResponseEntity<?> submitAsset(@RequestBody String obj) {
+  public ResponseEntity<?> submitAsset(@RequestBody String obj, HttpSession session) {
     try {
 
       ObjectMapper objectMapper = new ObjectMapper();
@@ -335,6 +373,14 @@ public class FormController {
           .addValue("associations", associations).addValue("obj", obj);
 
       jdbcTemplate.update(sql, params);
+      
+      // Update audit log
+      String username = retrieveUser(session.getId());
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:assetName, 'Created', :username, 'Asset')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("assetName", title).addValue("username", username);
+      jdbcTemplate.update(logSql, logParams);
 
       return ResponseEntity.ok().body("{\"message\": \"Asset created successfully!\"}");
 
@@ -346,8 +392,8 @@ public class FormController {
     } catch (DuplicateKeyException e) {
 
       System.err.println(e.getMessage());
-      return ResponseEntity.badRequest().body("{\"error\": \"" 
-      + "Please check that the name of your asset is unique!" + "\"}");
+      return ResponseEntity.badRequest()
+          .body("{\"error\": \"" + "Please check that the name of your asset is unique!" + "\"}");
 
     }
   }
@@ -360,7 +406,7 @@ public class FormController {
    * @return ResponseEntity indicating the success or failure of the update operation.
    */
   @PostMapping("/updateAsset/{id}")
-  public ResponseEntity<?> updateAsset(@PathVariable("id") int id, @RequestBody String obj) {
+  public ResponseEntity<?> updateAsset(@PathVariable("id") int id, @RequestBody String obj, HttpSession session) {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       JsonNode jsonNode = objectMapper.readTree(obj);
@@ -373,6 +419,7 @@ public class FormController {
         object.remove(jsonNode.fieldNames().next());
         object.remove(jsonNode.fieldNames().next());
       } catch (Exception e) {
+        System.out.println(e.getMessage());
         System.out.println("Title not changed.");
       }
 
@@ -387,34 +434,44 @@ public class FormController {
 
       if (!(title.equals(""))) {
         // Update the title and additional_attrs in the assets table
-        sql =
-            "UPDATE assets SET title = :title, additional_attrs = CAST(:obj AS JSONB) "
+        sql = "UPDATE assets SET title = :title, additional_attrs = CAST(:obj AS JSONB) "
             + "WHERE id = :id";
         params = new MapSqlParameterSource().addValue("title", title).addValue("obj", obj)
             .addValue("id", id);
       } else {
         sql = "UPDATE assets SET additional_attrs = CAST(:obj AS JSONB) WHERE id = :id";
+        String assetNameSql = "SELECT title FROM assets WHERE id = :id";
+        params = new MapSqlParameterSource().addValue("id",id);
+        title = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
         params = new MapSqlParameterSource().addValue("obj", obj).addValue("id", id);
-      }
-
+      };
+   
       jdbcTemplate.update(sql, params);
+      
+      // Update audit log
+      String username = retrieveUser(session.getId());
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:assetName, 'Updated', :username , 'Asset')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource().addValue("assetName", title)
+          .addValue("username", username);
+      jdbcTemplate.update(logSql, logParams);
 
       return ResponseEntity.ok().body("{\"message\": \"Asset updated successfully!\"}");
 
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
     } catch (DuplicateKeyException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest()
           .body("{\"error\": \"" + "Please check that the name of your asset is unique!" + "\"}");
     } catch (DataAccessException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
       return ResponseEntity.badRequest()
           .body("{\"error\": \"" + "Failed to update the asset in the database." + "\"}");
     }
   }
-
 
   /**
    * Retrieves the HTML page for creating an asset and fetches types from the database to populate a
@@ -428,8 +485,7 @@ public class FormController {
     List<String> types = jdbcTemplate.queryForList("SELECT type_name FROM type ORDER BY id ASC",
         Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
-    List<String> assets = jdbcTemplate.queryForList("SELECT title FROM assets "
-        + "ORDER BY id ASC",
+    List<String> assets = jdbcTemplate.queryForList("SELECT title FROM assets " + "ORDER BY id ASC",
         Collections.emptyMap(), String.class);
     model.addAttribute("assets", assets);
     return "create-asset";
@@ -444,33 +500,44 @@ public class FormController {
    */
   @GetMapping("/create-type.html")
   public String populateTypesCreateType(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT type_name FROM type "
-        + "ORDER BY id ASC",
-        Collections.emptyMap(), String.class);
+    List<String> types = jdbcTemplate.queryForList(
+        "SELECT type_name FROM type " + "ORDER BY id ASC", Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     return "create-type";
   }
 
-  /** 
+  /**
    * This method is required to load the search-asset.html page / template.
    *
    * @return String the "search-asset.html" HTML page.
    */
   @GetMapping("/search-asset.html")
   public String getSearchAssetPage(Model model) {
-    List<String> types = jdbcTemplate.queryForList("SELECT type_name FROM type "
-        + "ORDER BY id ASC",
-        Collections.emptyMap(), String.class);
+    List<String> types = jdbcTemplate.queryForList(
+        "SELECT type_name FROM type " + "ORDER BY id ASC", Collections.emptyMap(), String.class);
     model.addAttribute("types", types);
     return "search-asset";
   }
 
   /**
-   * Queries the database for matching assets based on the keyword entered / filters selected 
-   * by the user.
+   * This method is required to load the audit-trail.html page.
    *
-   * @param searchData a JSON string containing the keyword entered, followed by the values of 
-   *      each selection from the filter.
+   * @return String the "audit-trail.html" HTML page.
+   */
+  @GetMapping("/audit-trail.html")
+  public String populateAuditTrailPage(Model model) {
+    List<Map<String, Object>> auditTrailData = jdbcTemplate
+        .queryForList("SELECT * FROM audit_log ORDER BY last_updated", Collections.emptyMap());
+    model.addAttribute("auditTrailData", auditTrailData);
+    return "audit-trail";
+  }
+
+  /**
+   * Queries the database for matching assets based on the keyword entered / filters selected by the
+   * user.
+   *
+   * @param searchData a JSON string containing the keyword entered, followed by the values of each
+   *        selection from the filter.
    * @return List containing the names of the assets which match the criteria.
    */
   @PostMapping("/searchAssetQuery")
@@ -485,46 +552,56 @@ public class FormController {
       // Obtain the keyword relating to the asset to query.
       String assetToQuery = searchDataArr[0];
 
-      /* Default SQL statement which obtains the name of the asset which is similar to the keyword 
-      entered. */
+      /*
+       * Default SQL statement which obtains the name of the asset which is similar to the keyword
+       * entered.
+       */
       String sql = "SELECT title FROM assets WHERE title ILIKE :assetToQuery";
 
       // The "assetToQuery" parameter stores the keyword.
-      MapSqlParameterSource params = new MapSqlParameterSource()
-          .addValue("assetToQuery", "%" + assetToQuery + "%");
+      MapSqlParameterSource params =
+          new MapSqlParameterSource().addValue("assetToQuery", "%" + assetToQuery + "%");
 
       // Checks whether a type was selected via the "Type" filter.
       if (searchDataArr[1] != "") {
-        /* Then, we check whether both a start date and an end date were specified in the 
-        "Date Range" filter. */
+        /*
+         * Then, we check whether both a start date and an end date were specified in the
+         * "Date Range" filter.
+         */
         if (searchDataArr[2] != "" && searchDataArr[3] != "") {
-          /* Builds upon the default SQL statement to also consider the chosen type, start date, 
-          and end date. */
+          /*
+           * Builds upon the default SQL statement to also consider the chosen type, start date, and
+           * end date.
+           */
           sql = "SELECT title FROM assets JOIN type ON assets.type = type.id WHERE assets.title "
-            + "ILIKE :assetToQuery AND type.type_name = :chosenType AND assets.last_updated "
-            + "BETWEEN CAST(:dateFrom AS TIMESTAMP) AND CAST(:dateTo AS TIMESTAMP)";
+              + "ILIKE :assetToQuery AND type.type_name = :chosenType AND assets.last_updated "
+              + "BETWEEN CAST(:dateFrom AS TIMESTAMP) AND CAST(:dateTo AS TIMESTAMP)";
           params.addValue("chosenType", searchDataArr[1]);
           params.addValue("dateFrom", searchDataArr[2]);
           params.addValue("dateTo", searchDataArr[3]);
         } else {
           // Otherwise, we only consider the type as an additional filter.
           sql = "SELECT title FROM assets JOIN type ON assets.type = type.id WHERE assets.title "
-            + "ILIKE :assetToQuery AND type.type_name = :chosenType";
+              + "ILIKE :assetToQuery AND type.type_name = :chosenType";
           params.addValue("chosenType", searchDataArr[1]);
         }
-      /* If only the dates were specified, then only the dates are considered as an 
-      additional filter. */
+        /*
+         * If only the dates were specified, then only the dates are considered as an additional
+         * filter.
+         */
       } else {
         if (searchDataArr[2] != "" && searchDataArr[3] != "") {
           sql = "SELECT title FROM assets WHERE title ILIKE :assetToQuery AND assets.last_updated "
-            + "BETWEEN CAST(:dateFrom AS TIMESTAMP) AND CAST(:dateTo AS TIMESTAMP)";
+              + "BETWEEN CAST(:dateFrom AS TIMESTAMP) AND CAST(:dateTo AS TIMESTAMP)";
           params.addValue("dateFrom", searchDataArr[2]);
           params.addValue("dateTo", searchDataArr[3]);
         }
       }
 
-      /* Checks whether the user selected a choice in the "Sort by" filter section, adding to the
-      SQL statement accordingly. */
+      /*
+       * Checks whether the user selected a choice in the "Sort by" filter section, adding to the
+       * SQL statement accordingly.
+       */
       switch (searchDataArr[4]) {
         case "Alphabetical: A-Z":
           sql = sql + " ORDER BY title ASC";
@@ -565,8 +642,7 @@ public class FormController {
     // Obtains data from all the other columns of an asset given its name.
     String sql = "SELECT * FROM assets WHERE title = :assetName";
 
-    MapSqlParameterSource params = new MapSqlParameterSource()
-        .addValue("assetName", assetName);
+    MapSqlParameterSource params = new MapSqlParameterSource().addValue("assetName", assetName);
 
     // Map used to store the result.
     Map<String, Object> assetData = jdbcTemplate.queryForMap(sql, params);
@@ -577,14 +653,15 @@ public class FormController {
     // This entry is stored in additionalAttrs.
     Object additionalAttrs = assetData.remove("additional_attrs");
 
-    /* Since the type of the asset is stored as the type's id as opposed 
-    to the name, we retrieve the name from the id itself. */
+    /*
+     * Since the type of the asset is stored as the type's id as opposed to the name, we retrieve
+     * the name from the id itself.
+     */
     Object typeId = assetData.get("type");
 
     sql = "SELECT type_name FROM type WHERE id = :typeId";
-      
-    params = new MapSqlParameterSource()
-        .addValue("typeId", typeId);
+
+    params = new MapSqlParameterSource().addValue("typeId", typeId);
 
     String type = jdbcTemplate.queryForObject(sql, params, String.class);
 
@@ -601,47 +678,59 @@ public class FormController {
       assetData.forEach((key, value) -> {
         assetDataJson.put(key, value.toString());
       });
-      
+
       // Converts the Java Object containing the additional attributes of the asset to JSON.
       JsonNode additionalAttrsNode = mapper.valueToTree(additionalAttrs);
-      /* Extracts only the additional attributes of the asset via the field name "value", 
-      hence ignoring any other metadata. */
+      /*
+       * Extracts only the additional attributes of the asset via the field name "value", hence
+       * ignoring any other metadata.
+       */
       String additionalAttrsStr = additionalAttrsNode.get("value").asText();
       // Converts the previous JSON string back into a JSON object.
       JsonNode additionalAttrsData = mapper.readTree(additionalAttrsStr);
 
-      /* Sets up a LinkedHashMap so that the additional attributes of the asset appear 
-      in the order defined within the asset's type. */
+      /*
+       * Sets up a LinkedHashMap so that the additional attributes of the asset appear in the order
+       * defined within the asset's type.
+       */
       Map<String, Object> additionalAttrsOrdered = new LinkedHashMap<>();
-      
-      /* Obtains 2D array in the form [["Attribute Name", "Custom Datatype"], [...]]
-      representing each attribute name and its custom datatype in their originally 
-      defined order via the fetchAttributesForTypeFromDatabase method. */
+
+      /*
+       * Obtains 2D array in the form [["Attribute Name", "Custom Datatype"], [...]] representing
+       * each attribute name and its custom datatype in their originally defined order via the
+       * fetchAttributesForTypeFromDatabase method.
+       */
       List<String[]> attrKeysAndValues = fetchAttributesForTypeFromDatabase(type);
-      /* Since the entries of attrKeysAndValues are in their originally defined order, 
-      we can display the asset's attributes in the order they appear when viewing the 
-      attributes of its type. */
+      /*
+       * Since the entries of attrKeysAndValues are in their originally defined order, we can
+       * display the asset's attributes in the order they appear when viewing the attributes of its
+       * type.
+       */
       for (String[] pair : attrKeysAndValues) {
-        /* Adds a new entry (key-value pair) to the LinkedHashMap in the form 
-        "Attribute": Value, where the value is obtained from the 
-        original (unordered) JSON containing the additional attributes. */
+        /*
+         * Adds a new entry (key-value pair) to the LinkedHashMap in the form "Attribute": Value,
+         * where the value is obtained from the original (unordered) JSON containing the additional
+         * attributes.
+         */
         additionalAttrsOrdered.put(pair[0], additionalAttrsData.get(pair[0]));
       }
 
       // Converts the LinkedHashMap to JSON.
-      JsonNode additionalAttrsDataOrdered = mapper.convertValue(
-          additionalAttrsOrdered, JsonNode.class);
+      JsonNode additionalAttrsDataOrdered =
+          mapper.convertValue(additionalAttrsOrdered, JsonNode.class);
 
-      /* Then, convert to a TextNode to ensure we can accordingly place 
-      the additional attributes JSON within our overall JSON. */
-      TextNode additionalAttrsTextNode = new TextNode(
-          mapper.writeValueAsString(additionalAttrsDataOrdered));
+      /*
+       * Then, convert to a TextNode to ensure we can accordingly place the additional attributes
+       * JSON within our overall JSON.
+       */
+      TextNode additionalAttrsTextNode =
+          new TextNode(mapper.writeValueAsString(additionalAttrsDataOrdered));
 
       assetDataJson.set("additional_attrs", additionalAttrsTextNode);
 
       // Convert to JSON string.
-      String assetDataJsonStr = mapper.writerWithDefaultPrettyPrinter()
-          .writeValueAsString(assetDataJson);
+      String assetDataJsonStr =
+          mapper.writerWithDefaultPrettyPrinter().writeValueAsString(assetDataJson);
 
       // Return the asset data as a JSON string.
       return assetDataJsonStr;
@@ -653,7 +742,7 @@ public class FormController {
   }
 
   /**
-   * Intermediary method for getting attributes associated with a given type, in their originally 
+   * Intermediary method for getting attributes associated with a given type, in their originally
    * defined order, from the database.
    *
    * @param type The given asset type.
@@ -691,15 +780,13 @@ public class FormController {
    */
   @GetMapping("/manage-asset.html")
   public String populateTypesManageAsset(Model model) {
-    List<Map<String, Object>> types =
-        jdbcTemplate.queryForList("SELECT type_name FROM type ORDER BY id ASC", 
-        Collections.emptyMap());
+    List<Map<String, Object>> types = jdbcTemplate
+        .queryForList("SELECT type_name FROM type ORDER BY id ASC", Collections.emptyMap());
     model.addAttribute("types", types);
 
-    List<Map<String, Object>> assets =
-        jdbcTemplate.queryForList("SELECT assets.title, assets.id, type.type_name\r\n"
-            + "FROM assets\r\n" + "JOIN type ON assets.type = type.id ORDER BY id ASC", 
-            Collections.emptyMap());
+    List<Map<String, Object>> assets = jdbcTemplate
+        .queryForList("SELECT assets.title, assets.id, type.type_name\r\n" + "FROM assets\r\n"
+            + "JOIN type ON assets.type = type.id ORDER BY id ASC", Collections.emptyMap());
     model.addAttribute("assets", assets);
 
     return "manage-asset";
@@ -713,18 +800,31 @@ public class FormController {
    *         deleted successfully, or an error message if an exception occurs.
    */
   @PostMapping("/deleteAsset/{id}")
-  public ResponseEntity<?> deleteType(@PathVariable("id") int id) {
+  public ResponseEntity<?> deleteAsset(@PathVariable("id") int id, HttpSession session) {
     try {
-      String statement = "DELETE FROM assets WHERE id = :assetid";
+      String assetNameSql = "SELECT title FROM assets WHERE id = :assetid";
       MapSqlParameterSource params = new MapSqlParameterSource().addValue("assetid", id);
+      String logAssetName = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
+
+      String statement = "DELETE FROM assets WHERE id = :assetid";
       jdbcTemplate.update(statement, params);
+      
+      // Update audit log
+      String username = retrieveUser(session.getId());
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:assetName, 'Deleted', :username, 'Asset')";
+      MapSqlParameterSource logParams = new MapSqlParameterSource()
+          .addValue("assetName", logAssetName)
+          .addValue("username", username);
+      jdbcTemplate.update(logSql, logParams);
 
       // Return a JSON response with the success message
       return ResponseEntity.ok().body("{\"message\": \"Asset deleted successfully!\"}");
     } catch (Exception e) {
       // Catch other exceptions and return a JSON response with a generic error message
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("{\"error\": \"An error occurred while deleting the asset\"}");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+          "{\"error\": \"An error occurred whilst deleting the asset: " + e.getMessage() + "\"}");
     }
   }
 
@@ -732,8 +832,8 @@ public class FormController {
    * Fetches attributes for the selected type, in their originally defined order, from the database.
    *
    * @param type The selected asset type for which attributes are to be fetched.
-   * @return 2D array in the form [["Attribute Name", "Custom Datatype"], [...]] representing each 
-   *      attribute name and its custom datatype.
+   * @return 2D array in the form [["Attribute Name", "Custom Datatype"], [...]] representing each
+   *         attribute name and its custom datatype.
    */
   List<String[]> fetchAttributesForTypeFromDatabase(String type) {
     String sql = "SELECT attr_keys, attr_backend_types FROM type WHERE type_name = :type";
@@ -791,6 +891,106 @@ public class FormController {
     // System.out.println(Arrays.deepToString(descriptionValue.toArray()));
     return descriptionValue;
   }
+  
+  /**
+   * Retrieves the HTML page for managing users and fetches users from the database to populate a
+   * drop-down menu.
+   *
+   * @param model The model to which types retrieved from the database will be added.
+   * @return String the name of the HTML page for creating a type ("create-type").
+   */
+  @GetMapping("/manage-users.html")
+  public String populateUsers(Model model) {
+    List<Map<String, Object>> users =
+        jdbcTemplate.queryForList("SELECT user_id, username, role FROM user2 " + "ORDER BY user_id ASC",
+            Collections.emptyMap());
+    model.addAttribute("users", users);
+    return "manage-users";
+  }
+  
+  /**
+   * Updates the role of a user with the specified user ID.
+   * 
+   * @param id The ID of the user to update.
+   * @param role The new role for the user.
+   * @return ResponseEntity containing the status of the update operation.
+   */
+  @PostMapping("/updateUser/{user_id}/{roleChoice}")
+  public ResponseEntity<?> updateUser(@PathVariable("user_id") int id, @PathVariable("roleChoice") String role, HttpSession session) {
+      try {
+          role = role.toUpperCase();
+          String assetNameSql = "SELECT username FROM user2 WHERE user_id = :id";
+          
+          String statement = "UPDATE user2 SET role = :role WHERE user_id = :id"; // Added space before "WHERE"
+          SqlParameterSource params = new MapSqlParameterSource().addValue("role", role).addValue("id", id);
+          String logAssetName = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
 
+          jdbcTemplate.update(statement, params);
 
+          String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+              + "VALUES (:assetName, 'Updated role', :username, :role)";
+          String user = retrieveUser(session.getId());
+          MapSqlParameterSource logParams =
+              new MapSqlParameterSource().addValue("assetName", logAssetName).addValue("role", role)
+              .addValue("username", user);
+          jdbcTemplate.update(logSql, logParams);
+
+          return ResponseEntity.ok().body("{\"message\": \"User updated successfully!\"}");
+
+      } catch (DataAccessException e) {
+          System.err.println(e.getMessage());
+          return ResponseEntity.badRequest()
+                  .body("{\"error\": \"" + "Failed to update the user in the database." + "\"}");
+      }
+  }
+
+  /**
+   * Deletes the user with the specified ID from the database.
+   *
+   * @param id The ID of the user to be deleted.
+   * @return A ResponseEntity containing a JSON response with a success message if the user is
+   *         deleted successfully, or an error message if an exception occurs.
+   */
+  @PostMapping("/deleteUser/{user_id}")
+  public ResponseEntity<?> deleteUser(@PathVariable("user_id") int id, HttpSession session) {
+    try {
+      String assetNameSql = "SELECT username FROM user2 WHERE user_id = :id";
+      MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+      String logAssetName = jdbcTemplate.queryForObject(assetNameSql, params, String.class);
+
+      String statement = "DELETE FROM user2 WHERE user_id = :id";
+      jdbcTemplate.update(statement, params);
+
+      String logSql = "INSERT INTO audit_log (title, action, username, asset_or_type) "
+          + "VALUES (:assetName, 'Deleted', :username, 'User')";
+      String user = retrieveUser(session.getId());
+      MapSqlParameterSource logParams =
+          new MapSqlParameterSource().addValue("assetName", logAssetName).addValue("username", user);
+      jdbcTemplate.update(logSql, logParams);
+
+      // Return a JSON response with the success message
+      return ResponseEntity.ok().body("{\"message\": \"User deleted successfully!\"}");
+    } catch (Exception e) {
+      // Catch other exceptions and return a JSON response with a generic error message
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+          "{\"error\": \"An error occurred whilst deleting the user: " + e.getMessage() + "\"}");
+    }
+  }
+  
+  /**
+   * Retrieves username of user in the current session.
+   * 
+   * @param id is the Session ID of the current session.
+   * @return username of the user in the sessions table corresponding to the session ID.
+   */
+  public String retrieveUser(String id) {
+    String getUser = "SELECT username FROM sessions WHERE session_id = :id";
+    MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+    String userEmail = jdbcTemplate.queryForObject(getUser, params, String.class);
+    String[] username = userEmail.split("@");
+    String user = username[0];
+    
+    return user;
+  }
+  
 }

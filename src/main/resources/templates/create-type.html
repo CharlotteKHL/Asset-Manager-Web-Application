@@ -13,22 +13,34 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
         <div class="container-fluid">
            <a class="navbar-brand" href="index.html">Asset Metadata Repository</a>
-           <div class="d-flex w-100">
+           <div class="links d-flex w-100">
               <div class="mr-auto">
-                <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="create-asset.html">Create an Asset</a>
-                 </button>
+               	<button class="btn btn-outline-primary mx-3" id="manage-asset-types-button" disabled>
+                    <a class="nav-link" href="create-type.html">Manage Asset Types</a>
+              	</button>
                  <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="search-asset.html">Search for Assets</a>
+                    <a class="nav-link" href="create-asset.html">Create an Asset</a>
                  </button>
                 <button class="btn btn-outline-primary mx-3">
                     <a class="nav-link" href="manage-asset.html">Manage Assets</a>
-                </button>
+                 </button>
                  <button class="btn btn-outline-primary mx-3">
-                    <a class="nav-link" href="create-type.html">Manage Asset Types</a>
+                   	<a class="nav-link" href="search-asset.html">Search for Assets</a>
+                 </button>
+                  <button class="btn btn-outline-primary mx-3" id="manage-users-button">
+                  <a class="nav-link" href="manage-users.html">Manage Users</a>
+              </button>
+                 <button class="btn btn-outline-primary mx-3" id="audit-log-button" style="display: none">
+                    <a class="nav-link" href="audit-trail.html">Audit Trail</a>
                  </button>
               </div>
-              <div class="ms-auto">
+              <div class="ms-auto" id="welcome-user-message" style="display: none">
+                <p>
+                   <div class="fst-italic" id="username"></div>
+                   <i class="bi bi-box-arrow-right">&nbsp;</i><a href="login.html" onclick="logout()">Log out</a>
+                </p>
+              </div>
+              <div class="ms-auto" id="login-register-buttons">
                  <button class="btn btn-outline-primary mx-1">
                     <a class="nav-link" href="login.html">Log In</a>
                  </button>
@@ -366,5 +378,6 @@
             }
         });
     </script>
+    <script src="checkSession.js"></script>
 </body>
 </html>
