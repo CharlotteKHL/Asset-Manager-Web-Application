@@ -66,6 +66,12 @@ class UserEntityAndUserRepositoryTests {
 	}
 	
 	@Test
+	void testSetRole() {
+		user.setRole("user");
+		assertEquals("user", user.getRole());
+	}
+	
+	@Test
 	void testIsAccountNonExpired() {
 		assertTrue(user.isAccountNonExpired());
 	}
