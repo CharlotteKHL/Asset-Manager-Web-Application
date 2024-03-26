@@ -49,14 +49,21 @@ public class AccountController {
    * @param session the user's session.
    */
   @PostMapping("/logout")
-  public String logout(HttpSession session) {
-    String remove_session = "DELETE FROM sessions WHERE session_id = :id";
-    String id = session.getId();
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put("id", id);
-    jdbcTemplate.update(remove_session, parameters);
+  public ResponseEntity<?> logout(HttpSession session) {
+      String removeSessionSql = "DELETE FROM sessions WHERE session_id = :id";
+      String sessionId = session.getId();
+      Map<String, String> parameters = new HashMap<>();
+      parameters.put("id", sessionId);
 
-    return "Logout success";
+      // Execute the update to remove the session from the database
+      jdbcTemplate.update(removeSessionSql, parameters);
+
+      // Invalidate the session
+      session.invalidate();
+
+      String message = "Logged out";
+
+      return ResponseEntity.ok().body("{\"message\": \"" + message + "\"}");
   }
 
   /**
