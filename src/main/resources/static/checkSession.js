@@ -38,7 +38,7 @@ fetch('/check', {
         usernameText.innerHTML = "Logged in as: " + data.username;
     } else {
      appendAlert('<i class="bi bi-exclamation-triangle"></i> ' + data.username + '.', 'alert-danger', 'successAlertPlaceholder');
-         await sleep(1000);
+         await sleep(100);
          window.location.replace('login.html');
     }
 });
