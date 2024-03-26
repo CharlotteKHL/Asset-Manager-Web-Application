@@ -28,7 +28,7 @@ class AccountControllerTests {
   //Testing the extractLogin method (with static variables)
   @Test
   void testExtractLoginTry() throws InvalidLogin {
-	//  assertEquals((ResponseEntity.ok().body("{\"message\": \"Login successful\"}")), accountController.extractLogin("hi@gmail.com", "hi"));
+	  assertEquals((ResponseEntity.ok().body("{\"message\": \"Login successful\"}")), accountController.extractLogin("hi@gmail.com", "hi"));
   }
   
   //Testing the try block of the validateLoginDetails method.
