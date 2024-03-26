@@ -47,6 +47,9 @@ class FormControllerTests {
 static
   MockHttpSession mockHttpSession;
   
+  //There are some unreachable sections of code, due to exceptions that are required be thrown
+  // and unable to be manufactured to get the same result consistently.
+  
   @BeforeAll
   static void setUp() throws JSONException {
 	  typeObject = new JSONObject();
