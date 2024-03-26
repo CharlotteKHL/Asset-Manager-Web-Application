@@ -52,8 +52,6 @@ public class AccountController {
   public ResponseEntity<?> logout(HttpSession session) {
       String removeSessionSql = "DELETE FROM sessions WHERE session_id = :id";
       String sessionId = session.getId();
-      System.out.println(sessionId);
-      System.out.println("checking");
       Map<String, String> parameters = new HashMap<>();
       parameters.put("id", sessionId);
 
