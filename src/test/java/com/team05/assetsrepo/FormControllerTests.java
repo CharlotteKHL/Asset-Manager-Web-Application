@@ -302,10 +302,17 @@ static
   
   //Testing the deleteType method
   @Test
-  void testDeleteTypeTryID() {
-//	  assertEquals(ResponseEntity.ok().body("{\"message\": \"Asset deleted successfully!\"}"), formController.deleteType("TestData"));
+  void testDeleteTypeCatchID() {
+	  assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	          .body("{\"error\": \"Unable to delete asset type - please remove any assets currently "
+	                  + "using this type.\"}"), formController.deleteType("TestData", mockHttpSession));
   }
   
+  //Testing the delete asset method
+  @Test
+  void testDeleteAssetTry() {
+	  assertEquals(ResponseEntity.ok().body("{\"message\": \"Asset deleted successfully!\"}"), formController.deleteAsset(8, mockHttpSession));
+  }
   
   //Testing the get and fetch attributes methods
   @Test
@@ -346,6 +353,16 @@ static
 	  		+ "[Format, Markdown], "
 	  		+ "[Authors, John, Giorgios], "
 	  		+ "[Description, Documentation for the Utility Library.]]", formatedAttributes);
+  }
+  
+  @Test
+  void testPopulateUsers() {
+	  assertEquals("manage-users", formController.populateUsers(model));
+  }
+  
+  @Test
+  void testUpdateUser() {
+	  assertEquals(ResponseEntity.ok().body("{\"message\": \"User updated successfully!\"}"), formController.updateUser(25, "USER", mockHttpSession));
   }
   
   
