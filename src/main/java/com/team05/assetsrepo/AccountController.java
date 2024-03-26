@@ -84,7 +84,6 @@ public class AccountController {
 
     // Retrieve session ID of current user
     String id = session.getId();
-    System.out.println("Webpage being accessed by session ID: " + id);
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put("id", id);
     
@@ -208,7 +207,6 @@ public class AccountController {
       int usernameResult =
           (int) jdbcTemplate.queryForObject(UNIQUE_USERNAME, parameters, Integer.class);
 
-      // System.out.println(usernameResult);
 
       // checks username exists in database
       if (usernameResult == 1) {
@@ -221,7 +219,6 @@ public class AccountController {
         }
 
       } else {
-    	System.out.println("no username");
         throw new InvalidLogin(INVALID_LOGIN_MSG);
       }
 
@@ -237,8 +234,8 @@ public class AccountController {
    * (sequentially to current entries in the database) to the new user and inserts the new
    * information into the database.
    *
-   * @param username the user name the user inputed, to be checked against the database.
-   * @param password the password the user inputed, to be checked against the database.
+   * @param username the user name the user inputed, to be validated and inputted into the database.
+   * @param password the password the user inputed, to be inputted into the database.
    * 
    * @return a response entity including a string to indicate if registration was successful or not
    *         in the form of a JSON message.
@@ -256,9 +253,6 @@ public class AccountController {
 
     Map<String, String> parameters = new HashMap<String, String>();
 
-    // query database for current number of users to calculate user_id for new user
-    int idCount = (int) jdbcTemplate.queryForObject(count, parameters, Integer.class);
-
     parameters.put("username", username);
 
     // query database to check if username already exists in database
@@ -268,8 +262,10 @@ public class AccountController {
 
       // hash password
       password = encoder().encode(password);
+      // query database for current number of users to calculate user_id for new user
+      int idCount = (int) jdbcTemplate.queryForObject(count, parameters, Integer.class);
 
-      // if username unique add new user to the database
+      // add new user to the database
       MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", idCount + 1)
           .addValue("username", username).addValue("password", password).addValue("role", "USER");
 
