@@ -86,6 +86,30 @@ fetch('/adminCheck', {
 		}
 		
     } else if(data.adminCheckResult == "USER") {
+		
+		if(manageAssetTypesButton != null){
+            manageAssetTypesButton.style.display = 'none';
+        }
+		
+		if(manageUserButton != null){
+			manageUserButton.style.display = 'none';
+		}
+		
+        if(auditButton != null){
+            auditButton.style.display = 'none';
+        }
+		
+		if(manageAssetButton != null){
+			manageAssetButton.style.display = 'inline-block';
+		}
+		
+		if(createAssetButton != null){
+			createAssetButton.style.display = 'inline-block';
+		}
+		
+		if(searchButton != null){
+			searchButton.style.display = 'inline-block';
+		}
         //check if user on page they are not allowed on
         let pathname = window.location.pathname;
         if((pathname == "/create-type.html") || (pathname == "/audit-trail.html") || (pathname == "/manage-users.html")){
